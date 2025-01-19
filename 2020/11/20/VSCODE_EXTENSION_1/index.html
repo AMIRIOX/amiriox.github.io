@@ -19,12 +19,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="此文章的 撰写时间 撰写日期 绝对有问题   此文章的部分图片可能无法加载。这是因为大概这一版的博客搭建在云服务器上所以图片没有用图床为什么呢？难道云服务器流量不要钱吗？白嫖图床不好吗？  开新坑了,VSCode: 扩展开发攻略系列主要介绍如何从零开始(不需要Js&#x2F;TS基础)开发一个VSCode插件 序: 写在前面的废话由于英语不好谷歌翻译后的官方文档 很迷惑,我就打算自己简单翻翻看">
+    <meta name="description" content="此文章的 撰写时间 撰写日期 绝对有问题   此文章的部分图片可能无法加载。这是因为大概这一版的博客搭建在云服务器上所以图片没有用图床为什么呢？难道云服务器流量不要钱吗？白嫖图床不好吗？  开新坑了,VSCode: 扩展开发攻略系列主要介绍如何从零开始(不需要Js&#x2F;TS基础)开发一个VSCode插件 序: 写在前面的废话由于英语不好谷歌翻译后的官方文档 很迷惑,我就打算自己简单翻翻看 翻一下 顺">
 <meta property="og:type" content="article">
 <meta property="og:title" content="VSCODE 扩展开发 01">
 <meta property="og:url" content="http://amiriox.github.io/2020/11/20/VSCODE_EXTENSION_1/index.html">
 <meta property="og:site_name" content="Amiriox&#39;s Storage">
-<meta property="og:description" content="此文章的 撰写时间 撰写日期 绝对有问题   此文章的部分图片可能无法加载。这是因为大概这一版的博客搭建在云服务器上所以图片没有用图床为什么呢？难道云服务器流量不要钱吗？白嫖图床不好吗？  开新坑了,VSCode: 扩展开发攻略系列主要介绍如何从零开始(不需要Js&#x2F;TS基础)开发一个VSCode插件 序: 写在前面的废话由于英语不好谷歌翻译后的官方文档 很迷惑,我就打算自己简单翻翻看">
+<meta property="og:description" content="此文章的 撰写时间 撰写日期 绝对有问题   此文章的部分图片可能无法加载。这是因为大概这一版的博客搭建在云服务器上所以图片没有用图床为什么呢？难道云服务器流量不要钱吗？白嫖图床不好吗？  开新坑了,VSCode: 扩展开发攻略系列主要介绍如何从零开始(不需要Js&#x2F;TS基础)开发一个VSCode插件 序: 写在前面的废话由于英语不好谷歌翻译后的官方文档 很迷惑,我就打算自己简单翻翻看 翻一下 顺">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://amiriox.github.io/%60warming%60%E5%8D%B7%E4%B8%80/%E4%B8%8A/2020_2/%E7%BC%96%E7%A8%8B%E6%97%A5%E8%AE%B0/images/YlTHgI.gif">
 <meta property="og:image" content="http://amiriox.github.io/%60warming%60%E5%8D%B7%E4%B8%80/%E4%B8%8A/2020_2/%E7%BC%96%E7%A8%8B%E6%97%A5%E8%AE%B0/images/Yl7K2R.png">
@@ -58,7 +58,119 @@
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
-</head>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
   <div class="headband"></div>
@@ -124,7 +236,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -135,7 +247,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -225,7 +337,7 @@
 <blockquote>
 <p>此文章的部分图片可能无法加载。这是因为大概这一版的博客搭建在云服务器上所以图片没有用图床<br><del>为什么呢？难道云服务器流量不要钱吗？白嫖图床不好吗？</del></p>
 </blockquote>
-<p>开新坑了,<code>VSCode: 扩展开发攻略</code>系列主要介绍如何从零开始(<strong>不需要Js&#x2F;TS基础</strong>)开发一个VSCode插件</p>
+<p>开新坑了,<code>VSCode: 扩展开发攻略</code>系列主要介绍如何从零开始(<strong>不需要Js/TS基础</strong>)开发一个VSCode插件</p>
 <h1 id="序-写在前面的废话"><a href="#序-写在前面的废话" class="headerlink" title="序: 写在前面的废话"></a>序: 写在前面的废话</h1><p>由于<del>英语不好</del>谷歌翻译后的<a target="_blank" rel="noopener" href="https://code.visualstudio.com/api">官方文档</a> 很迷惑,我就打算自己简单翻翻看 翻一下 顺便加上一些注解</p>
 <p>需要注意的一点是 有些东西你别理解 先能复现再说 因为有些Js语法你没学肯定看不懂</p>
 <p>放心,这个系列一定会咕咕咕的,<del>估计十年都写不好</del></p>
@@ -247,15 +359,15 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yo code</span><br></pre></td></tr></table></figure>
 <p>下面的操作类似这样<br>中间有些耗时较长的地方我暂停了下GIF,不影响实际操作<br><img src="/../../../../%60warming%60%E5%8D%B7%E4%B8%80/%E4%B8%8A/2020_2/%E7%BC%96%E7%A8%8B%E6%97%A5%E8%AE%B0/images/YlTHgI.gif" alt="YlTHgI.gif"><br>然后</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd name</span><br><span class="line">code .</span><br></pre></td></tr></table></figure>
-<p>(这里的name就是你<code>? What&#39;s the identifier of your extension? name</code>这里输入的名字)<br>然后cmd就可以关掉了,你发现你惊喜的进入了VSCode<br><img src="/../../../../%60warming%60%E5%8D%B7%E4%B8%80/%E4%B8%8A/2020_2/%E7%BC%96%E7%A8%8B%E6%97%A5%E8%AE%B0/images/Yl7K2R.png" alt="Yl7K2R.png"><br>(背景图片来自WLOP) (忽略我打开的那个json文件)</p>
+<p>(这里的name就是你<code>? What's the identifier of your extension? name</code>这里输入的名字)<br>然后cmd就可以关掉了,你发现你惊喜的进入了VSCode<br><img src="/../../../../%60warming%60%E5%8D%B7%E4%B8%80/%E4%B8%8A/2020_2/%E7%BC%96%E7%A8%8B%E6%97%A5%E8%AE%B0/images/Yl7K2R.png" alt="Yl7K2R.png"><br>(背景图片来自WLOP) (忽略我打开的那个json文件)</p>
 <h1 id="开始征程-第一个HelloWorld插件"><a href="#开始征程-第一个HelloWorld插件" class="headerlink" title="开始征程: 第一个HelloWorld插件"></a>开始征程: 第一个HelloWorld插件</h1><p>##熟悉文件</p>
 <p>左侧文件资源管理器已经能看到<code>package.json</code>和<code>extension.js</code>这两个文件了,qwq<br>这两个文件就是官方那个轮子生成的文件<br>我们先熟悉一下这个package.json文件</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;name&quot;</span><span class="punctuation">,</span>             <span class="comment">//插件名</span></span><br><span class="line">	<span class="attr">&quot;displayName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;name&quot;</span><span class="punctuation">,</span>      <span class="comment">//显示名</span></span><br><span class="line">	<span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;描述 可以中文&quot;</span><span class="punctuation">,</span>  <span class="comment">//描述 对应你在命令行cmd输入的描述</span></span><br><span class="line">	<span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;0.0.1&quot;</span><span class="punctuation">,</span>         <span class="comment">//版本号  注: 以上在vscode插件市场可见</span></span><br><span class="line">	<span class="attr">&quot;engines&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;vscode&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^1.45.0&quot;</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;categories&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">		<span class="string">&quot;Other&quot;</span></span><br><span class="line">	<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">        <span class="comment">//扩展被激活时的事件(也就是干的事 有基础的同学可以理解为一个函数)</span></span><br><span class="line">	<span class="attr">&quot;activationEvents&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">		<span class="string">&quot;onCommand:name.helloWorld&quot;</span></span><br><span class="line">	<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">        <span class="comment">//入口文件</span></span><br><span class="line">	<span class="attr">&quot;main&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./extension.js&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="comment">//插件差不多所有的东西到要在这改,主要是一些命令的描述</span></span><br><span class="line">	<span class="attr">&quot;contributes&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;commands&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">			<span class="punctuation">&#123;</span></span><br><span class="line">				<span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;name.helloWorld&quot;</span><span class="punctuation">,</span></span><br><span class="line">				<span class="attr">&quot;title&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Hello World&quot;</span></span><br><span class="line">			<span class="punctuation">&#125;</span></span><br><span class="line">		<span class="punctuation">]</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;scripts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;lint&quot;</span><span class="punctuation">:</span> <span class="string">&quot;eslint .&quot;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;pretest&quot;</span><span class="punctuation">:</span> <span class="string">&quot;npm run lint&quot;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;test&quot;</span><span class="punctuation">:</span> <span class="string">&quot;node ./test/runTest.js&quot;</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;devDependencies&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;@types/vscode&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^1.45.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;@types/glob&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^7.1.1&quot;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;@types/mocha&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^7.0.2&quot;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;@types/node&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^13.11.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;eslint&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^6.8.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;glob&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^7.1.6&quot;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;mocha&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^7.1.2&quot;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;typescript&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^3.8.3&quot;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;vscode-test&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^1.3.0&quot;</span></span><br><span class="line">	<span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">{</span></span><br><span class="line">	<span class="attr">"name"</span><span class="punctuation">:</span> <span class="string">"name"</span><span class="punctuation">,</span>             <span class="comment">//插件名</span></span><br><span class="line">	<span class="attr">"displayName"</span><span class="punctuation">:</span> <span class="string">"name"</span><span class="punctuation">,</span>      <span class="comment">//显示名</span></span><br><span class="line">	<span class="attr">"description"</span><span class="punctuation">:</span> <span class="string">"描述 可以中文"</span><span class="punctuation">,</span>  <span class="comment">//描述 对应你在命令行cmd输入的描述</span></span><br><span class="line">	<span class="attr">"version"</span><span class="punctuation">:</span> <span class="string">"0.0.1"</span><span class="punctuation">,</span>         <span class="comment">//版本号  注: 以上在vscode插件市场可见</span></span><br><span class="line">	<span class="attr">"engines"</span><span class="punctuation">:</span> <span class="punctuation">{</span></span><br><span class="line">		<span class="attr">"vscode"</span><span class="punctuation">:</span> <span class="string">"^1.45.0"</span></span><br><span class="line">	<span class="punctuation">}</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">"categories"</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">		<span class="string">"Other"</span></span><br><span class="line">	<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">        <span class="comment">//扩展被激活时的事件(也就是干的事 有基础的同学可以理解为一个函数)</span></span><br><span class="line">	<span class="attr">"activationEvents"</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">		<span class="string">"onCommand:name.helloWorld"</span></span><br><span class="line">	<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">        <span class="comment">//入口文件</span></span><br><span class="line">	<span class="attr">"main"</span><span class="punctuation">:</span> <span class="string">"./extension.js"</span><span class="punctuation">,</span></span><br><span class="line">        <span class="comment">//插件差不多所有的东西到要在这改,主要是一些命令的描述</span></span><br><span class="line">	<span class="attr">"contributes"</span><span class="punctuation">:</span> <span class="punctuation">{</span></span><br><span class="line">		<span class="attr">"commands"</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">			<span class="punctuation">{</span></span><br><span class="line">				<span class="attr">"command"</span><span class="punctuation">:</span> <span class="string">"name.helloWorld"</span><span class="punctuation">,</span></span><br><span class="line">				<span class="attr">"title"</span><span class="punctuation">:</span> <span class="string">"Hello World"</span></span><br><span class="line">			<span class="punctuation">}</span></span><br><span class="line">		<span class="punctuation">]</span></span><br><span class="line">	<span class="punctuation">}</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">"scripts"</span><span class="punctuation">:</span> <span class="punctuation">{</span></span><br><span class="line">		<span class="attr">"lint"</span><span class="punctuation">:</span> <span class="string">"eslint ."</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">"pretest"</span><span class="punctuation">:</span> <span class="string">"npm run lint"</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">"test"</span><span class="punctuation">:</span> <span class="string">"node ./test/runTest.js"</span></span><br><span class="line">	<span class="punctuation">}</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">"devDependencies"</span><span class="punctuation">:</span> <span class="punctuation">{</span></span><br><span class="line">		<span class="attr">"@types/vscode"</span><span class="punctuation">:</span> <span class="string">"^1.45.0"</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">"@types/glob"</span><span class="punctuation">:</span> <span class="string">"^7.1.1"</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">"@types/mocha"</span><span class="punctuation">:</span> <span class="string">"^7.0.2"</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">"@types/node"</span><span class="punctuation">:</span> <span class="string">"^13.11.0"</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">"eslint"</span><span class="punctuation">:</span> <span class="string">"^6.8.0"</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">"glob"</span><span class="punctuation">:</span> <span class="string">"^7.1.6"</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">"mocha"</span><span class="punctuation">:</span> <span class="string">"^7.1.2"</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">"typescript"</span><span class="punctuation">:</span> <span class="string">"^3.8.3"</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">"vscode-test"</span><span class="punctuation">:</span> <span class="string">"^1.3.0"</span></span><br><span class="line">	<span class="punctuation">}</span></span><br><span class="line"><span class="punctuation">}</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>没注释的地方可以忽略掉</p>
 <p>然后我们再熟悉下<code>extension.js</code></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">// The module &#x27;vscode&#x27; contains the VS Code extensibility API</span><br><span class="line">// Import the module and reference it with the alias vscode in your code below</span><br><span class="line">const vscode = require(&#x27;vscode&#x27;);</span><br><span class="line"></span><br><span class="line">// this method is called when your extension is activated</span><br><span class="line">// your extension is activated the very first time the command is executed</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @param &#123;vscode.ExtensionContext&#125; context</span><br><span class="line"> */</span><br><span class="line">//插件被激活时执行这个</span><br><span class="line">function activate(context) &#123;</span><br><span class="line"></span><br><span class="line">	// Use the console to output diagnostic information (console.log) and errors (console.error)</span><br><span class="line">	// This line of code will only be executed once when your extension is activated</span><br><span class="line">	console.log(&#x27;Congratulations, your extension &quot;name&quot; is now active!&#x27;);</span><br><span class="line"></span><br><span class="line">	// The command has been defined in the package.json file</span><br><span class="line">	// Now provide the implementation of the command with  registerCommand</span><br><span class="line">	// The commandId parameter must match the command field in package.json</span><br><span class="line">	let disposable = vscode.commands.registerCommand(&#x27;name.helloWorld&#x27;, function () &#123;</span><br><span class="line">		// The code you place here will be executed every time your command is executed</span><br><span class="line"></span><br><span class="line">		// Display a message box to the user</span><br><span class="line">		vscode.window.showInformationMessage(&#x27;Hello World from name!&#x27;);</span><br><span class="line">	&#125;);</span><br><span class="line"></span><br><span class="line">	context.subscriptions.push(disposable);</span><br><span class="line">&#125;</span><br><span class="line">exports.activate = activate;</span><br><span class="line"></span><br><span class="line">// this method is called when your extension is deactivated</span><br><span class="line">//被释放时激活这个(上面那句英文也是这个意思,是自己生成的不关我事 ( ( (</span><br><span class="line">function deactivate() &#123;&#125;</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">	activate,</span><br><span class="line">	deactivate</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">// The module 'vscode' contains the VS Code extensibility API</span><br><span class="line">// Import the module and reference it with the alias vscode in your code below</span><br><span class="line">const vscode = require('vscode');</span><br><span class="line"></span><br><span class="line">// this method is called when your extension is activated</span><br><span class="line">// your extension is activated the very first time the command is executed</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @param {vscode.ExtensionContext} context</span><br><span class="line"> */</span><br><span class="line">//插件被激活时执行这个</span><br><span class="line">function activate(context) {</span><br><span class="line"></span><br><span class="line">	// Use the console to output diagnostic information (console.log) and errors (console.error)</span><br><span class="line">	// This line of code will only be executed once when your extension is activated</span><br><span class="line">	console.log('Congratulations, your extension "name" is now active!');</span><br><span class="line"></span><br><span class="line">	// The command has been defined in the package.json file</span><br><span class="line">	// Now provide the implementation of the command with  registerCommand</span><br><span class="line">	// The commandId parameter must match the command field in package.json</span><br><span class="line">	let disposable = vscode.commands.registerCommand('name.helloWorld', function () {</span><br><span class="line">		// The code you place here will be executed every time your command is executed</span><br><span class="line"></span><br><span class="line">		// Display a message box to the user</span><br><span class="line">		vscode.window.showInformationMessage('Hello World from name!');</span><br><span class="line">	});</span><br><span class="line"></span><br><span class="line">	context.subscriptions.push(disposable);</span><br><span class="line">}</span><br><span class="line">exports.activate = activate;</span><br><span class="line"></span><br><span class="line">// this method is called when your extension is deactivated</span><br><span class="line">//被释放时激活这个(上面那句英文也是这个意思,是自己生成的不关我事 ( ( (</span><br><span class="line">function deactivate() {}</span><br><span class="line"></span><br><span class="line">module.exports = {</span><br><span class="line">	activate,</span><br><span class="line">	deactivate</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <h2 id="文件分析"><a href="#文件分析" class="headerlink" title="文件分析"></a>文件分析</h2><p>这两个自己生成的文件已经带有了输出hello world提示信息的功能,我们来分析下他是如何实现的<br><code>package.json</code>节选:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&quot;contributes&quot;: &#123;</span><br><span class="line">		&quot;commands&quot;: [</span><br><span class="line">			&#123;</span><br><span class="line">				&quot;command&quot;: &quot;name.helloWorld&quot;,</span><br><span class="line">				&quot;title&quot;: &quot;Hello World&quot;</span><br><span class="line">			&#125;</span><br><span class="line">		]</span><br><span class="line">	&#125;,</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">"contributes": {</span><br><span class="line">		"commands": [</span><br><span class="line">			{</span><br><span class="line">				"command": "name.helloWorld",</span><br><span class="line">				"title": "Hello World"</span><br><span class="line">			}</span><br><span class="line">		]</span><br><span class="line">	},</span><br></pre></td></tr></table></figure>
 <p>commands的意思是”命令”,也就是说,以后要执行的命令都要在这<strong>注册</strong>(即进行描述)<br>了解json格式的同学也能发现commands<strong>其实是一个json数组</strong>,包含很多个json对象,不理解没关系<br>其中内部”command”是命令的名字,name.helloworld也就是这个命令的名字,可以理解为身份证,<br>比如以后要用到这个命令就要用这个名字叫他</p>
 <blockquote>
 <p>一个人呼喊另一个人: 张三!<br>人群中一堆叫张三的走了过来: 咋啦?<br>于是他喊: 身份证号是888888888888888888的人过来一下!<br>于是他要的张三就来了</p>
@@ -265,7 +377,7 @@
 <p>注意,这里name不是固定的,而是我们这个项目的名称</p>
 </blockquote>
 <p>title的意思是标题,顾名思义,也就是标题<br>然后我们看看<code>extension.js</code>节选</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">activate</span>(<span class="params">context</span>) &#123;</span><br><span class="line">	<span class="keyword">let</span> disposable = vscode.<span class="property">commands</span>.<span class="title function_">registerCommand</span>(<span class="string">&#x27;name.helloWorld&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">		vscode.<span class="property">window</span>.<span class="title function_">showInformationMessage</span>(<span class="string">&#x27;Hello World from name!&#x27;</span>);</span><br><span class="line">	&#125;);</span><br><span class="line">	context.<span class="property">subscriptions</span>.<span class="title function_">push</span>(disposable);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">activate</span>(<span class="params">context</span>) {</span><br><span class="line">	<span class="keyword">let</span> disposable = vscode.<span class="property">commands</span>.<span class="title function_">registerCommand</span>(<span class="string">'name.helloWorld'</span>, <span class="keyword">function</span> (<span class="params"></span>) {</span><br><span class="line">		vscode.<span class="property">window</span>.<span class="title function_">showInformationMessage</span>(<span class="string">'Hello World from name!'</span>);</span><br><span class="line">	});</span><br><span class="line">	context.<span class="property">subscriptions</span>.<span class="title function_">push</span>(disposable);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
 <p>function中文意思函数 可以理解为一长串清单 告诉某个对象要做什么<br>我们看代码里有这么一句context.subscriptions.push(disposable);</p>
 <blockquote>
 <p>context  n. 环境；上下文；来龙去脉</p>
@@ -282,14 +394,14 @@
 <blockquote>
 <p>当然,有的函数不会”吐东西”,甚至也不接收东西</p>
 </blockquote>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">vscode.commands.registerCommand(&#x27;name.helloWorld&#x27;, function () &#123;</span><br><span class="line">		vscode.window.showInformationMessage(&#x27;Hello World from name!&#x27;);</span><br><span class="line">	&#125;);</span><br></pre></td></tr></table></figure>
-<p>这段代码就是执行一个函数,函数名字(面包机的型号)<code>registerCommand</code>, 参数是’name.helloWorld’这个字符串和另一个函数(Js中字符串不是<code>&quot;</code>而是<code>&#39;</code>) 参数是什么?就是上面说的你放进面包机的东西<br>返回结果是<code>Disposable对象</code>,至于对象,你暂时理解成你对象好了,你对象是一个人这个类的个体<br><del>如果你没有对象的话,赶紧去找啊,还学什么学啊(大雾</del></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">vscode.commands.registerCommand('name.helloWorld', function () {</span><br><span class="line">		vscode.window.showInformationMessage('Hello World from name!');</span><br><span class="line">	});</span><br></pre></td></tr></table></figure>
+<p>这段代码就是执行一个函数,函数名字(面包机的型号)<code>registerCommand</code>, 参数是’name.helloWorld’这个字符串和另一个函数(Js中字符串不是<code>"</code>而是<code>'</code>) 参数是什么?就是上面说的你放进面包机的东西<br>返回结果是<code>Disposable对象</code>,至于对象,你暂时理解成你对象好了,你对象是一个人这个类的个体<br><del>如果你没有对象的话,赶紧去找啊,还学什么学啊(大雾</del></p>
 <blockquote>
-<p>小提示: 实际上,&#96;vscode.commands.registerCommand()就是一个API(Application Programming Interface,应用程序接口,也就是那个面包机的入口,用于注册命令,不理解没关系</p>
+<p>小提示: 实际上,`vscode.commands.registerCommand()就是一个API(Application Programming Interface,应用程序接口,也就是那个面包机的入口,用于注册命令,不理解没关系</p>
 </blockquote>
 <p>有时候,您可能看到这样的写法</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">context.subscriptions.push(vscode.commands.registerCommand(&#x27;name.helloWorld&#x27;, () =&gt; &#123;</span><br><span class="line">    //......</span><br><span class="line">&#125;));</span><br></pre></td></tr></table></figure>
-<p>实际上这里它直接把值”扔”了进去,而没有用”纸”记下来<br>第二,它使用了() &#x3D;&gt; {…}这样的写法,实际上叫一个<code>Lambda</code>表达式,暂时忽略即可<br>感兴趣可以自行百度&#x2F;Bing&#x2F;Google</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">context.subscriptions.push(vscode.commands.registerCommand('name.helloWorld', () =&gt; {</span><br><span class="line">    //......</span><br><span class="line">}));</span><br></pre></td></tr></table></figure>
+<p>实际上这里它直接把值”扔”了进去,而没有用”纸”记下来<br>第二,它使用了() =&gt; {…}这样的写法,实际上叫一个<code>Lambda</code>表达式,暂时忽略即可<br>感兴趣可以自行百度/Bing/Google</p>
 <p>而函数内部呢,也是一个API,这个API<code>vscode.window.showInformationMessage()</code>用于输出一句调试信息<br>也很好理解,vscode就是vscode,window是窗口,show information message也就是显示 信息 消息<br>而括号中的’Hello World from name!’就是一个字符串,表示你要输出的信息,可以自己改</p>
 <p>这样就分析完了,如何测试一下是否可以呢?<br>按<code>f5</code>,在你键盘的第一行,不算esc键的第五个按键<br>可以看到它弹出来了一个新窗口<br>按下Ctrl+Shift+P,也就是打开VSCode的命令面板<br><img src="/../../../../%60warming%60%E5%8D%B7%E4%B8%80/%E4%B8%8A/2020_2/%E7%BC%96%E7%A8%8B%E6%97%A5%E8%AE%B0/images/YlOvV0.png" alt="YlOvV0.png"><br>(注意看上图上方)<br>输入hello,就能看到我们的helloworld命令了(title就是Hello World)<br>回车选择这个命令<br><img src="/../../../../%60warming%60%E5%8D%B7%E4%B8%80/%E4%B8%8A/2020_2/%E7%BC%96%E7%A8%8B%E6%97%A5%E8%AE%B0/images/YlXFM9.png" alt="YlXFM9.png"><br>(那个登录成功是我装的另一个插件<code>vscode-luogu</code>显示的,与本插件无关)<br>就能看到我们的输出信息了,即vscode.window.showInformationMessage()括号里的字符串(参数)</p>
 <p>这样,第一个Hello World就说完了,是不是很容易?<br>剩下的 以后再说吧 不会咕的 至少我也会把右键菜单命令和快捷键说完吧<br>掰掰~ 下期再见 ~</p>
@@ -309,13 +421,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2020/11/20/VSCODE_EXTENSION_2/" rel="prev" title="VSCODE 扩展开发 02">
-                  <i class="fa fa-angle-left"></i> VSCODE 扩展开发 02
+                <a href="/2020/11/14/CSAPP-2020-11-14/" rel="prev" title="CSAPP 2020-11-14">
+                  <i class="fa fa-angle-left"></i> CSAPP 2020-11-14
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2020/11/20/CSSC/" rel="next" title="Crash Course Computer Science">
-                  Crash Course Computer Science <i class="fa fa-angle-right"></i>
+                <a href="/2020/11/20/VSCODE_EXTENSION_2/" rel="next" title="VSCODE 扩展开发 02">
+                  VSCODE 扩展开发 02 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>

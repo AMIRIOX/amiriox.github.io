@@ -53,7 +53,119 @@
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
-</head>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
   <div class="headband"></div>
@@ -119,7 +231,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -130,7 +242,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -249,7 +361,7 @@
 <li><p>2020年5月 </p>
 <ul>
 <li>痛苦黑暗的日子来临了 由于一些较为隐私的事情 加上父母的一些事情 严重影响了我的心态 本来在2019年压制住的问题又爆发出来 </li>
-<li>由于心里原因和上网课的颓废 数学考了43分(这次期末估分差不多117&#x2F;120 可以对比下) 再加之父母的另一些问题 直接导致我心态崩掉</li>
+<li>由于心里原因和上网课的颓废 数学考了43分(这次期末估分差不多117/120 可以对比下) 再加之父母的另一些问题 直接导致我心态崩掉</li>
 <li>由于一些情感问题, 内心绝望</li>
 <li>在Jvav仓库提交了我在Github的第一个pull request, 通过哦#define的方式重新定义关键字做了Jvav Programming language的第一个版本编译器 号称兼容C++ (逃) | 据说这个梗得到了当事人zhy的许可(伏笔 下面还会说到)</li>
 <li>当然那个pr由于另一个人改进了我的代码 就打了重复标签然后拒了</li>
@@ -269,15 +381,15 @@
 <li><p>2020年7月 发现之前JCP(通过define套壳gcc)不能一直下去 开始学习正经编译原理(买了&lt;&lt;编译原理&gt;&gt;我的第二本黑皮书), 并且跟着LLVM的文档做一个toy language</p>
 <ul>
 <li>早上早期在马桶上看编译原理(龙书) (</li>
-<li>开始学习rust, 看&lt;<The Rust Language Book>&gt; 这本书大概是我看过最棒的讲语言的书了 (其实是官方的文档), 看到11章<code>测试</code>结束, 后面还有闭包 只能指针之类的东西</li>
-<li>llvm windows不支持<code>--config</code> 因此想了好多办法 最后在团队里一个朋友(如果当事人允许也许会@一下)的windows上装ubuntu虚拟机然后远程 &#x3D; &#x3D; 感觉好二(我本地磁盘不够装虚拟机的)</li>
+<li>开始学习rust, 看&lt;<the Rust="" Language="" Book="">&gt; 这本书大概是我看过最棒的讲语言的书了 (其实是官方的文档), 看到11章<code>测试</code>结束, 后面还有闭包 只能指针之类的东西</the></li>
+<li>llvm windows不支持<code>--config</code> 因此想了好多办法 最后在团队里一个朋友(如果当事人允许也许会@一下)的windows上装ubuntu虚拟机然后远程 = = 感觉好二(我本地磁盘不够装虚拟机的)</li>
 <li>后来删了一堆东西 卸载了一些没用的东西 装了macOS虚拟机 然后发现llvm的<code>--config</code>可以在macOS用, 于是编译出了这个Jvav语言编译器JLC的第一个版本 有lexer和parser 并且有转换LLVM IR和AST的代码</li>
 <li>大概是这个时候 看了WWDC  成了一名果粉 随即发现微软没有那么香了</li>
 <li>咕咕了很久的深基终于到了 但是由于一直在搞工程 只看了前面一写我本来就会的内容</li>
 <li>给某个人写了个Android小游戏 这完全是我照着之前的Java底子(我六年级的时候入门编程 学得JavaSE)和google的文档写的 写了一半就有别的事情忙去了 这个github上还有仓库 已经archived了: <a target="_blank" rel="noopener" href="https://github.com/AMIRIOX/leaping-octopus">https://github.com/AMIRIOX/leaping-octopus</a></li>
 <li>老师逼迫下我参加了一个什么程序设计比赛 需求和文档写的和屎一样 根本没说出来想要啥 一股华而不实的风格 然后通宵半周搞出来了一个Qt写的天气预报程序: <a target="_blank" rel="noopener" href="https://github.com/AMIRIOX/SpjWeather">https://github.com/AMIRIOX/SpjWeather</a> , 毫无意外地拿了一等奖. 虽然当时代码风格我自己都看不下去, 设计模式啥也不会, 代码质量不敢评价,但这个比赛含金量太低了…. 虽然是windows的 但是qt有跨平台buff 有时间在现在linux上搞一下qt然后编译下看看 (</li>
-<li>搞了自己的博客 typecho+阿里云的服务器(RMB 98&#x2F;年)</li>
-<li>巩固了一些基础算法(二分&#x2F;贪心, dfs等) 刷了题单</li>
+<li>搞了自己的博客 typecho+阿里云的服务器(RMB 98/年)</li>
+<li>巩固了一些基础算法(二分/贪心, dfs等) 刷了题单</li>
 <li>一些事情: 在jvav.top一方(也是我五月份交pr的那个仓库的owner)的舆论(这个人由于当时的一些事情卷了很多奇怪的事情里) 加上对方对JDT的不支持 导致团队发展逐渐堪忧. 另外前期对项目质量控制的忽略(no CI, no cr, no docker, no test!) 项目开始变得难以维护 重构了几次都没有起色. 然后最后直接原因来了, 我们当时以为获得了Jvav梗当事人zhy的许可(这个事我是让一个团队里的人联系搞得) 但实际没有(他给了个截图 但实际上聊天记录截图不是本人) 然后我们开始怀疑我们目标的正确性 于是最终迫于多方面压力解散了JDT. 这些项目在github还有archived的仓库: <a target="_blank" rel="noopener" href="https://github.com/AMIRIOX/JvavLlvmCompiler">JLC</a>和<a target="_blank" rel="noopener" href="https://github.com/AMIRIOX/JvavCompilePlatform">JCP</a>, 以及在Gitee上Jvav的VSCode插件(本想写语言服务器但发现太菜了写不了) <a target="_blank" rel="noopener" href="https://gitee.com/airk/Jvavscode">Jvavscode</a>, <a target="_blank" rel="noopener" href="https://gitee.com/Jvavdev/">这</a>是当时的gitee 组织</li>
 <li>迎来了期末考试 毫无疑问考砸了 因为颓的时间太多</li>
 <li>15天生地结业总复习. 算是心理状态比较好的日子, 整天听网课之类的, 卷发了4套 我都是边听课边写 发现效果更好, 早上班主任要求我们在钉钉会议露脸 然后我把摄像头调整在挡住我手的地方 然后继续开TIM水群聊天 不亦乐乎</li>
@@ -292,7 +404,7 @@
 <li>心理状态不太好 但勉强讲究. </li>
 <li>后来补课结束 OI水平大跃进, 进步了很多(主要是树和图 还有图相关的算法) </li>
 <li>但是越来越自卑 对自己OI水平不自信 感觉很空(现在也是 但缓解很多)</li>
-<li>开始继续学OI之外的一些东西, 想了想 想起编译原理的难度 组成原理啊之类的高深 柿子先挑软的捏 就选了多线程 于是看了多线程七篇 了解了互斥锁&#x2F;条件变量&#x2F;读写锁之类的多线程概念, 实现的代码在这个仓库: <a target="_blank" rel="noopener" href="https://github.com/AMIRIOX/multithreading">multithreading</a></li>
+<li>开始继续学OI之外的一些东西, 想了想 想起编译原理的难度 组成原理啊之类的高深 柿子先挑软的捏 就选了多线程 于是看了多线程七篇 了解了互斥锁/条件变量/读写锁之类的多线程概念, 实现的代码在这个仓库: <a target="_blank" rel="noopener" href="https://github.com/AMIRIOX/multithreading">multithreading</a></li>
 <li>补课的时候一同学给我看了些精神污染的东西…我对这些东西承受能力很差 然后看到一句话”心中有党 做事不慌” 然后听义勇军进行曲(中国国歌欸), 牢不可破的联盟(苏联国歌) 还有法国国歌等</li>
 <li>然后看到了国际歌 了解了苏联的一些历史 开始对共产主义产生兴趣</li>
 <li>严格意义来讲当时的我只算<code>共产主义趣味者</code> 没有理论武装头脑, 但还是使我产生了很大兴趣 <del>为以后深入做铺垫</del></li>
@@ -325,12 +437,12 @@
 <li>我是普及组水平 但还是报了提高组 有些慌, 后来很多人说线段树常考 我就打算学线段树</li>
 <li>发现这东西没啥难的 就直接上了 但还是有个bug没调处来</li>
 <li>11.7 十月革命 龙江初雪 吸哎思劈 6号出发去大庆的时候 晚上从教室离开 我同桌还有好多人给我加油来着 蛮温暖的QwQ 虽然父母不支持 但总有人支持我的</li>
-<li>11.7 CSP当天, 上午J组有些紧张 有些该拿的分没拿到, T1忘记注释freopen, T4浪费太多时间调弱智问题, 写程序前没有认真思考并写注释思路的习惯 所以当时思路混乱导致T2失误; 下午S组基本白给 看了下这些题发现都很复杂 估计了一下自己的水平估计只能写一题, 就 他 妈 选 了 T 1, 以为是签到题….然后打了4小时大模拟, 也没有什么打表 二分之类的优化 还是爆零了, 最终J组65, S组0, 详见游记: <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/blog/airx/csp-js-quan-zha-liao">CSP-J&#x2F;S全炸了</a></li>
+<li>11.7 CSP当天, 上午J组有些紧张 有些该拿的分没拿到, T1忘记注释freopen, T4浪费太多时间调弱智问题, 写程序前没有认真思考并写注释思路的习惯 所以当时思路混乱导致T2失误; 下午S组基本白给 看了下这些题发现都很复杂 估计了一下自己的水平估计只能写一题, 就 他 妈 选 了 T 1, 以为是签到题….然后打了4小时大模拟, 也没有什么打表 二分之类的优化 还是爆零了, 最终J组65, S组0, 详见游记: <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/blog/airx/csp-js-quan-zha-liao">CSP-J/S全炸了</a></li>
 <li>回来后心态很不好 加上父母的一些事, 导致整个月心里都不太安稳</li>
 <li>回归了Minecraft. 每次人生落入低谷, MC总会出现在那….</li>
 <li>然后重心逐渐转向文化课, 很少刷题了, 月末的时候突然想搞一套自律的方案, 这个一会说</li>
 <li>开始学习&lt;&lt;深入理解计算机系统&gt;&gt;(CSAPP) 这是我的第三本黑皮书, 写了一些博客(CSAPP Today系列, 咕了很久但会继续更的)</li>
-<li>排除了一下 发现OI知识体系里普及组的我差不多快完事了 但还剩一个动态规划的大块, 于是开始学习动态规划. 数字三角形 然后LIS&#x2F;LCS学了好久不懂, 好不容易懂了 然后学背包九讲(01完全多重混合分组二维…..)</li>
+<li>排除了一下 发现OI知识体系里普及组的我差不多快完事了 但还剩一个动态规划的大块, 于是开始学习动态规划. 数字三角形 然后LIS/LCS学了好久不懂, 好不容易懂了 然后学背包九讲(01完全多重混合分组二维…..)</li>
 <li>十一月刷题数6</li>
 </ul>
 </li>
@@ -360,7 +472,7 @@
 <p>这一年的优点:</p>
 <ul>
 <li>心智成熟了很多 不再是xxs了</li>
-<li>OI水平跨越 至少在知识点上是普及组水平了 (但思维还是太差&#x2F;kk)</li>
+<li>OI水平跨越 至少在知识点上是普及组水平了 (但思维还是太差/kk)</li>
 <li>学习了很多OI之外的知识  多线程啊 设计模式啊, 代码质量++;</li>
 <li>对生活有更好的计划 同时也不失自由</li>
 <li>承受能力变强! qwq</li>
@@ -371,7 +483,7 @@
 <ul>
 <li>自我控制做的仍然不好, 颓时知道不应该 心里有压力, 但又控制不住</li>
 <li>心态不够宽, 对某些事情看的并不是很开, 心态要平衡</li>
-<li>情绪影响太大 要学会控制情绪(控制&#x3D;压抑+发泄)</li>
+<li>情绪影响太大 要学会控制情绪(控制=压抑+发泄)</li>
 <li>学习效率低 刷题效率低</li>
 </ul>
 </blockquote>

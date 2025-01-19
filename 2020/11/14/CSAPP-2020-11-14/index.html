@@ -19,12 +19,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="此文章的 撰写时间 可能有误  CSAPP today: 总线(传递字节)      IO桥和I&#x2F;O设备通过控制器或适配器接入总线      CPU中有      总线接口     ALU(逻辑算术单元)    PC(程序计数器, 任何时刻都指向一条指令的地址), 寄存器文件(L0, 最小最快的存储单元) CPU有(加载,存储,操作和跳转)操作   可以通过DMA直接存储器存取技术直接">
+    <meta name="description" content="此文章的 撰写时间 可能有误  CSAPP today: 总线(传递字节)      IO桥和I&#x2F;O设备通过控制器或适配器接入总线      CPU中有      总线接口     ALU(逻辑算术单元)    PC(程序计数器, 任何时刻都指向一条指令的地址), 寄存器文件(L0, 最小最快的存储单元) CPU有(加载,存储,操作和跳转)操作   可以通过DMA直接存储器存取技术直接交流磁盘和">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CSAPP 2020-11-14">
 <meta property="og:url" content="http://amiriox.github.io/2020/11/14/CSAPP-2020-11-14/index.html">
 <meta property="og:site_name" content="Amiriox&#39;s Storage">
-<meta property="og:description" content="此文章的 撰写时间 可能有误  CSAPP today: 总线(传递字节)      IO桥和I&#x2F;O设备通过控制器或适配器接入总线      CPU中有      总线接口     ALU(逻辑算术单元)    PC(程序计数器, 任何时刻都指向一条指令的地址), 寄存器文件(L0, 最小最快的存储单元) CPU有(加载,存储,操作和跳转)操作   可以通过DMA直接存储器存取技术直接">
+<meta property="og:description" content="此文章的 撰写时间 可能有误  CSAPP today: 总线(传递字节)      IO桥和I&#x2F;O设备通过控制器或适配器接入总线      CPU中有      总线接口     ALU(逻辑算术单元)    PC(程序计数器, 任何时刻都指向一条指令的地址), 寄存器文件(L0, 最小最快的存储单元) CPU有(加载,存储,操作和跳转)操作   可以通过DMA直接存储器存取技术直接交流磁盘和">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-11-13T16:00:00.000Z">
 <meta property="article:modified_time" content="2025-01-03T14:38:35.579Z">
@@ -53,7 +53,119 @@
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
-</head>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
   <div class="headband"></div>
@@ -120,7 +232,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -131,7 +243,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -221,7 +333,7 @@
 <h1 id="CSAPP-today"><a href="#CSAPP-today" class="headerlink" title="CSAPP today:"></a>CSAPP today:</h1><ol>
 <li><p>总线(传递字节)    </p>
 </li>
-<li><p>IO桥和I&#x2F;O设备通过控制器或适配器接入总线    </p>
+<li><p>IO桥和I/O设备通过控制器或适配器接入总线    </p>
 </li>
 <li><p>CPU中有    </p>
 <ul>
@@ -232,8 +344,8 @@
 </li>
 <li><p>可以通过DMA直接存储器存取技术直接交流磁盘和主存    </p>
 </li>
-<li><h2 id="存储器有-L0-寄存器-L1高速缓存-L2高速缓存-L3高速缓存-主存-一组动态随机访问存储器DRAM的集合-磁盘-分布式文件系统-Web服务器文件"><a href="#存储器有-L0-寄存器-L1高速缓存-L2高速缓存-L3高速缓存-主存-一组动态随机访问存储器DRAM的集合-磁盘-分布式文件系统-Web服务器文件" class="headerlink" title="存储器有 * L0 寄存器; * L1高速缓存; * L2高速缓存; * L3高速缓存; * 主存(一组动态随机访问存储器DRAM的集合); * 磁盘; * 分布式文件系统&#x2F;Web服务器文件;  
- "></a>存储器有<br> * L0 寄存器;<br> * L1高速缓存;<br> * L2高速缓存;<br> * L3高速缓存;<br> * 主存(一组动态随机访问存储器DRAM的集合);<br> * 磁盘;<br> * 分布式文件系统&#x2F;Web服务器文件;  
+<li><h2 id="存储器有-L0-寄存器-L1高速缓存-L2高速缓存-L3高速缓存-主存-一组动态随机访问存储器DRAM的集合-磁盘-分布式文件系统-Web服务器文件"><a href="#存储器有-L0-寄存器-L1高速缓存-L2高速缓存-L3高速缓存-主存-一组动态随机访问存储器DRAM的集合-磁盘-分布式文件系统-Web服务器文件" class="headerlink" title="存储器有 * L0 寄存器; * L1高速缓存; * L2高速缓存; * L3高速缓存; * 主存(一组动态随机访问存储器DRAM的集合); * 磁盘; * 分布式文件系统/Web服务器文件;  
+ "></a>存储器有<br> * L0 寄存器;<br> * L1高速缓存;<br> * L2高速缓存;<br> * L3高速缓存;<br> * 主存(一组动态随机访问存储器DRAM的集合);<br> * 磁盘;<br> * 分布式文件系统/Web服务器文件;  
  </h2><p> 从上到下, 每一层都更慢 每字节造价更低, 容量更大    </p>
 </li>
 <li><p><strong>操作系统</strong>(防止失控程序滥用硬件, 提供统一简单的接口抽象给应用程序), 有四个重要概念:     </p>
@@ -248,7 +360,7 @@
 <li>程序本身的内存(固定的)</li>
 </ul>
 </li>
-<li>文件是一个字节序列, 一切设备 I&#x2F;O设备都可以看成文件; 通过这个概念可以方便的进行不同系统的操作, 如磁盘内容处理, 这一切通过unix I&#x2F;O接口实现.</li>
+<li>文件是一个字节序列, 一切设备 I/O设备都可以看成文件; 通过这个概念可以方便的进行不同系统的操作, 如磁盘内容处理, 这一切通过unix I/O接口实现.</li>
 </ul>
 </li>
 </ol>
@@ -276,8 +388,8 @@
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2020/11/20/forge_setup/" rel="next" title="Minecraft Forge 模组开发环境配置">
-                  Minecraft Forge 模组开发环境配置 <i class="fa fa-angle-right"></i>
+                <a href="/2020/11/20/VSCODE_EXTENSION_1/" rel="next" title="VSCODE 扩展开发 01">
+                  VSCODE 扩展开发 01 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
