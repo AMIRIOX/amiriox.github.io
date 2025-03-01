@@ -20,12 +20,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
-    <meta name="description" content="链接(第七章 ALL) 这章内容很短, 就是书中和 15213 都有意隐去了很多细节, 自己去理解思考这些细节会很麻烦 另外 section 的翻译易引起歧义, 这里不作翻译 静态链接: 静态链接包括两个阶段, 符号解析和重定位:">
+    <meta name="description" content="链接(第七章 ALL) 这章内容很短, 就是书中和 15213 都有意隐去了很多细节, 自己去理解思考这些细节会很麻烦 另外 section 的翻译易引起歧义, 这里不作翻译 静态链接: 静态链接包括两个阶段, 符号解析和重定位:">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CSAPP3e第七章(链接)">
 <meta property="og:url" content="https://amiriox.github.io/2025/02/19/CSAPP-2025-02-19/index.html">
 <meta property="og:site_name" content="Amiriox&#39;s Storage">
-<meta property="og:description" content="链接(第七章 ALL) 这章内容很短, 就是书中和 15213 都有意隐去了很多细节, 自己去理解思考这些细节会很麻烦 另外 section 的翻译易引起歧义, 这里不作翻译 静态链接: 静态链接包括两个阶段, 符号解析和重定位:">
+<meta property="og:description" content="链接(第七章 ALL) 这章内容很短, 就是书中和 15213 都有意隐去了很多细节, 自己去理解思考这些细节会很麻烦 另外 section 的翻译易引起歧义, 这里不作翻译 静态链接: 静态链接包括两个阶段, 符号解析和重定位:">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-02-19T08:28:39.000Z">
 <meta property="article:modified_time" content="2025-02-20T15:39:35.315Z">
@@ -192,6 +192,7 @@
 
 
 <div class="post-block">
+
   
   
 
@@ -276,14 +277,14 @@
 <col style="width: 41%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th style="text-align: center;">名称</th>
 <th style="text-align: center;">意义</th>
 <th style="text-align: center;">举例</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td style="text-align: center;">ELF Header</td>
 <td style="text-align: center;">描述 ELF 格式文件的各个 Section
 信息</td>
@@ -291,64 +292,64 @@
 字节描述了生成该文件的系统的大小和字节顺序,
 剩下的描述目标文件类型/机器类型等</td>
 </tr>
-<tr>
+<tr class="even">
 <td style="text-align: center;"><code>.text</code></td>
 <td style="text-align: center;">代码段, 已编译程序的机器代码</td>
 <td
 style="text-align: center;"><code>E8 78 56 34 12</code> (<code>callq 0x12345678</code>)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td style="text-align: center;"><code>.rodata</code></td>
 <td style="text-align: center;">只读数据</td>
 <td style="text-align: center;"><code>printf("%d", a)</code> 中的
 <code>"%d"</code>, switch 的跳转表</td>
 </tr>
-<tr>
+<tr class="even">
 <td style="text-align: center;"><code>.data</code></td>
 <td style="text-align: center;">已初始化的全局和静态变量</td>
 <td style="text-align: center;"></td>
 </tr>
-<tr>
+<tr class="odd">
 <td style="text-align: center;"><code>.bss</code>*</td>
 <td style="text-align: center;">未初始化的或初始化为 0
 的全局和静态变量</td>
 <td
 style="text-align: center;"><code>static int bss = 0; int arr[N]; signed main() &#123;&#125;</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td style="text-align: center;"><code>.symtab</code></td>
 <td style="text-align: center;">符号表, 定义和引用的符号信息</td>
 <td style="text-align: center;">任意符号</td>
 </tr>
-<tr>
+<tr class="odd">
 <td style="text-align: center;"><code>.rel.text</code></td>
 <td style="text-align: center;">代码段符号的重定位条目(见下文)</td>
 <td style="text-align: center;"><code>void func();</code> 中
 <code>R_X86_64_PC32 func</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td style="text-align: center;"><code>.rel.data</code></td>
 <td style="text-align: center;">数据段符号的重定位条目(见下文)</td>
 <td style="text-align: center;"><code>int arr[N];</code> 中
 <code>R_X86_64_32 arr</code></td>
 </tr>
-<tr>
+<tr class="odd">
 <td style="text-align: center;"><code>.debug</code></td>
 <td style="text-align: center;"><code>-g</code>, 原始 C 文件</td>
 <td style="text-align: center;">N/A</td>
 </tr>
-<tr>
+<tr class="even">
 <td style="text-align: center;"><code>.line</code></td>
 <td style="text-align: center;">行号映射</td>
 <td style="text-align: center;">N/A</td>
 </tr>
-<tr>
+<tr class="odd">
 <td style="text-align: center;"><code>.strtab</code></td>
 <td style="text-align: center;"><code>.symtab</code> 和
 <code>.debug</code> 中的符号表, Section Header 中的 section 名字</td>
 <td style="text-align: center;">N/A</td>
 </tr>
-<tr>
+<tr class="even">
 <td style="text-align: center;">Section Header</td>
 <td style="text-align: center;">描述目标文件的 section</td>
 <td style="text-align: center;">N/A</td>
@@ -422,21 +423,21 @@ style="text-align: center;"><code>static int bss = 0; int arr[N]; signed main()
 <p>列出一些参数:</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th style="text-align: center;">内容</th>
 <th style="text-align: center;">值</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td style="text-align: center;"><code>ADDR(r.symbol)</code></td>
 <td style="text-align: center;"><code>0x9</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td style="text-align: center;"><code>addend</code></td>
 <td style="text-align: center;">待计算</td>
 </tr>
-<tr>
+<tr class="odd">
 <td style="text-align: center;"><code>ADDR(s) + r.offset</code></td>
 <td style="text-align: center;"><code>0x2</code></td>
 </tr>
@@ -561,8 +562,8 @@ malloc 解析为 __wrap_malloc</li>
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2025/02/20/CSAPP-2025-02-20/" rel="next" title="CSAPP3e第六章(存储器层次结构)">
-                  CSAPP3e第六章(存储器层次结构) <i class="fa fa-angle-right"></i>
+                <a href="/2025/02/23/CSAPP-2025-02-23/" rel="next" title="CSAPP3e第五章[草稿施工中勿看]">
+                  CSAPP3e第五章[草稿施工中勿看] <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>

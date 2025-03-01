@@ -182,10 +182,141 @@
 
     <div class="main-inner index posts-expand">
 
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC&display=swap" rel="stylesheet">
+  <style>
+    .terminal-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-width: 100%;
+      margin: 20px 0;
+      font-family: "Courier New", "Noto Serif SC", monospace;
+    }
+
+    .terminal {
+      background-color: #121212;
+      color: #d1d5db;
+      width: 100%;
+      max-width: 800px;
+      border-radius: 8px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+    }
+
+    .title-bar {
+      display: flex;
+      align-items: center;
+      background-color: #333;
+      color: #ddd;
+      padding: 5px 10px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+    }
+
+    .title-bar .dots {
+      display: flex;
+      gap: 6px;
+      margin-right: 8px;
+    }
+
+    .title-bar .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .red { background-color: #ff5f56; }
+    .yellow { background-color: #ffbd2e; }
+    .green { background-color: #27c93f; }
+
+    .content {
+      padding: 10px 15px;
+      line-height: 1.6;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .prompt { color: #7dd3fc; }
+    .info { color: #86efac; }
+    .warn { color: #facc15; }
+    .task-todo { color: #38bdf8; }
+  </style>
+
+  <div class="terminal-container">
+    <div class="terminal">
+      <div class="title-bar">
+        <div class="dots">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+        </div>
+        amiriox@terminal: ~/journey
+      </div>
+      <div class="content">
+  <span class="prompt">$ whoami > /dev/null</span>
+
+  <span class="info">## debug 自我进行时</span>
+  <span class="prompt">$ cat /proc/amiriox</span>
+  折鸦/折鸦夜明け前/無暝; Amiriox Makinohara
+  &gt; 极端社恐, 所以线上线下基本上是两个人
+  &gt; 计算机科学狂热爱好者, OS/C++/Rust, Vim 党
+  &gt; 并非 geek, 并非 nerd, 找不到可以定义自己的标签, 也因此常常觉得没有归属感
+  &gt; 大多数时候情绪低落会显得比较冷漠, 放置一会即可
+
+  <span class="prompt">$ vim ~/anime.rs</span>
+  const anime_arr : [anime; 9] =
+  [末日三问, 虚构推理, 魔女之旅, 四叠半时光机, 浪客剑心, 葬送的芙莉莲, 我心危, 比翼之吻, 孤独摇滚]; // 轻度看番
+  -- INSERT --    1, 1    All
+
+  <span class="prompt"># cat ~/hobbies.md</span>
+  * 空洞骑士/只狼:影逝二度/怪物猎人/赛博朋克2077
+  * 明日方舟暂退坑但仍然关注
+  * 正在培养的爱好: 板绘/像素画/摄影/文学/戏剧
+
+  <span class="info">## 不断 refactor 的灵魂</span>
+  <span class="prompt">$ objdump -s -j .rodata /usr/bin/amiriox_soul | grep -oP '\s\K[^\0]*'</span>
+  0x00401000  保持必要的力量与清醒, 去努力维持您自己的宁静与尊严
+  0x0040104C  水利万物而不争，故万物莫能与之争
+  0x0040107B  He who has a why to live can bear almost any how.
+
+  <span class="info">## 正在成为自己的旅程</span>
+  <span class="prompt">$ systemctl status amiriox-journey.service</span>
+  ● amiriox-journey.service - Becoming Myself Daemon
+      Loaded: loaded (/etc/systemd/system/amiriox-journey.service; enabled)
+      Active: active (running) since Sat 2006-06-26 12:34:56 UTC+8; 1y 2mo ago
+    Main PID: 1223 (amiriox_soul)
+      Tasks: 3 (limit: ∞)
+      Memory: ∞
+      CPU: 100%
+      IO: /dev/heart
+  Tasks in Progress:
+  ├─ 0x1. 学着爱自己: 找到计算机以外的锚点
+  ├─ 0x2. 学着热爱世界: 提升感受能力
+  └─ 0x3. 提升能力 + 劳动实践, 不要脱产
+
+  <span class="prompt">$ journalctl -fu amiriox-journey.service</span>
+  Jun 06 2006 12:34:56 localhost amiriox_soul[1223]: [INFO] 🌱 故事的开始
+  Mar 14 2018 12:34:56 localhost amiriox_soul[1223]: [INFO] 💻 Hello, World!
+  Mar 35 2024 12:35:00 localhost amiriox_soul[1223]: [WARN] 💔 我知这世界, 本如露水般短暂。然而，然而。
+  Feb 28 2025 14:00:10 localhost amiriox_soul[1223]: [WARN] 🎭 折鸦, 退役是我送你的最后一个礼物。
+  Mar 02 2025 00:29:41 localhost amiriox_soul[1223]: [INFO] 🪽 天空即为极限
+
+  <span class="info">## 短期计划</span>
+  <span class="prompt">$ calcurse -t</span>
+  - [ ] 📚 彻底完结 CSAPP 的总结博客文章
+  - [ ] 💻 博客前端调整
+  - [ ] 🖼️ 板绘学习
+  - [ ] 📝 准备六级
+  - [ ] 📖 要找到活下去的意义啊, 求你了。
+      </div>
+    </div>
+  </div>
       
 
 
 <div class="post-block">
+
   
   
 
@@ -288,122 +419,7 @@
 
 
 <div class="post-block">
-  
-  
 
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/02/20/CSAPP-2025-02-20/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/icon.jpg">
-      <meta itemprop="name" content="折鸦夜明け前">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Amiriox's Storage">
-      <meta itemprop="description" content="穷途末路 异想天开">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Amiriox's Storage">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/02/20/CSAPP-2025-02-20/" class="post-title-link" itemprop="url">CSAPP3e第六章(存储器层次结构)</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-02-20 22:04:30" itemprop="dateCreated datePublished" datetime="2025-02-20T22:04:30+08:00">2025-02-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-02-21 01:21:42" itemprop="dateModified" datetime="2025-02-21T01:21:42+08:00">2025-02-21</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第六章-存储器层次结构摘要与注解">第六章
-存储器层次结构(摘要与注解)</h1>
-<p>这一章也很好理解, 重点解释一些不太好理解或者书上介绍不是很清楚的地方,
-然后列大纲用于以后复习看。</p>
-<h2 id="存储器分类">存储器分类</h2>
-<p>当前存储技术主要可以做以下分类:</p>
-<ol type="1">
-<li>RAM 随机访问储存器, 断电后数据会消失
-<ol type="1">
-<li>SRAM, 静态随机范围储存器, 例如 CPU 的 <code>L1/L2/L3</code> 缓存,
-每个单元是六晶体管电路</li>
-<li>DRAM, 动态随机范围存储器,
-每个单元是一晶体管电路。我们常用的主存一般是双倍数据速率同步的 DRAM
-(Double Data-Rate DRAM), 这是 DDR 内存的实际传输情况一般要频率乘 2
-(有的会用 MT/s 作单位, 除以 2 就是频率)</li>
-</ol></li>
-<li>ROM, 名字不重要, 一般可以读也可以写, 非易失性的
-<ol type="1">
-<li>PROM, 可编程 ROM, 只能被编程一次</li>
-<li>EPROM, 可擦写可编程 ROM</li>
-<li>EEPROM, 电子可擦写可编程 ROM, 一般每个单元会在编程 <span class="math inline">\(10^5\)</span> 次后失效</li>
-<li>闪存, 基于 EEPROM, 我们用的固态硬盘中的颗粒就是这个</li>
-</ol></li>
-<li>旋转磁盘</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/02/20/CSAPP-2025-02-20/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-      
-
-
-<div class="post-block">
   
   
 
@@ -501,6 +517,7 @@
 
 
 <div class="post-block">
+
   
   
 
@@ -599,6 +616,7 @@ i 前面距离 i 最近的颜色不完全相同但也不完全不同的 j，我�
 
 
 <div class="post-block">
+
   
   
 
@@ -701,6 +719,7 @@ x\ +_w^u\ y =
 
 
 <div class="post-block">
+
   
   
 
@@ -797,6 +816,7 @@ x\ +_w^u\ y =
 
 
 <div class="post-block">
+
   
   
 
@@ -869,6 +889,208 @@ x\ +_w^u\ y =
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/12/29/CSAPP-Lab-Attack/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+      
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2024/12/14/CSAPP-Lab-Bomb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="穷途末路 异想天开">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/12/14/CSAPP-Lab-Bomb/" class="post-title-link" itemprop="url">CSAPP Bomb Lab 达成</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-12-14 19:58:00" itemprop="dateCreated datePublished" datetime="2024-12-14T19:58:00+08:00">2024-12-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-02-14 00:11:04" itemprop="dateModified" datetime="2025-02-14T00:11:04+08:00">2025-02-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <hr>
+<p>Border relations with Canada have never been better. 直接读phase_1 的
+$rdi.</p>
+<hr>
+<p>1 2 4 8 16 32 利用断点跳到 read_six_number 后, 发现核心代码 add $eax
+$eax</p>
+<hr>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/12/14/CSAPP-Lab-Bomb/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+      
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2022/01/28/2021_face_up_to_calamities/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="穷途末路 异想天开">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/01/28/2021_face_up_to_calamities/" class="post-title-link" itemprop="url">直面灾厄 -- 2021 年终总结</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-01-28 01:05:00" itemprop="dateCreated datePublished" datetime="2022-01-28T01:05:00+08:00">2022-01-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-02-14 00:21:51" itemprop="dateModified" datetime="2025-02-14T00:21:51+08:00">2025-02-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">年终总结</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="直面灾厄-2021-年终总结">“直面灾厄” —— 2021 年终总结。</h1>
+<p>本篇系笔者 2021年年终总结 / 初中毕业总结 / 高一(上)学年生活总结。</p>
+<h2 id="part-1.-概括">Part 1. 概括。</h2>
+<p>这一年实在是多灾多难的一年。
+年初的时候其实还蛮好的（<del>还记得大年初一学对顶堆</del>）
+然而接下来经历了中考考前的四个月+考后假期一个月+高一网课一个月+高一线下课四个月
+彻底毁了我整个精神状态（或者说引爆了埋在深处的雷罢）</p>
+<p>中考考前四个月，我做了大概是目前最后悔的一个决定，我退役了OI。
+说是为了学习，其实也只是跟风 包括满足自己虚荣心之类的。
+那个时候精神状态就在恶化（尽管现在看来当时算很不错的），
+于是还是在颓了四个月之后，甚至还碰运气考上全县前50（大概是35的样子）进了我最恐惧的实验班。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/01/28/2021_face_up_to_calamities/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
