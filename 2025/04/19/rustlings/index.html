@@ -28,7 +28,7 @@
 <meta property="og:description" content="操作系统设计与实现中常用的 Rust 特性 oscamp 第一阶段的 rustlings 总结, 但因为去年写过一次 rustlings 了, 题目比较基础(除了最后的算法和数据结构实现有点麻烦)之前也接触过不少 Rust, 所以这次是总结一下二三阶段中特别需要的 Rust 特性 结构体和枚举 注意元组结构体 12345struct TupleStruct(u32, u32, u32);let t">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-04-19T03:19:06.000Z">
-<meta property="article:modified_time" content="2025-04-19T06:29:30.553Z">
+<meta property="article:modified_time" content="2025-04-19T12:30:06.756Z">
 <meta property="article:author" content="折鸦夜明け前">
 <meta property="article:tag" content="Rust">
 <meta property="article:tag" content="rCore">
@@ -129,7 +129,7 @@ Result&lt;T, E&gt;</span></a></li><li class="nav-item nav-level-2"><a class="nav
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -233,7 +233,7 @@ Result&lt;T, E&gt;</span></a></li><li class="nav-item nav-level-2"><a class="nav
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2025-04-19 11:19:06 / 修改时间：14:29:30" itemprop="dateCreated datePublished" datetime="2025-04-19T11:19:06+08:00">2025-04-19</time>
+      <time title="创建时间：2025-04-19 11:19:06 / 修改时间：20:30:06" itemprop="dateCreated datePublished" datetime="2025-04-19T11:19:06+08:00">2025-04-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -423,6 +423,8 @@ ch8 中学习到</p>
 而不是<code>[dependencies]</code> 的形式依赖 <code>axhal</code>.
 但是这个不通过 Rust 编译器的检查, 所以用过程宏封装成 <code>trait</code>
 的形式, 减少出错概率</li>
+<li>用于宏内核或其他扩展的任务控制块扩展结构体类型用
+<code>def_task_ext!</code> 宏注册.</li>
 <li>用宏对某些特定对象生成 trait
 的默认行为这些相比以上用法已经算是比较一般的了</li>
 </ul>
@@ -529,6 +531,9 @@ class="math inline">\(2 \times i + 1\)</span></p>
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2025/04/19/arceos_learn/" rel="next" title="组件化操作系统">
+                  组件化操作系统 <i class="fa fa-angle-right"></i>
+                </a>
             </div>
           </div>
     </footer>
