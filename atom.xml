@@ -6,7 +6,7 @@
   <link href="https://amiriox.github.io/atom.xml" rel="self"/>
   
   <link href="https://amiriox.github.io/"/>
-  <updated>2025-04-19T12:29:03.352Z</updated>
+  <updated>2025-04-26T16:17:22.676Z</updated>
   <id>https://amiriox.github.io/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>OSCamp周纪要</title>
+    <link href="https://amiriox.github.io/2025/04/26/starry/"/>
+    <id>https://amiriox.github.io/2025/04/26/starry/</id>
+    <published>2025-04-25T16:00:00.000Z</published>
+    <updated>2025-04-26T16:17:22.676Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="oscamp-四阶段-周纪要">OSCamp 四阶段 · 周纪要</h1><h2 id="第-0-周-准备工作">第 0 周, 准备工作</h2><p>计划:</p><hr /><p>实际:</p><ul><li>4.27: starry-next 的的环境搭建并能成功运行。</li></ul><h2 id="第-1-周4月28日">第 1 周(4月28日)</h2><p>计划:</p><hr /><p>实际:</p><h2 id="第-2-周5月5日">第 2 周(5月5日)</h2><p>计划:</p><hr /><p>实际:</p>]]></content>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;oscamp-四阶段-周纪要&quot;&gt;OSCamp 四阶段 · 周纪要&lt;/h1&gt;
+&lt;h2 id=&quot;第-0-周-准备工作&quot;&gt;第 0 周, 准备工作&lt;/h2&gt;
+&lt;p&gt;计划:&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;实际:&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="杂谈" scheme="https://amiriox.github.io/categories/%E6%9D%82%E8%B0%88/"/>
+    
+    
+    <category term="日记" scheme="https://amiriox.github.io/tags/%E6%97%A5%E8%AE%B0/"/>
+    
+  </entry>
   
   <entry>
     <title>组件化操作系统</title>
@@ -152,54 +177,6 @@ Rust, 所以这次是总结一下二三阶段中特别需要的 Rust 特性&lt;/
     <category term="计算机科学" scheme="https://amiriox.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/"/>
     
     <category term="CSAPP/cmu15213" scheme="https://amiriox.github.io/tags/CSAPP-cmu15213/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>碎了我的丰碑 捡起锋利一片</title>
-    <link href="https://amiriox.github.io/2025/03/04/Dairy_250304/"/>
-    <id>https://amiriox.github.io/2025/03/04/Dairy_250304/</id>
-    <published>2025-03-04T14:23:58.000Z</published>
-    <updated>2025-03-04T15:44:19.237Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote><p>[01:08.877]高举一面夜色<br />[01:11.633]星空替你记得<br />[01:13.793]究竟为了什么活着</p><p>[02:07.196]啊，听是谁在歌颂<br />[02:11.356]昔日的美梦、光荣<br />[02:13.645]是诱惑<br />[02:14.782]快走，别停泊<br />[02:16.843]唱吧，塞壬的歌<br />[02:19.680]我早已不留恋<br />[02:21.590]再也回不去的从前啊<br />[02:26.566]碎了我的丰碑<br />[02:29.302]捡起锋利一片<br />[02:31.363]划破还未知的明天</p></blockquote><p>退役之后确实轻松了很多,但随之而来的也有意料之内的意义危机被摆上台面.</p><p>怪就只能怪之前的想法太过极端: “不加训的时间都是被浪费掉了”,结果现在一退役不训了, 干什么都成浪费时间了.<br />我还需要一段时间适应: 平静并修补内心, 找到更加平衡的锚点</p><p>前几天把博客的自我介绍部分写了, 差点除了计算机什么都写不出来,我总犯这样的毛病: 时常太过依赖什么最后导致失去平衡,最后也大概率会搞砸.<br />高三的时候对待感情是这样,吵架的时候不敢暂时放下以来让两个人都冷静冷静最后各种胡话然后分手.jpg不过这也是高三的过于异常的精神状态导致的没什么补救办法了<br />对待竞赛也是这样, 太过看重反而走不远了</p><p>简单整理一些目前面临的问题:</p><ol type="1"><li>竞争心态已经严重侵蚀了我的思维逻辑, 遇到任何人都要本能地比一比,而且大概率是用自己的短处去比别人的长处,最后下来发现自己什么优点也没有了. 但其实这还不是最严重的时候,最严重的时候甚至到了最极端的社达也不会有的心态:如果我不如别人那我就是该被淘汰的那我就去死.这是一种因为缺少肯定(甚至是过度否定)的激进防御(滥用防御机制已经不是我能控制的了)</li><li>不知道怎样生活才是”对”的, 如果把评分的权利交给自己也太主观了,但是交给外界又会被外界的不适用于自己的评价体系左右</li></ol><blockquote><p>​ ”聪明，优秀，“拜托，拥有一个会打竞赛的朋友超酷的好吧！但我的朋友，请不要让这个最明亮、闪烁的优点成为你的前行的负担。聪明才智绝非你的拦路石。名为人生或青春的答卷，只有你自己才是唯一的评分人。另，无论如何，我都会觉得你超棒的！</p></blockquote><p>也许也只有你还会这么评价我了吧</p><p>还是比较迷茫的, 现代性的意义危机确实很致命, 目前缺乏: 安全感,独处环境, 自我坚定能力</p>]]></content>
-    
-    
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;[01:08.877]高举一面夜色&lt;br&gt;
-[01:11.633]星空替你记得&lt;br&gt;
-[01:13.793]究竟为了什么活着&lt;/p&gt;
-&lt;p&gt;[02:07.196]啊，听是谁在歌颂&lt;br&gt;
-[02:11.356]昔日的美梦、光荣&lt;br&gt;
-[02:13.645]是诱惑&lt;br&gt;
-[02:14.782]快走，别停泊&lt;br&gt;
-[02:16.843]唱吧，塞壬的歌&lt;br&gt;
-[02:19.680]我早已不留恋&lt;br&gt;
-[02:21.590]再也回不去的从前啊&lt;br&gt;
-[02:26.566]碎了我的丰碑&lt;br&gt;
-[02:29.302]捡起锋利一片&lt;br&gt;
-[02:31.363]划破还未知的明天&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;退役之后确实轻松了很多,
-但随之而来的也有意料之内的意义危机被摆上台面.&lt;/p&gt;
-&lt;p&gt;怪就只能怪之前的想法太过极端: “不加训的时间都是被浪费掉了”,
-结果现在一退役不训了, 干什么都成浪费时间了.&lt;br&gt;
-我还需要一段时间适应: 平静并修补内心, 找到更加平衡的锚点&lt;/p&gt;
-&lt;p&gt;前几天把博客的自我介绍部分写了, 差点除了计算机什么都写不出来,
-我总犯这样的毛病: 时常太过依赖什么最后导致失去平衡,
-最后也大概率会搞砸.&lt;br&gt;
-高三的时候对待感情是这样,
-吵架的时候不敢暂时放下以来让两个人都冷静冷静最后各种胡话然后分手.jpg
-不过这也是高三的过于异常的精神状态导致的没什么补救办法了&lt;br&gt;
-对待竞赛也是这样, 太过看重反而走不远了&lt;/p&gt;
-&lt;p&gt;简单整理一些目前面临的问题:&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="杂谈" scheme="https://amiriox.github.io/categories/%E6%9D%82%E8%B0%88/"/>
-    
-    
-    <category term="日记" scheme="https://amiriox.github.io/tags/%E6%97%A5%E8%AE%B0/"/>
     
   </entry>
   
