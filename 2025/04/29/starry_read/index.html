@@ -20,25 +20,29 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
-    <meta name="description" content="穷途末路 异想天开">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Amiriox&#39;s Storage">
-<meta property="og:url" content="https://amiriox.github.io/archives/page/2/index.html">
+    <meta name="description" content="Starry Next 源代码阅读 run_user_app:  新建用户地址空间 把内核地址空间复制到应用地址空间高地址区域 (ArceOS 特性) 设置当前目录 set_current_dir 设置当前目录 全局变量 CURRENT_DIR load_user_app  借助创建的用户地址空间和传入的参数 读取 ELF 数据, 加载 ld.so&#x2F;libc.so 在用户地址空间映射可执行文件的各">
+<meta property="og:type" content="article">
+<meta property="og:title" content="StarryNext源代码阅读">
+<meta property="og:url" content="https://amiriox.github.io/2025/04/29/starry_read/index.html">
 <meta property="og:site_name" content="Amiriox&#39;s Storage">
-<meta property="og:description" content="穷途末路 异想天开">
+<meta property="og:description" content="Starry Next 源代码阅读 run_user_app:  新建用户地址空间 把内核地址空间复制到应用地址空间高地址区域 (ArceOS 特性) 设置当前目录 set_current_dir 设置当前目录 全局变量 CURRENT_DIR load_user_app  借助创建的用户地址空间和传入的参数 读取 ELF 数据, 加载 ld.so&#x2F;libc.so 在用户地址空间映射可执行文件的各">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-04-29T07:54:33.000Z">
+<meta property="article:modified_time" content="2025-04-29T15:55:36.734Z">
 <meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="StarryNext">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://amiriox.github.io/archives/page/2/">
+<link rel="canonical" href="https://amiriox.github.io/2025/04/29/starry_read/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"archives/page/2/index.html","title":""}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/04/29/starry_read/","path":"2025/04/29/starry_read/","title":"StarryNext源代码阅读"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>归档 | Amiriox's Storage</title>
+<title>StarryNext源代码阅读 | Amiriox's Storage</title>
   
 
 
@@ -71,7 +75,7 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">Amiriox's Storage</h1>
+      <p class="site-title">Amiriox's Storage</p>
       <i class="logo-line"></i>
     </a>
       <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
@@ -94,7 +98,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -107,6 +111,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#starry-next-%E6%BA%90%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB"><span class="nav-number">1.</span> <span class="nav-text">Starry Next 源代码阅读</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -183,239 +188,172 @@
 
     </div>
 
-    <div class="main-inner archive posts-collapse">
+    <div class="main-inner post posts-expand">
 
 
   
+
+
+<div class="post-block">
+
   
   
-  <div class="post-block">
-    <div class="post-content">
-      <div class="collection-title">
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/04/29/starry_read/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="穷途末路 异想天开">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="StarryNext源代码阅读 | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          StarryNext源代码阅读
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-04-29 15:54:33 / 修改时间：23:55:36" itemprop="dateCreated datePublished" datetime="2025-04-29T15:54:33+08:00">2025-04-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="starry-next-源代码阅读">Starry Next 源代码阅读</h1>
+<p><code>run_user_app</code>:</p>
+<ul>
+<li>新建用户地址空间</li>
+<li>把内核地址空间复制到应用地址空间高地址区域 (ArceOS 特性)</li>
+<li>设置当前目录</li>
+<li><code>set_current_dir</code> 设置当前目录 全局变量
+<code>CURRENT_DIR</code></li>
+<li><code>load_user_app</code>
+<ul>
+<li>借助创建的用户地址空间和传入的参数</li>
+<li>读取 ELF 数据, 加载 <code>ld.so</code>/<code>libc.so</code></li>
+<li>在用户地址空间映射可执行文件的各个逻辑段</li>
+<li>通过预先布局的汇编常量地址和大小映射用户栈到用户地址空间,
+初始化用户栈内容</li>
+<li>在用户地址空间映射堆区.</li>
+<li>返回起始运行地址和用户栈栈指针</li>
+</ul></li>
+<li>准备用户地址空间上下文(管理 Trap 上下文, 例如通用寄存器状态,
+CSRs)</li>
+<li>新建用户任务, 传一个切进用户态的闭包进去</li>
+<li>设置根页表位置, RISCV SV39 下就是 <code>satp</code></li>
+<li>准备进程和线程相关数据, <code>FD_TABLE</code>
+<code>CURRENT_DIR</code> <code>tid</code> 等,
+把任务添加到待执行队列等待调度</li>
+</ul>
+<p><code>main</code>:</p>
+<ul>
+<li>宏内核扩展, 相当于一个”应用程序的 main”</li>
+<li>启动 <code>init</code> 进程, 运行 testcases</li>
+</ul>
+<p><code>handle_page_fault</code>:</p>
+<ul>
+<li>当前任务的地址空间执行 <code>handle_page_fault</code>, 失败则
+<code>SIGSEGV</code> 信号退出</li>
+</ul>
+<p><code>handle_syscall</code>:</p>
+<ul>
+<li>依赖 <code>syscalls</code> crate 的 <code>Sysno</code>, 根据 id
+匹配一下具体的 syscall 类型, 分发到对应处理函数, 返回执行结果</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/04/29/starry_read/" title="StarryNext源代码阅读">https://amiriox.github.io/2025/04/29/starry_read/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/StarryNext/" rel="tag"># StarryNext</a>
+          </div>
+
         
-        <span class="collection-header">还行! 目前共计 36 篇日志。 继续努力。</span>
-      </div>
 
-      
-    <div class="collection-year">
-      <span class="collection-header">2025<span class="collection-year-count">17</span></span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2025-02-19T22:04:30+08:00"
-              content="2025-02-19">
-          02-19
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2025/02/19/CSAPP-2025-02-20/" itemprop="url">
-            <span itemprop="name">CSAPP3e第六章(存储器层次结构)</span>
-          </a>
-      </div>
-
-      
-    </header>
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/04/26/starry/" rel="prev" title="OSCamp周纪要">
+                  <i class="fa fa-angle-left"></i> OSCamp周纪要
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
   </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2025-02-19T16:28:39+08:00"
-              content="2025-02-19">
-          02-19
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2025/02/19/CSAPP-2025-02-19/" itemprop="url">
-            <span itemprop="name">CSAPP3e第七章(链接)</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2025-02-13T23:26:26+08:00"
-              content="2025-02-13">
-          02-13
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2025/02/13/23H2-bugs/" itemprop="url">
-            <span itemprop="name">更新到 23H2 的 bug</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2025-01-31T17:26:06+08:00"
-              content="2025-01-31">
-          01-31
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2025/01/31/problem-rust-ref/" itemprop="url">
-            <span itemprop="name">记一次 Rust 类型系统的问题解决</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2025-01-26T22:24:33+08:00"
-              content="2025-01-26">
-          01-26
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2025/01/26/2022-2023-2024/" itemprop="url">
-            <span itemprop="name">永远不要放弃战斗 -- 三年年终总结</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2025-01-25T20:11:15+08:00"
-              content="2025-01-25">
-          01-25
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2025/01/25/CSAPP-2025-01-25/" itemprop="url">
-            <span itemprop="name">CSAPP3e第二章(整数的运算)</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2025-01-19T10:43:30+08:00"
-              content="2025-01-19">
-          01-19
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2025/01/19/CSAPP-2025-01-19/" itemprop="url">
-            <span itemprop="name">CSAPP3e第二章(整数的表示)</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-    <div class="collection-year">
-      <span class="collection-header">2024<span class="collection-year-count">2</span></span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2024-12-29T21:53:00+08:00"
-              content="2024-12-29">
-          12-29
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2024/12/29/CSAPP-Lab-Attack/" itemprop="url">
-            <span itemprop="name">CSAPP Attack Lab 笔记</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2024-12-14T19:58:00+08:00"
-              content="2024-12-14">
-          12-14
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2024/12/14/CSAPP-Lab-Bomb/" itemprop="url">
-            <span itemprop="name">CSAPP Bomb Lab 达成</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-    <div class="collection-year">
-      <span class="collection-header">2022<span class="collection-year-count">1</span></span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2022-01-28T01:05:00+08:00"
-              content="2022-01-28">
-          01-28
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/01/28/2021_face_up_to_calamities/" itemprop="url">
-            <span itemprop="name">直面灾厄 -- 2021 年终总结</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
+</div>
 
 
-    </div>
-  </div>
-  
-  
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/archives/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/archives/page/3/"><i class="fa fa-angle-right"></i></a>
-  </nav>
+
+
+
 
 </div>
   </main>

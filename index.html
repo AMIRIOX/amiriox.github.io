@@ -121,7 +121,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -132,7 +132,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -526,7 +526,7 @@ Rust, 所以这次是总结一下二三阶段中特别需要的 Rust 特性</p>
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-04-19 11:18:09" itemprop="dateModified" datetime="2025-04-19T11:18:09+08:00">2025-04-19</time>
+      <time title="修改时间：2025-04-29 22:04:52" itemprop="dateModified" datetime="2025-04-29T22:04:52+08:00">2025-04-29</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -768,123 +768,6 @@ Rust, 所以这次是总结一下二三阶段中特别需要的 Rust 特性</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/02/23/CSAPP-2025-02-23/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-      
-
-
-<div class="post-block">
-
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/02/19/CSAPP-2025-02-20/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/icon.jpg">
-      <meta itemprop="name" content="折鸦夜明け前">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Amiriox's Storage">
-      <meta itemprop="description" content="穷途末路 异想天开">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Amiriox's Storage">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/02/19/CSAPP-2025-02-20/" class="post-title-link" itemprop="url">CSAPP3e第六章(存储器层次结构)</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-02-19 22:04:30" itemprop="dateCreated datePublished" datetime="2025-02-19T22:04:30+08:00">2025-02-19</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-03-18 19:19:25" itemprop="dateModified" datetime="2025-03-18T19:19:25+08:00">2025-03-18</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第六章-存储器层次结构摘要与注解">第六章
-存储器层次结构(摘要与注解)</h1>
-<p>这一章也很好理解, 重点解释一些不太好理解或者书上介绍不是很清楚的地方,
-然后列大纲用于以后复习看。</p>
-<h2 id="存储器分类">存储器分类</h2>
-<p>当前存储技术主要可以做以下分类:</p>
-<ol type="1">
-<li>RAM 随机访问储存器, 断电后数据会消失
-<ol type="1">
-<li>SRAM, 静态随机范围储存器, 例如 CPU 的 <code>L1/L2/L3</code> 缓存,
-每个单元是六晶体管电路</li>
-<li>DRAM, 动态随机范围存储器,
-每个单元是一晶体管电路。我们常用的主存一般是双倍数据速率同步的 DRAM
-(Double Data-Rate DRAM), 这是 DDR 内存的实际传输情况一般要频率乘 2
-(有的会用 MT/s 作单位, 除以 2 就是频率)</li>
-</ol></li>
-<li>ROM, 名字不重要, 一般可以读也可以写, 非易失性的
-<ol type="1">
-<li>PROM, 可编程 ROM, 只能被编程一次</li>
-<li>EPROM, 可擦写可编程 ROM</li>
-<li>EEPROM, 电子可擦写可编程 ROM, 一般每个单元会在编程 <span class="math inline">\(10^5\)</span> 次后失效</li>
-<li>闪存, 基于 EEPROM, 我们用的固态硬盘中的颗粒就是这个</li>
-</ol></li>
-<li>旋转磁盘</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/02/19/CSAPP-2025-02-20/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
