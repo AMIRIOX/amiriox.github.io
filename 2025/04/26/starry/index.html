@@ -20,15 +20,15 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
-    <meta name="description" content="OSCamp 四阶段 · 周纪要 第 0 周, 准备工作 计划:  实际:">
+    <meta name="description" content="OSCamp 四阶段 · 周纪要 第 0 周, 准备工作 计划: 无  实际:">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OSCamp周纪要">
 <meta property="og:url" content="https://amiriox.github.io/2025/04/26/starry/index.html">
 <meta property="og:site_name" content="Amiriox&#39;s Storage">
-<meta property="og:description" content="OSCamp 四阶段 · 周纪要 第 0 周, 准备工作 计划:  实际:">
+<meta property="og:description" content="OSCamp 四阶段 · 周纪要 第 0 周, 准备工作 计划: 无  实际:">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-04-25T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-04-28T16:16:24.294Z">
+<meta property="article:modified_time" content="2025-05-02T16:39:02.066Z">
 <meta property="article:author" content="折鸦夜明け前">
 <meta property="article:tag" content="日记">
 <meta name="twitter:card" content="summary">
@@ -235,7 +235,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-04-29 00:16:24" itemprop="dateModified" datetime="2025-04-29T00:16:24+08:00">2025-04-29</time>
+      <time title="修改时间：2025-05-03 00:39:02" itemprop="dateModified" datetime="2025-05-03T00:39:02+08:00">2025-05-03</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -265,7 +265,7 @@
     
     <div class="post-body" itemprop="articleBody"><h1 id="oscamp-四阶段-周纪要">OSCamp 四阶段 · 周纪要</h1>
 <h2 id="第-0-周-准备工作">第 0 周, 准备工作</h2>
-<p>计划:</p>
+<p>计划: 无</p>
 <hr />
 <p>实际:</p>
 <ul>
@@ -328,7 +328,7 @@ class="math inline">\(0, 2, 4, ...\)</span> ), 所以释放了 8 个</li>
 <hr />
 <p>实际:</p>
 <ul>
-<li>4.28:
+<li><p>4.28:</p>
 <ul>
 <li>将 Starry-Next 的代码作为基础 OS 放到评测仓库</li>
 <li>成功设置好了各种配置, CI 通过了 <code>glibc</code>/<code>musl</code>
@@ -386,7 +386,32 @@ class="math inline">\(0, 2, 4, ...\)</span> ), 所以释放了 8 个</li>
 </ol></li>
 </ol></li>
 </ul></li>
-<li>4.29:</li>
+<li><p>4.29: 看 Starry Next 源代码,
+<del>但其实主要还是在补高数线代课.</del> 试图过 <code>busybox</code>
+测例, 但没弄懂评测 CI 怎么工作的, 遂放弃, 去做 <code>libctest</code>.
+通过了 <code>fdopen</code>:</p>
+<p><code>sys_lseek</code>, <code>sys_unlink</code>(分割字符串,
+通过路径获取 <code>Directory</code>, 从目录下删除
+<code>filename</code>)</p></li>
+<li><p>4.30: 把 Starry Next 代码以及其和 ArceOS 的结构大概梳理了一遍,
+完成了 <code>fscanf</code> 测例</p>
+<ul>
+<li>pipe 的 <code>read</code> (POSIX read 标准):
+<ul>
+<li>管道中无数据, 写端已关闭: 返回 EOF</li>
+<li>管道中无数据, 写端未关闭: 说明可能还有数据将要达到, 应当阻塞, yield
+或者 spin</li>
+<li>管道中有数据: 尽可能多地读完并返回大小</li>
+</ul></li>
+<li>syscall <code>writev</code> 的参数
+<code>iov: *const ctypes::iovec</code> 中莫名会多一个
+<code>base=0, len=0</code> 的元素, 然后访问 <code>0x0</code> 地址导致
+<code>BadAddress</code>, 暂时未发现原因, 先 <code>continue</code>
+以后再说</li>
+<li>动态分发的类型擦除经常难以调试()</li>
+</ul></li>
+<li><p>5.1: 补校内作业</p></li>
+<li><p>5.2: 补校内作业, 补高数课</p></li>
 </ul>
 <h2 id="第-2-周5月5日">第 2 周(5月5日)</h2>
 <p>计划: 看源代码, 画架构图, 争取吃透细节</p>
