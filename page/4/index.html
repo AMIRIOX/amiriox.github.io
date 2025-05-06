@@ -214,6 +214,7 @@
       padding: 5px 10px;
       border-top-left-radius: 8px;
       border-top-right-radius: 8px;
+      justify-content: space-between;
     }
 
     .title-bar .dots {
@@ -244,6 +245,19 @@
     .info { color: #86efac; }
     .warn { color: #facc15; }
     .task-todo { color: #38bdf8; }
+
+    .collapse-btn {
+      background: none;
+      border: none;
+      color: #ddd;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 0 5px;
+    }
+
+    .collapse-btn:hover {
+      color: white;
+    }
   </style>
 
   <div class="terminal-container">
@@ -255,6 +269,7 @@
           <div class="dot green"></div>
         </div>
         amiriox@terminal: ~/journey
+        <button class="collapse-btn" onclick="toggleTerminal(this)">[−]折叠</button>
       </div>
       <div class="content">
       <span class="prompt">$ whoami > /dev/null # RSS: /atom.xml</span>
@@ -266,8 +281,8 @@
       &gt; 计算机科学狂热爱好者, OS/C++/Rust, Vim 党
 
       <span class="prompt">$ vim ~/anime.rs</span>
-      const anime_arr : [anime; 10] =
-      [末日三问, 虚构推理, 魔女之旅, 四叠半时光机, 浪客剑心, 葬送的芙莉莲, 我心危, 比翼之吻, 孤独摇滚, GBC];
+      const anime_arr: [anime; 10] =
+      [末日三问, 虚构推理, 魔女之旅, 四叠半, 浪客剑心, 葬送的芙莉莲, 我心危, 比翼之吻, 孤独摇滚, GBC];
       -- INSERT --    1, 1    All
 
       <span class="prompt"># cat ~/hobbies.md</span>
@@ -286,6 +301,19 @@
       </div>
     </div>
   </div>
+
+  <script>
+    function toggleTerminal(btn) {
+      const content = btn.closest('.terminal').querySelector('.content');
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+        btn.textContent = '−';
+      } else {
+        content.style.display = 'none';
+        btn.textContent = '+';
+      }
+    }
+  </script>
       
 
 
