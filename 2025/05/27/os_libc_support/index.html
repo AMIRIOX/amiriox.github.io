@@ -28,7 +28,7 @@
 <meta property="og:description" content="操作系统的 libc 支持   ..&#x2F;_images&#x2F;app-software-stack.png  之前 我们说到系统从其功能实现上的目的是: 管理各种硬件资源,实现隔离并发与虚拟化. 但是站在一般用户的角度来说, 一个操作系统要有良好的生态, 支持应用程序才能被广泛使用. 而应用程序是由编程语言开发的, 这就要求操作系统能够支持一些语言(特别对于C语言)的标准库.  “C库”, “C标准库”,">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-05-27T02:10:33.000Z">
-<meta property="article:modified_time" content="2025-05-27T09:51:56.832Z">
+<meta property="article:modified_time" content="2025-05-29T11:32:21.510Z">
 <meta property="article:author" content="折鸦夜明け前">
 <meta property="article:tag" content="计算机科学">
 <meta property="article:tag" content="StarryNext">
@@ -111,7 +111,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84-libc-%E6%94%AF%E6%8C%81"><span class="nav-number">1.</span> <span class="nav-text">操作系统的 libc 支持</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B6%89%E5%8F%8A%E5%88%B0%E5%86%85%E6%A0%B8%E6%80%81%E7%9A%84%E6%B5%8B%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">涉及到内核态的测例:</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#argv"><span class="nav-number">2.1.</span> <span class="nav-text">argv</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#env"><span class="nav-number">2.2.</span> <span class="nav-text">env</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clock_gettime"><span class="nav-number">2.3.</span> <span class="nav-text">clock_gettime</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fdopen"><span class="nav-number">2.4.</span> <span class="nav-text">fdopen</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#scanf-fscanf"><span class="nav-number">2.5.</span> <span class="nav-text">scanf &#x2F; fscanf</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#memstream"><span class="nav-number">2.6.</span> <span class="nav-text">memstream</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%A7%E5%A4%9A%E5%8F%AA%E6%B6%89%E5%8F%8A%E7%94%A8%E6%88%B7%E6%80%81%E7%9A%84%E6%B5%8B%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">大多只涉及用户态的测例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#basename"><span class="nav-number">3.1.</span> <span class="nav-text">basename</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clocale_mbfuncs"><span class="nav-number">3.2.</span> <span class="nav-text">clocale_mbfuncs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dirname"><span class="nav-number">3.3.</span> <span class="nav-text">dirname</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fnmatch"><span class="nav-number">3.4.</span> <span class="nav-text">fnmatch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iconv_open"><span class="nav-number">3.5.</span> <span class="nav-text">iconv_open</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#inet_pton"><span class="nav-number">3.6.</span> <span class="nav-text">inet_pton</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84-libc-%E6%94%AF%E6%8C%81"><span class="nav-number">1.</span> <span class="nav-text">操作系统的 libc 支持</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B6%89%E5%8F%8A%E5%88%B0%E5%86%85%E6%A0%B8%E6%80%81%E7%9A%84%E6%B5%8B%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">涉及到内核态的测例:</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#argv"><span class="nav-number">2.1.</span> <span class="nav-text">argv</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#env"><span class="nav-number">2.2.</span> <span class="nav-text">env</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clock_gettime"><span class="nav-number">2.3.</span> <span class="nav-text">clock_gettime</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fdopen"><span class="nav-number">2.4.</span> <span class="nav-text">fdopen</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#scanf-fscanf"><span class="nav-number">2.5.</span> <span class="nav-text">scanf &#x2F; fscanf</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ungetc"><span class="nav-number">2.6.</span> <span class="nav-text">ungetc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#memstream"><span class="nav-number">2.7.</span> <span class="nav-text">memstream</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%A7%E5%A4%9A%E5%8F%AA%E6%B6%89%E5%8F%8A%E7%94%A8%E6%88%B7%E6%80%81%E7%9A%84%E6%B5%8B%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">大多只涉及用户态的测例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#basename"><span class="nav-number">3.1.</span> <span class="nav-text">basename</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clocale_mbfuncs"><span class="nav-number">3.2.</span> <span class="nav-text">clocale_mbfuncs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dirname"><span class="nav-number">3.3.</span> <span class="nav-text">dirname</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fnmatch"><span class="nav-number">3.4.</span> <span class="nav-text">fnmatch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iconv_open"><span class="nav-number">3.5.</span> <span class="nav-text">iconv_open</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#inet_pton"><span class="nav-number">3.6.</span> <span class="nav-text">inet_pton</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -126,18 +126,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-count">39</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -228,9 +228,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-05-27 10:10:33 / 修改时间：17:51:56" itemprop="dateCreated datePublished" datetime="2025-05-27T10:10:33+08:00">2025-05-27</time>
+      <time title="创建时间：2025-05-27 10:10:33" itemprop="dateCreated datePublished" datetime="2025-05-27T10:10:33+08:00">2025-05-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-05-29 19:32:21" itemprop="dateModified" datetime="2025-05-29T19:32:21+08:00">2025-05-29</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -377,6 +383,14 @@ target="_blank" rel="noopener" href="https://zheya.cc/2025/04/19/arceos_learn/#�
 </ul></li>
 <li><code>write</code> 是类似的.</li>
 </ul>
+<h2 id="ungetc">ungetc</h2>
+<ul>
+<li><code>ungetc</code> 用于把一个字符退回到缓冲区,
+使得下次读入从这个字符开始读入. 直接 <code>LOG=debug</code> (或者
+<code>strace</code> 也行) 可以看到需要 <code>readv</code> (Read Vector)
+系统调用. 分别对每个 vector 读入 (<code>read_impl</code> 由
+<code>get_file_like(fd).read(buf)</code> 实现) 相应大小即可</li>
+</ul>
 <h2 id="memstream">memstream</h2>
 <p><code>open_memstream</code> 打开一个内存流,
 内存流就像文件流一样只是数据都在(堆)内存中, 所以相当于测试
@@ -446,6 +460,9 @@ target="_blank" rel="noopener" href="https://zheya.cc/2025/04/19/arceos_learn/#�
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2025/05/30/sicp_1/" rel="next" title="SICP 第一章(构造过程抽象)">
+                  SICP 第一章(构造过程抽象) <i class="fa fa-angle-right"></i>
+                </a>
             </div>
           </div>
     </footer>

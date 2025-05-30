@@ -121,18 +121,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-count">39</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -905,105 +905,6 @@ x\ +_w^u\ y =
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/01/19/CSAPP-2025-01-19/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-      
-
-
-<div class="post-block">
-
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2024/12/29/CSAPP-Lab-Attack/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/icon.jpg">
-      <meta itemprop="name" content="折鸦夜明け前">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Amiriox's Storage">
-      <meta itemprop="description" content="穷途末路 异想天开">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Amiriox's Storage">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/12/29/CSAPP-Lab-Attack/" class="post-title-link" itemprop="url">CSAPP Attack Lab 笔记</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2024-12-29 21:53:00" itemprop="dateCreated datePublished" datetime="2024-12-29T21:53:00+08:00">2024-12-29</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-02-14 00:11:18" itemprop="dateModified" datetime="2025-02-14T00:11:18+08:00">2025-02-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="phase-0x1">Phase 0x1</h2>
-<p>一个练手的，要求通过缓冲区栈溢出攻击来调用 touch1</p>
-<p><code>gdb ctarget</code> 然后 <code>set args -q</code>
-防止与不存在的服务器通信（<code>run -q</code> 也可以)
-<code>b Gets</code> <code>run -q</code></p>
-<p>看一下栈信息:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">────────────────────────[ STACK ]────────────────────────</span><br><span class="line">00:0000│ rsp 0x5561dc70 —▸ 0x4017b4 (getbuf+12) ◂— movl $1, %eax</span><br><span class="line">01:0008│ rdi 0x5561dc78 ◂— 0</span><br><span class="line">... ↓        3 skipped</span><br><span class="line">05:0028│     0x5561dc98 —▸ 0x55586000 ◂— 0</span><br><span class="line">06:0030│     0x5561dca0 —▸ 0x401976 (test+14) ◂— movl %eax, %edx</span><br><span class="line">07:0038│     0x5561dca8 —▸ 0x55685fe8 —▸ 0x402fa5 ◂— pushq $0x3a6971 /* &#x27;hqi:&#x27; */</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/12/29/CSAPP-Lab-Attack/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
