@@ -121,7 +121,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-count">40</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -132,7 +132,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -314,6 +314,116 @@
       }
     }
   </script>
+      
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/06/17/sicp_2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="穷途末路 异想天开">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/06/17/sicp_2/" class="post-title-link" itemprop="url"><未完成>SICP 第一章(构造数据抽象)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-06-17 16:24:39" itemprop="dateCreated datePublished" datetime="2025-06-17T16:24:39+08:00">2025-06-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-06-20 13:11:03" itemprop="dateModified" datetime="2025-06-20T13:11:03+08:00">2025-06-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">编程语言理论</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="复合数据">复合数据</h2>
+<p>在实际的程序设计中(模拟数学或现实系统),
+操作(过程)要应用到的数据往往不是一个单独的基本类型数据,
+而是多个基本类型数据复合起来的: 例如分数是由分子和分母确定起来的,
+单一的分子和分母都不能称为分数.
+而将分子和分母以某种方式复合起来比单独管理分子和分母具有更强的可读性,
+减少了编码中的精力消耗;
+同时加强分子和分母之间的关系(分子和分母的关系应当强于这两个符号之于别的数据的关系)也符合某种(<del>哲学上的</del>)道理.</p>
+<p>为此, 我们需要构造一种抽象使得这两个数据被复合起来:</p>
+<ul>
+<li>首先要有构造函数, 将这分子和分母复合为另一个新的数据</li>
+<li>然后还要有选择函数,
+因为在实际操作中我们需要操作分子和分母本身(来模拟分数的运算)而不是分数本身</li>
+<li>最后,
+分子和分母及其操作应当符合某些规则(即数学上分数运算上的规则)</li>
+</ul>
+<p>这就是复合数据的需求: 将数据定义为一组适当的选择函数和构造函数,
+以及为了使得这些过程成为一套合法表示, 它们就必须满足一组特定的条件.</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/06/17/sicp_2/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
       
 
 
@@ -862,7 +972,7 @@ Rust, 所以这次是总结一下二三阶段中特别需要的 Rust 特性</p>
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/03/13/CSAPP-2025-03-13/" class="post-title-link" itemprop="url">CSAPP3e第四章[草稿施工中]</a>
+          <a href="/2025/03/13/CSAPP-2025-03-13/" class="post-title-link" itemprop="url"><未完成>CSAPP3e第四章(处理器体系结构)</a>
         </h2>
 
         <div class="post-meta-container">
@@ -880,7 +990,7 @@ Rust, 所以这次是总结一下二三阶段中特别需要的 Rust 特性</p>
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-03-14 13:09:44" itemprop="dateModified" datetime="2025-03-14T13:09:44+08:00">2025-03-14</time>
+      <time title="修改时间：2025-06-20 13:09:00" itemprop="dateModified" datetime="2025-06-20T13:09:00+08:00">2025-06-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -902,8 +1012,7 @@ Rust, 所以这次是总结一下二三阶段中特别需要的 Rust 特性</p>
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="csapp3e第四章草稿-这一篇还在写">CSAPP3e第四章[草稿,
-这一篇还在写]</h1>
+          <h1 id="csapp3e第四章处理器体系结构">CSAPP3e第四章(处理器体系结构)</h1>
 <p>这一章理解难度不大, 但是内容很多, 比较复杂,
 你可能读着读着时而觉得”我去这简直是艺术品”时而觉得”我他妈快睡着了”。</p>
 <h2 id="指令集体系结构">指令集体系结构</h2>
