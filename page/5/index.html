@@ -23,7 +23,7 @@
     <meta name="description" content="穷途末路 异想天开">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Amiriox&#39;s Storage">
-<meta property="og:url" content="https://amiriox.github.io/archives/2025/01/index.html">
+<meta property="og:url" content="https://amiriox.github.io/page/5/index.html">
 <meta property="og:site_name" content="Amiriox&#39;s Storage">
 <meta property="og:description" content="穷途末路 异想天开">
 <meta property="og:locale" content="zh_CN">
@@ -31,14 +31,14 @@
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://amiriox.github.io/archives/2025/01/">
+<link rel="canonical" href="https://amiriox.github.io/page/5/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"archives/2025/01/index.html","title":""}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"page/5/index.html","title":""}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>归档 | Amiriox's Storage</title>
+<title>Amiriox's Storage</title>
   
 
 
@@ -183,110 +183,140 @@
 
     </div>
 
-    <div class="main-inner archive posts-collapse">
+    <div class="main-inner index posts-expand">
 
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC&display=swap" rel="stylesheet">
+  <style>
+    .terminal-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-width: 100%;
+      margin: 20px 0;
+      font-family: "Courier New", "Noto Serif SC", monospace;
+    }
 
-  
-  
-  
-  <div class="post-block">
-    <div class="post-content">
-      <div class="collection-title">
-        
-        <span class="collection-header">还行! 目前共计 41 篇日志。 继续努力。</span>
+    .terminal {
+      background-color: #121212;
+      color: #d1d5db;
+      width: 100%;
+      max-width: 800px;
+      border-radius: 8px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+    }
+
+    .title-bar {
+      display: flex;
+      align-items: center;
+      background-color: #333;
+      color: #ddd;
+      padding: 5px 10px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      justify-content: space-between;
+    }
+
+    .title-bar .dots {
+      display: flex;
+      gap: 6px;
+      margin-right: 8px;
+    }
+
+    .title-bar .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .red { background-color: #ff5f56; }
+    .yellow { background-color: #ffbd2e; }
+    .green { background-color: #27c93f; }
+
+    .content {
+      padding: 10px 15px;
+      line-height: 1.6;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .prompt { color: #7dd3fc; }
+    .info { color: #86efac; }
+    .warn { color: #facc15; }
+    .task-todo { color: #38bdf8; }
+
+    .collapse-btn {
+      background: none;
+      border: none;
+      color: #ddd;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 0 5px;
+    }
+
+    .collapse-btn:hover {
+      color: white;
+    }
+  </style>
+
+  <div class="terminal-container">
+    <div class="terminal">
+      <div class="title-bar">
+        <div class="dots">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+        </div>
+        amiriox@terminal: ~/journey
+        <button class="collapse-btn" onclick="toggleTerminal(this)">[−]折叠</button>
       </div>
+      <div class="content">
+      <span class="prompt">$ whoami > /dev/null # RSS: /atom.xml</span>
 
-      
-    <div class="collection-year">
-      <span class="collection-header">2025<span class="collection-year-count">22</span></span>
-    </div>
+      <span class="info">## Tutorial TLDR 下划以查看博客文章</span>
+      <span class="prompt">$ tldr amiriox</span>
+      折鸦/折鸦夜明け前/無暝; Amiriox Makinohara
+      &gt; 极端社恐, 线上线下基本上是两个人, 但欢迎聊天/交换友链
+      &gt; 计算机科学狂热爱好者, OS/C++/Rust, Vim 党
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2025-01-31T17:26:06+08:00"
-              content="2025-01-31">
-          01-31
-        </time>
+      <span class="prompt">$ vim ~/anime.rs</span>
+      const anime_arr: [anime; 10] =
+      [末日三问, 虚构推理, 魔女之旅, 四叠半, 浪客剑心, 葬送的芙莉莲, 我心危, 比翼之吻, 孤独摇滚, GBC];
+      -- INSERT --    1, 1    All
+
+      <span class="prompt"># cat ~/hobbies.md</span>
+      * 游戏: 空洞骑士/只狼:影逝二度/怪物猎人/赛博朋克2077/明日方舟/丝之歌.unwrap()
+      * 听音乐:
+        * J-POP:    可惜夜/夜鹿/majiko/Reol/Aimer/花谱/结束乐队(
+        * Vocaloid: 洛天依/诗岸/星尘Infinity
+        * R&B:      陶喆/王力宏
+      * 正在培养的爱好: 板绘/像素画/摄影/文学
+
+      <span class="info">## 不断 refactor 的灵魂</span>
+      <span class="prompt">$ objdump -s -j .rodata /usr/bin/amiriox_soul | grep -oP '\s\K[^\0]*'</span>
+      0x00401000  保持必要的力量与清醒, 去努力维持您自己的宁静与尊严
+      0x0040104C  水利万物而不争，故万物莫能与之争
+      0x0040107B  He who has a why to live can bear almost any how.
       </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2025/01/31/problem-rust-ref/" itemprop="url">
-            <span itemprop="name">记一次 Rust 类型系统的问题解决</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2025-01-26T22:24:33+08:00"
-              content="2025-01-26">
-          01-26
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2025/01/26/2022-2023-2024/" itemprop="url">
-            <span itemprop="name">永远不要放弃战斗 -- 三年年终总结</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2025-01-25T20:11:15+08:00"
-              content="2025-01-25">
-          01-25
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2025/01/25/CSAPP-2025-01-25/" itemprop="url">
-            <span itemprop="name">CSAPP3e第二章(整数的运算)</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2025-01-19T10:43:30+08:00"
-              content="2025-01-19">
-          01-19
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2025/01/19/CSAPP-2025-01-19/" itemprop="url">
-            <span itemprop="name">CSAPP3e第二章(整数的表示)</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-
     </div>
   </div>
-  
-  
-  
+
+  <script>
+    function toggleTerminal(btn) {
+      const content = btn.closest('.terminal').querySelector('.content');
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+        btn.textContent = '−';
+      } else {
+        content.style.display = 'none';
+        btn.textContent = '+';
+      }
+    }
+  </script>
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span>
+  </nav>
 
 </div>
   </main>
