@@ -121,18 +121,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-count">42</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -314,6 +314,110 @@
       }
     }
   </script>
+      
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/03/26/rCore_learn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="穷途末路 异想天开">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/03/26/rCore_learn/" class="post-title-link" itemprop="url">一条操作系统的使命</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-26 18:06:50" itemprop="dateCreated datePublished" datetime="2025-03-26T18:06:50+08:00">2025-03-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-05-27 17:47:57" itemprop="dateModified" datetime="2025-05-27T17:47:57+08:00">2025-05-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="从-sbi-开发出一个操作系统内核">从 SBI
+开发出一个操作系统内核</h1>
+<p>以 rCore 为例, 介绍一个操作系统从 RustSBI 开始,
+从批处理系统到分时多任务系统, 包括地址空间/进程/文件系统的实现,
+最后实现多线程以及同步互斥的各种机制.</p>
+<p>暂时集中在一篇文章里, 以后有需要再分章节记录</p>
+<h2 id="运行环境配置">运行环境配置</h2>
+<p>用 Rust 开发操作系统内核源代码, 通过 <code>rustc</code> 交叉编译到
+<code>riscv64gc-unknown-none-elf</code> (一般情况下是
+<code>x86_64-unknown-linux-gnu</code>), 通过 <code>rust-objcopy</code>
+提取出 bin, 然后放到 <code>qemu-system-riscv64</code> 模拟器进行模拟,
+大概是这么个工具链.</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/26/rCore_learn/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
       
 
 
