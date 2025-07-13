@@ -121,7 +121,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -314,6 +314,105 @@
       }
     }
   </script>
+      
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/01/31/problem-rust-ref/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="穷途末路 异想天开">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/01/31/problem-rust-ref/" class="post-title-link" itemprop="url">记一次 Rust 类型系统的问题解决</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-01-31 17:26:06" itemprop="dateCreated datePublished" datetime="2025-01-31T17:26:06+08:00">2025-01-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-03-05 22:18:50" itemprop="dateModified" datetime="2025-03-05T22:18:50+08:00">2025-03-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/" itemprop="url" rel="index"><span itemprop="name">问题解决</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>在做 Codeforces Educational Round 169 D Colored Portals 时，需要找到
+i 前面距离 i 最近的颜色不完全相同但也不完全不同的 j，我随手写了个</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> vector&lt;string&gt; type = &#123;<span class="string">&quot;BG&quot;</span>, <span class="string">&quot;BR&quot;</span>, <span class="string">&quot;BY&quot;</span>, <span class="string">&quot;GR&quot;</span>, <span class="string">&quot;GY&quot;</span>, <span class="string">&quot;RY&quot;</span>&#125;;</span><br><span class="line">map&lt;string, <span class="type">int</span>&gt; m;</span><br><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">lc</span><span class="params">(n, <span class="number">-1</span>)</span>, <span class="title">rc</span><span class="params">(n, <span class="number">-1</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">    <span class="keyword">auto</span> condi = m | <span class="built_in">filter</span>([&amp;](<span class="type">const</span> <span class="keyword">auto</span> &amp;p) &#123; <span class="keyword">return</span> p.first != in[i] &amp;&amp; <span class="built_in">has_same</span>(p.first, in[i]); &#125;);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">auto</span> lci = ranges::<span class="built_in">max_element</span>(</span><br><span class="line">                condi, [](<span class="type">const</span> <span class="keyword">auto</span> &amp;a, <span class="type">const</span> <span class="keyword">auto</span> &amp;b) &#123; <span class="keyword">return</span> a.second &lt; b.second; &#125;);</span><br><span class="line">            lci != ranges::<span class="built_in">end</span>(condi)) &#123;</span><br><span class="line">            lc[i] = lci-&gt;second;</span><br><span class="line">    &#125;</span><br><span class="line">    m[in[i]] = i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后吐槽了下 C++ 没有 <code>.iter().filter()</code> 或者
+<code>.iter().map()</code> 这种写法</p>
+<p>于是我就建了个 D.rs 写了个 Rust 版本的:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::collections::HashMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">has_same</span>(a: &amp;[<span class="type">char</span>; <span class="number">2</span>], b: &amp;[<span class="type">char</span>; <span class="number">2</span>]) <span class="punctuation">-&gt;</span> <span class="type">bool</span> &#123;</span><br><span class="line">    (a[<span class="number">0</span>] == b[<span class="number">0</span>] || a[<span class="number">0</span>] == b[<span class="number">1</span>]) || (a[<span class="number">1</span>] == b[<span class="number">0</span>] || a[<span class="number">1</span>] == b[<span class="number">1</span>])</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">n</span> : <span class="type">usize</span> = <span class="number">4</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">inv</span> : <span class="type">Vec</span>&lt;[<span class="type">char</span>; <span class="number">2</span>]&gt; = <span class="built_in">vec!</span>[[<span class="string">&#x27;B&#x27;</span>, <span class="string">&#x27;R&#x27;</span>], [<span class="string">&#x27;B&#x27;</span>, <span class="string">&#x27;R&#x27;</span>], [<span class="string">&#x27;G&#x27;</span>, <span class="string">&#x27;Y&#x27;</span>], [<span class="string">&#x27;G&#x27;</span>, <span class="string">&#x27;R&#x27;</span>]]; <span class="comment">// simple</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">map</span> : HashMap&lt;[<span class="type">char</span>; <span class="number">2</span>], <span class="type">i32</span>&gt; = HashMap::<span class="title function_ invoke__">new</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">lc</span> = <span class="built_in">vec!</span>[-<span class="number">1</span>; n];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">0usize</span>..n &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(lci) = map.<span class="title function_ invoke__">iter</span>()</span><br><span class="line">            .<span class="title function_ invoke__">filter</span>(|(key, _)| *key != &amp;inv[i] &amp;&amp; <span class="title function_ invoke__">has_same</span>(key, &amp;inv[i]))</span><br><span class="line">            .<span class="title function_ invoke__">max_by</span>(|a, b| a.<span class="number">1</span>.<span class="title function_ invoke__">cmp</span>(&amp;b.<span class="number">1</span>)) &#123;</span><br><span class="line">            lc[i] = *lci.<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        map.<span class="title function_ invoke__">insert</span>(inv[i].<span class="title function_ invoke__">clone</span>(), i <span class="keyword">as</span> <span class="type">i32</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, lc);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/01/31/problem-rust-ref/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
       
 
 
@@ -1100,105 +1199,6 @@ $eax</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2021/01/18/CSAPP-2021-01-28/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-      
-
-
-<div class="post-block">
-
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2020/12/25/2020_curtain_falls/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/icon.jpg">
-      <meta itemprop="name" content="折鸦夜明け前">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Amiriox's Storage">
-      <meta itemprop="description" content="穷途末路 异想天开">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Amiriox's Storage">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/12/25/2020_curtain_falls/" class="post-title-link" itemprop="url">辉煌落幕 -- 2020 年终总结</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-12-25 00:00:00" itemprop="dateCreated datePublished" datetime="2020-12-25T00:00:00+08:00">2020-12-25</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-02-14 00:21:46" itemprop="dateModified" datetime="2025-02-14T00:21:46+08:00">2025-02-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">年终总结</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>此文章的 <em>撰写时间</em> 可能有误</p>
-</blockquote>
-<p><strong>2020对我来说是极其重要的一年, 堪比2018年</strong></p>
-<h1 id="一-简述">一 简述</h1>
-<p>这一年乱七八糟的 想起来似乎没有记忆却又全是记忆</p>
-<p>由于疫情的原因 这一年变得很奇怪</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/25/2020_curtain_falls/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
