@@ -1045,13 +1045,13 @@ pre code {
   border-bottom-color: transparent;
   border-left-color: #ddd;
   border-right-color: #ddd;
-  border-top-color: #fc6423;
+  border-top-color: #3cb371;
 }
 @media (max-width: 413px) {
   .post-body .tabs ul.nav-tabs li.tab.active,
   .tabs-comment ul.nav-tabs li.tab.active {
     border-bottom-color: #ddd;
-    border-left-color: #fc6423;
+    border-left-color: #3cb371;
     border-right-color: #ddd;
     border-top-color: #ddd;
   }
@@ -1360,7 +1360,7 @@ pre code {
     vertical-align: middle;
   }
   .links-of-author a::before {
-    background: #74c281;
+    background: #0ec6ff;
     display: inline-block;
     margin-right: 3px;
     transform: translateY(-2px);
@@ -1445,15 +1445,15 @@ pre code {
 }
 .sidebar .sidebar-button button {
   background: transparent;
-  color: #fc6423;
+  color: #3cb371;
   cursor: pointer;
   line-height: 2;
   padding: 0 15px;
-  border: 1px solid #fc6423;
+  border: 1px solid #3cb371;
   border-radius: 4px;
 }
 .sidebar .sidebar-button button:hover {
-  background: #fc6423;
+  background: #3cb371;
   color: #fff;
 }
 .sidebar .sidebar-button button i[class^='fa'] {
@@ -1499,17 +1499,17 @@ pre code {
   margin-left: 10px;
 }
 .sidebar-nav li:hover {
-  color: #fc6423;
+  color: #3cb371;
 }
 .sidebar-toc-active .sidebar-nav-toc,
 .sidebar-overview-active .sidebar-nav-overview {
-  border-bottom-color: #fc6423;
-  color: #fc6423;
+  border-bottom-color: #3cb371;
+  color: #3cb371;
   transition-delay: 0.2s;
 }
 .sidebar-toc-active .sidebar-nav-toc:hover,
 .sidebar-overview-active .sidebar-nav-overview:hover {
-  color: #fc6423;
+  color: #3cb371;
 }
 .sidebar-panel-container {
   align-items: start;
@@ -1602,7 +1602,7 @@ pre code {
   }
 }
 .sidebar-toggle:hover .toggle-line {
-  background: #fc6423;
+  background: #3cb371;
 }
 @media (any-hover: hover) {
   body:not(.sidebar-active) .sidebar-toggle:hover :first-child {
@@ -1668,14 +1668,14 @@ pre code {
   visibility: unset;
 }
 .post-toc .nav .active > a {
-  border-bottom-color: #fc6423;
-  color: #fc6423;
+  border-bottom-color: #3cb371;
+  color: #3cb371;
 }
 .post-toc .nav .active-current > a {
-  color: #fc6423;
+  color: #3cb371;
 }
 .post-toc .nav .active-current > a:hover {
-  color: #fc6423;
+  color: #3cb371;
 }
 .site-state {
   display: flex;
@@ -1818,7 +1818,7 @@ pre code {
   }
 }
 .back-to-top:hover {
-  color: #fc6423;
+  color: #3cb371;
 }
 .back-to-top.back-to-top-on {
   bottom: 30px;
@@ -2344,17 +2344,17 @@ pre code {
 }
 .reward-container button {
   background: transparent;
-  color: #fc6423;
+  color: #3cb371;
   cursor: pointer;
   line-height: 2;
   padding: 0 15px;
-  border: 2px solid #fc6423;
+  border: 2px solid #3cb371;
   border-radius: 2px;
   outline: 0;
   vertical-align: text-top;
 }
 .reward-container button:hover {
-  background: #fc6423;
+  background: #3cb371;
   color: #fff;
 }
 .post-reward {
@@ -2840,14 +2840,14 @@ header.header {
 }
 .sub-menu .menu-item a:hover {
   background: transparent;
-  color: #fc6423;
+  color: #3cb371;
 }
 .sub-menu .menu-item-active {
-  border-bottom-color: #fc6423;
-  color: #fc6423;
+  border-bottom-color: #3cb371;
+  color: #3cb371;
 }
 .sub-menu .menu-item-active:hover {
-  border-bottom-color: #fc6423;
+  border-bottom-color: #3cb371;
 }
 @media (min-width: 992px) {
   .sidebar {
@@ -2877,14 +2877,14 @@ header.header {
   }
   .sidebar .sidebar-button button {
     border: 0;
-    color: #fc6423;
+    color: #3cb371;
     display: block;
     width: 100%;
   }
   .sidebar .sidebar-button button:hover {
     background: none;
     border: 0;
-    color: #e34603;
+    color: #308f5a;
   }
   .links-of-author {
     display: flex;
@@ -3012,4 +3012,44 @@ header.header {
   .sidebar {
     display: none;
   }
+}
+.post-toc .nav .active-current > a {
+  color: #3cb371;
+}
+.post-toc .nav .active > a {
+  border-bottom-color: #3cb371;
+  color: #3cb371;
+}
+.sidebar-toc-active .sidebar-nav-toc,
+.sidebar-overview-active .sidebar-nav-overview {
+  border-bottom-color: #3cb371;
+  color: #3cb371;
+  transition-delay: 0.2s;
+}
+.post-toc .nav .active > a {
+  border-bottom-color: #3cb371;
+  color: #3cb371;
+}
+.post-toc .nav .active-current > a {
+  color: #3cb371;
+}
+.sidebar-toc-active .sidebar-nav-toc:hover,
+.sidebar-overview-active .sidebar-nav-overview:hover {
+  color: #3cb371;
+}
+.sidebar-nav li:hover {
+  color: #3cb371;
+}
+.sidebar-toc-active .sidebar-nav-toc,
+.sidebar-overview-active .sidebar-nav-overview {
+  border-bottom-color: #3cb371;
+  color: #3cb371;
+  transition-delay: 0.2s;
+}
+.post-toc .nav .active > a {
+  border-bottom-color: #3cb371;
+  color: #3cb371;
+}
+.post-toc .nav .active-current > a {
+  color: #3cb371;
 }
