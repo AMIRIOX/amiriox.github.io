@@ -143,9 +143,9 @@
     
     <category term="计算机科学" scheme="https://amiriox.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/"/>
     
-    <category term="SICP" scheme="https://amiriox.github.io/tags/SICP/"/>
-    
     <category term="未完成" scheme="https://amiriox.github.io/tags/%E6%9C%AA%E5%AE%8C%E6%88%90/"/>
+    
+    <category term="SICP" scheme="https://amiriox.github.io/tags/SICP/"/>
     
   </entry>
   
