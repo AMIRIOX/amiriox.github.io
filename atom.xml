@@ -6,7 +6,7 @@
   <link href="https://amiriox.github.io/atom.xml" rel="self"/>
   
   <link href="https://amiriox.github.io/"/>
-  <updated>2025-07-18T18:03:38.810Z</updated>
+  <updated>2025-07-26T09:16:53.308Z</updated>
   <id>https://amiriox.github.io/</id>
   
   <author>
@@ -15,6 +15,47 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>(草稿)从设备到操作系统: 如何编写驱动</title>
+    <link href="https://amiriox.github.io/2025/07/26/driver_tutorial/"/>
+    <id>https://amiriox.github.io/2025/07/26/driver_tutorial/</id>
+    <published>2025-07-26T09:11:50.000Z</published>
+    <updated>2025-07-26T09:16:53.308Z</updated>
+    
+    <content type="html"><![CDATA[<p>cpu 内存, 系统总线, pci总线 早期简单设备GPIO直接控制 PCI/USB总线</p><p>I/O传输方式: PIO(PMIO/MMIO轮询), Interrupt, DMA(中断不一定一定比PIO好) I/O传输内容: 操作系统组件与驱动交互,驱动与设备交互 驱动传递给设备命令和数据文件/流/virtio-mmio的共享内存(12略) I/O模型:阻塞/非阻塞/多路复用/信号驱动/异步(略)</p><p>驱动程序设计: 1. 数据结构初始化(VirtIoHeader, 其中包含VirtQueue,其中包含设备描述符/Avail/Used) 2. 初始化设备, 设定设备状态 3.中断处理例程 4. 和操作系统组件交互</p><p>设备的呈现模式与 probe 1. x86_64, 个人计算机通常采用 PCI总线的发现方式 2. arm/riscv 因为设备多种多样, 采用 device tree,Bootloader(如SBI)负责将dtb放入寄存器交给操作系统 3. 设备树的 reg是”总线地址”(对于在 PCI 总线上的设备) 或 直接的物理地址(对于 virtio-mmio设备), 前者需要 IOMMU 翻译 4.解析设备树主要是根据不同设备类型分派到不同处理过程, 主要是拿一下地址,还有相关信息等 PLIC:</p><pre><code>传来中断时并不清楚是不是给自己的中断, 所以要检查一下www</code></pre><p>virtio 之设备描述: 设备特征位与地址空间 virtio 之状态表示: 设备状态域virtio 只交互机制: 通知+虚拟队列</p><p>通知(门铃 doorbell):</p><p>虚拟队列 VirtQueue: 描述符表: 存放每个描述符的位置和 next 指针;很多驱动传达给设备的信息需要多个描述符组成一个链表(命令+数据+结果)可用环(Avail vring): 存放驱动程序放进去描述符链表的索引, 表示传递的命令,通过 kick 机制 (写入特定寄存器) 通知设备有新任务 已用环(Used vring):设备从可用环中取出描述符链表解析并处理,然后把填好后的描述符索引放入已用环, 中断一下让驱动程序拿结果在驱动程序操作描述符表, 可用环和通知设备时,需要设置内存屏障强制控制指令执行顺序,防止乱序执行导致设备看到错误的信息</p><p>VirtIOHeader: 各种寄存器区域, 除了status 和 features 相关的寄存器,还有存放虚拟队列索引的寄存器,以及存放描述符表/可用环/已用环的内存位置的寄存器(分为低32和高32位存,为了兼容性和内存对齐),以及中断相关的寄存器</p><p>初始化设备: 读取信息, 按照规范设定设备状态,开辟所需数据结构的dma内存</p><p>Virtio-GPU: header, rect, 实际的显示内存载荷, 总体命令的虚拟队列,光标命令的虚拟队列, 队列本身的内存载荷, 为了方便处理的 send/recv queue切片(注意生命周期标注, 必须至少和 VirIOGPU 活的一样长) new 里初始化设备,分配各种dma内存, 读配置空间 还需要按照规范把实际显存关联到 virtio-gpu设备上; 主要是发送 ResourceCreate2D 和 ResourceAttackBacking, 然后SetScanout 把显示资源链接到显示扫描输出上</p><p>操作系统的任务: 包装 VirtIOGPU 对象, 加引用计数和锁, 操作显存, flush,暴露系统调用给用户态程序</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;cpu 内存, 系统总线, pci总线 早期简单设备GPIO直接控制 PCI/USB总线&lt;/p&gt;
+&lt;p&gt;I/O传输方式: PIO(PMIO/MMIO轮询), Interrupt, DMA
+(中断不一定一定比PIO好) I/O传输内容: 操作系统组件与驱动交互,
+驱动与设备交互 驱动传递给设备命令和数据
+文件/流/virtio-mmio的共享内存(12略) I/O模型:
+阻塞/非阻塞/多路复用/信号驱动/异步(略)&lt;/p&gt;
+&lt;p&gt;驱动程序设计: 1. 数据结构初始化(VirtIoHeader, 其中包含VirtQueue,
+其中包含设备描述符/Avail/Used) 2. 初始化设备, 设定设备状态 3.
+中断处理例程 4. 和操作系统组件交互&lt;/p&gt;
+&lt;p&gt;设备的呈现模式与 probe 1. x86_64, 个人计算机通常采用 PCI
+总线的发现方式 2. arm/riscv 因为设备多种多样, 采用 device tree,
+Bootloader(如SBI)负责将dtb放入寄存器交给操作系统 3. 设备树的 reg
+是”总线地址”(对于在 PCI 总线上的设备) 或 直接的物理地址(对于 virtio-mmio
+设备), 前者需要 IOMMU 翻译 4.
+解析设备树主要是根据不同设备类型分派到不同处理过程, 主要是拿一下地址,
+还有相关信息等 PLIC:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;传来中断时并不清楚是不是给自己的中断, 所以要检查一下www&lt;/code&gt;&lt;/pre&gt;</summary>
+    
+    
+    
+    <category term="操作系统" scheme="https://amiriox.github.io/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"/>
+    
+    
+    <category term="计算机科学" scheme="https://amiriox.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/"/>
+    
+    <category term="QEMU" scheme="https://amiriox.github.io/tags/QEMU/"/>
+    
+    <category term="草稿" scheme="https://amiriox.github.io/tags/%E8%8D%89%E7%A8%BF/"/>
+    
+  </entry>
   
   <entry>
     <title>oscamp 暑期 proj 周纪要</title>
@@ -153,38 +194,6 @@
 &lt;/ul&gt;
 &lt;p&gt;这就是复合数据的需求: 将数据定义为一组适当的选择函数和构造函数,
 以及为了使得这些过程成为一套合法表示, 它们就必须满足一组特定的条件.&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="编程语言理论" scheme="https://amiriox.github.io/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E7%90%86%E8%AE%BA/"/>
-    
-    
-    <category term="计算机科学" scheme="https://amiriox.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/"/>
-    
-    <category term="SICP" scheme="https://amiriox.github.io/tags/SICP/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>SICP 第一章(构造过程抽象)</title>
-    <link href="https://amiriox.github.io/2025/05/30/sicp_1/"/>
-    <id>https://amiriox.github.io/2025/05/30/sicp_1/</id>
-    <published>2025-05-30T00:17:39.000Z</published>
-    <updated>2025-05-30T04:46:51.897Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="程序设计需要考虑的基本元素">程序设计需要考虑的基本元素</h2><ol type="1"><li>基本的表达形式:<strong>基本的数据表达</strong>与<strong>基本的过程表达</strong></li><li>组合的方法: 将基本表达组合起来构成复合的元素, 如 Lisp 的组合式</li><li>抽象的方法: 为复合对象命名, 从一个新的抽象层次操作非基本单元</li></ol><p>在 lisp (SICP 使用 scheme 方言) 中有如下体现:</p><h2 id="上述概念在-lisp-的体现">上述概念在 Lisp 的体现</h2><h3 id="表达式">表达式:</h3><p><strong>基本表达式</strong>(如数这样的自求值原子表达式 或<code>+</code> 这样表示基本过程(算术运算)的符号表达式),或基本表达式组合构成的复合表达式</p><h3 id="复合数据-组合式">复合数据: 组合式</h3><p>形如 <code>(+ 1 2)</code>用一对括号扩起一些表达式称为组合式来表示一个<strong>过程</strong>应用,最左侧称为<strong>运算符</strong>, 其它称为<strong>运算对象</strong>.允许出现组合式嵌套的情况(组合式元素本身还是组合式).</p><ol type="1"><li><p>组合式的求值</p><p>先求值子表达式,再将其最左子表达式的值(即一个运算符代表的过程)应用于相应的实际参数(即子表达式运算对象的值),如 <code>(+ 1 2)</code> 先对 1 和 2 求值, 自求值原子表达式的值分别为<code>1</code> 和 <code>2</code>, 再将 <code>+</code>代表的加法过程应用到实际参数 <code>1</code> 和 <code>2</code> 上.</p><p>如果有 <code>(define x 1)</code> 或者 <code>let</code>使名字与一个值相关联后, 求值时就会环境中找这个名字对应的值.<strong>环境</strong> 维护一个名字与一个值的映射, 具有不同层级(全局环境和局部环境), 与上下文的概念类似,在一些常见编程语言中通常用栈帧实现.</p><p>有嵌套的组合式就涉及递归求值.</p></li><li><p>结构化求值:</p><p><strong>树形积累</strong> 是一种结构化求值的模型,将表达式作为一个树形结构, 从叶子节点开始逐渐向上组合.</p></li><li><p>代换模型</p><p>通过替换逐步规约表达式, 直到无法继续规约.</p></li></ol><ul><li><p>应用序: 在任何表达式的计算过程中, 先求值得到实际参数,再将过程操作应用于实际参数.如 <code>(square_1 (square_2 x))</code>的计算过程(这里角标只是方便叙述): 先求 <code>(square_2 x)</code>得到实际参数 (<code>* x x</code> 的值) 再应用 <code>square_1</code>过程到这个实际参数上面, 可以看到 <code>square_2</code>被应用一次.</p></li><li><p>正则序: 在任何表达式的计算过程中, 先尽可能完全展开树形结构,而后向上规约. 同样以上一个为例: 先尽可能展开:<code>(* (square_2 x) (square_2 x))</code> 再展开<code>(* (* x x) (* x x))</code>, 可以发现 <code>square_2</code>被应用了两次.</p><p>由于正则序的重复计算性质, Lisp 采用应用序. (当然,正则序也是有意义的)</p></li></ul><h3 id="复合过程">复合过程:</h3><p><strong>过程</strong> 和 <strong>函数</strong> 的区别:函数更注重”是什么”, 过程更注重”怎么做”.</p><ol type="1"><li><code>(define (&lt;name&gt; &lt;parameters&gt;) &lt;body&gt;)</code>是一个过程定义. 注意这(本身)并不是一个组合式,而是一种<strong>特殊形式</strong>, 不遵循上述求值的一般规则.</li><li>条件表达式:<code>(cond (&lt;p1&gt; &lt;e1&gt;) (&lt;p2&gt; &lt;e2&gt;) ...)</code>,其中 <code>&lt;p&gt;</code> 是一个 <strong>谓词</strong>(Predicate,值为真或假), <code>&lt;e&gt;</code> 是一个普通表达式. 计算过程是先判断<code>&lt;p1&gt;</code> 是否为真, 如果为真则 <code>cond</code> 的值就是<code>&lt;e1&gt;</code>, 否则检查 <code>&lt;p2</code>&gt; , 依次类推.如果 <code>&lt;p1&gt;</code> 到 <code>&lt;pn&gt;</code> 均为假, 则<code>cond</code> 无意义; 另一种条件表达式是<code>(if &lt;predicate&gt; &lt;consequent&gt; &lt;alternative&gt;)</code>.</li><li>过程封装了内部复杂的逻辑形成了一个黑箱, 这种抽象方式减轻了思维负载,其依靠的特性之一就是局部名不影响全局的值.</li></ol><h3 id="总结">总结</h3><p>1.1.7 以牛顿法求平方根为例简单展示了使用 Scheme复合基本数据和复合基本过程来构成代码的实例</p><p>1.1 - 1.8习题:<br />改写为前缀表达式和根据需求写 lisp 比较简单.<br />比较有意思的是1.5, 如果是应用序, 先规约后展开, 解释器会一直在对<code>(p)</code> 进行求值 (<code>(define (p) (p))</code>) 时无限递归,永远无法得到实际参数; 如果是正则序, 先展开后规约: 根据 <code>if</code>的短路特性, 在 <code>predicate</code> 为真时只对 <code>consequent</code>求值, <code>alternative</code> 不会被求值, (p) 不会被递归.<br />1.6 中的 <code>new-if</code> 是一个过程并不是特殊形式, 所以没有<code>if</code> 的短路特性. (注意区分语义和实现过程,不要和分支预测混淆)</p><h2 id="过程及其产生的计算">过程及其产生的计算</h2><h3 id="递归与迭代过程">递归与迭代过程</h3><p>通过 <code>(* n (f (- n 1)))</code> 和<code>(iter (* result n) (- n 1))</code> 方式计算阶乘</p><ul><li><p>对前者来说, 其代换模型展现出一个先构造其一个推迟执行的长链(先求<span class="math inline">\((n-1)!\)</span> 获得返回值再推迟乘 <spanclass="math inline">\(n\)</span> )后再收缩(对每个得到的返回值乘当前<span class="math inline">\(n\)</span>), 这个计算过程是一个<strong>递归</strong>, 且因为其执行次数与 <spanclass="math inline">\(n\)</span> 成正比, 称为 <strong>线性递归</strong>.总结一下: 递归过程的特点: 信息由返回值获得, 推迟执行,计算状态隐含在代换模型长链的构造与收缩中</p></li><li><p>对后者来说, 由第一个形式参数 <code>result</code> 保存信息,不推迟, 直接执行乘 <span class="math inline">\(n\)</span>,然后再用乘法所得结果替换下一次执行的形式参数实现了用参数而不是返回值保存信息.由于执行次数与 <span class="math inline">\(n\)</span> 成正比, 称为<strong>线性迭代</strong>. 迭代过程的特点: 由几个变量保存迭代状态,不推迟执行, 计算状态单纯由迭代状态量表示</p></li><li><p><strong>注意不要混淆计算过程的与实现的区别</strong>,从这个实现上来讲这两者都是递归;迭代的实现也不一定是要用递归和参数保存信息,部分语言中也有循环语法实现迭代<spanclass="math inline">\(^{[1]}\)</span>.</p></li></ul><blockquote><p>${[1]}: $ 任何循环都能由递归表示和实现, 反之亦然<br />但由于递归的实际实现方式开销较大(保存上下文等),所以编译器往往是将递归优化成循环. 编译器通常只优化尾递归(称为尾调用优化), <strong>尾递归</strong>是”递归调用在过程的最后一步”的递归, 这样的递归转换为循环是很方便的.但通用递归到循环的转换非常复杂, 需要模拟调用栈等,反而开销会更大一些.</p></blockquote><p>练习 1.9:</p><figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name"><span class="built_in">+</span></span> a b) </span><br><span class="line">    (<span class="name"><span class="built_in">if</span></span> (<span class="name"><span class="built_in">=</span></span> b <span class="number">0</span>) a</span><br><span class="line">        (<span class="name">inc</span> (<span class="name"><span class="built_in">+</span></span> a (<span class="name">dec</span> b)) ) </span><br><span class="line">    )</span><br><span class="line">)</span><br><span class="line"><span class="comment">; 代换模型类似 (inc (inc (inc (+ 0 res)))), 在达到递归边界之前一直在推迟计算</span></span><br></pre></td></tr></table></figure><figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name"><span class="built_in">+</span></span> a b) </span><br><span class="line">  (<span class="name"><span class="built_in">if</span></span> (<span class="name"><span class="built_in">=</span></span> b <span class="number">0</span>) a</span><br><span class="line">      (<span class="name"><span class="built_in">+</span></span> (<span class="name">inc</span> a) (<span class="name">dec</span> b))</span><br><span class="line">  )</span><br><span class="line">)</span><br><span class="line"><span class="comment">; 代换模型类似 (+ 0 res), 没有推迟计算</span></span><br></pre></td></tr></table></figure><p><del>话说我第一次老老实实展开看代换模型写对了,写这个博客的时候算第二次试图直接看结果看错了</del></p><p>练习 1.10: 直接展开模拟然后归纳, 但是我之前写的时候墨迹太乱了,依稀只能看出有一个是 <span class="math inline">\(^{n-1}2\)</span> (即<span class="math inline">\(2^{2^{2^{2^{...}}}}\)</span>)</p><h3 id="树形递归">树形递归</h3><p>像斐波那契的递归求法这样的 DFS 过程称为树形递归,其代换模型不是一长链, 而是一棵树.</p><h3 id="递归如何简化逻辑">递归如何简化逻辑</h3><p>以书中对任意数量 <span class="math inline">\(n\)</span> 现金求拆分成<span class="math inline">\(c\)</span> 种价值的零钱的方法数 (称为 <spanclass="math inline">\(f(n, c)\)</span> ) 为例.<br />递归可以将其简化为单纯的分类过程: 数量为 <spanclass="math inline">\(n\)</span> 的现金可以 “使用第一种硬币” 和“不使用第一种硬币”, 因此拆分种数也就是 “拆分 <spanclass="math inline">\(n\)</span> 为除第一种硬币之外的其他 <spanclass="math inline">\(c-1\)</span> 币种的拆分数” 加上“仅使用一次第一种硬币, 递归拆分 <span class="math inline">\(n -d\)</span> 为 <span class="math inline">\(c\)</span> 币种的拆分书”,即递归为 <span class="math inline">\(f(n, c-1)+f(n-d, c)\)</span> .再确认相关递归边界即可.</p><figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name">f</span> n c) (<span class="name"><span class="built_in">cond</span></span> </span><br><span class="line">                 ((<span class="name"><span class="built_in">=</span></span> c <span class="number">0</span>) <span class="number">1</span>) </span><br><span class="line">                 ((<span class="name"><span class="built_in">or</span></span> (<span class="name"><span class="built_in">&lt;</span></span> c <span class="number">0</span>) (<span class="name"><span class="built_in">=</span></span> n <span class="number">0</span>)) <span class="number">0</span>)</span><br><span class="line">                 (<span class="name"><span class="built_in">else</span></span> (<span class="name"><span class="built_in">+</span></span> (<span class="name">f</span> n (<span class="name"><span class="built_in">-</span></span> c <span class="number">1</span>)) </span><br><span class="line">                          (<span class="name">f</span> (<span class="name"><span class="built_in">-</span></span> n (<span class="name">coins</span> c)) c) </span><br><span class="line">                          ))</span><br><span class="line">                 ))</span><br><span class="line"><span class="comment">; coins 是一个根据 c 币种编号返回对应币种价值的过程, 类似承担数组/map的职责</span></span><br><span class="line"><span class="comment">; 这 scheme 写起来匹配括号看眼花了, 我懒得写了()</span></span><br></pre></td></tr></table></figure><p>练习 1.11: 看起来是个非常直观的树形递归, 所以用递归很好写;迭代过程需要反着算(因为不能推迟计算), 从 f(0), f(1), f(2) 往上加算出f(n) 来</p><h3 id="复杂度分析">复杂度分析</h3><p>给了标准的大 <span class="math inline">\(\Theta\)</span> 记法的定义:<span class="math inline">\(k_1g(n) \leq f(n) \leq k_2g(n)\)</span> 称为<span class="math inline">\(f(n) = \Theta(g(n))\)</span>.<br />(btw, 大 <span class="math inline">\(O\)</span> 记法就是把下界换成0,仅代表上界, 即最坏情况)</p><p>练习 1.19 很有意思, 总之就是按他说的去推, 最后是: <spanclass="math inline">\(T^2_{pq} = T_{p&#39;q&#39;}\)</span>, 其中 <spanclass="math inline">\(p&#39; = p^2+q^2, q&#39; = 2pq + q^2\)</span>.</p><figure><img src="/images/image-20250530113707542.png"alt="image-20250530113707542" /><figcaption aria-hidden="true">image-20250530113707542</figcaption></figure><h2 id="高阶函数做抽象">高阶函数做抽象</h2><h3 id="过程作为参数">过程作为参数</h3><p>lisp 中过程可以直接作为其他过程的参数.<br />如果需要临时的匿名过程, 可以使用 lambda:<code>lambda (&lt;parameters&gt;) &lt;body&gt;</code><br />如果需要建立临时变量约束, 可以用 lambda 的一种语法糖<code>let</code>:</p><figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">let</span></span> ((<span class="name">&lt;var1&gt;</span> &lt;exp1&gt;)</span><br><span class="line">  (<span class="name">&lt;var2&gt;</span> &lt;exp2&gt;)</span><br><span class="line">...</span><br><span class="line">  )</span><br><span class="line">  &lt;body&gt;</span><br><span class="line">)</span><br></pre></td></tr></table></figure><p><code>// TODO</code></p><h3 id="过程作为一般性方法">过程作为一般性方法</h3><p>折半法找函数的根, 找函数不动点</p><h3 id="过程作为返回值">过程作为返回值</h3><p>牛顿法</p><p>练习: <img src="/images/image-20250530124016847.png"alt="image-20250530124016847" /></p><h3 id="抽象作为第一级过程">抽象作为第一级过程</h3><h2 id="小剧场">小剧场:</h2><figure><img src="/images/image-20250530123735194.png"alt="image-20250530123735194" /><figcaption aria-hidden="true">image-20250530123735194</figcaption></figure>]]></content>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;程序设计需要考虑的基本元素&quot;&gt;程序设计需要考虑的基本元素&lt;/h2&gt;
-&lt;ol type=&quot;1&quot;&gt;
-&lt;li&gt;基本的表达形式:
-&lt;strong&gt;基本的数据表达&lt;/strong&gt;与&lt;strong&gt;基本的过程表达&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;组合的方法: 将基本表达组合起来构成复合的元素, 如 Lisp 的组合式&lt;/li&gt;
-&lt;li&gt;抽象的方法: 为复合对象命名, 从一个新的抽象层次操作非基本单元&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;在 lisp (SICP 使用 scheme 方言) 中有如下体现:&lt;/p&gt;
-&lt;h2 id=&quot;上述概念在-lisp-的体现&quot;&gt;上述概念在 Lisp 的体现&lt;/h2&gt;
-&lt;h3 id=&quot;表达式&quot;&gt;表达式:&lt;/h3&gt;</summary>
     
     
     
