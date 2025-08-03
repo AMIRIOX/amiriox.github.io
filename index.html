@@ -352,9 +352,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-07-26 17:11:50 / 修改时间：17:16:53" itemprop="dateCreated datePublished" datetime="2025-07-26T17:11:50+08:00">2025-07-26</time>
+      <time title="创建时间：2025-07-26 17:11:50" itemprop="dateCreated datePublished" datetime="2025-07-26T17:11:50+08:00">2025-07-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-04 01:28:37" itemprop="dateModified" datetime="2025-08-04T01:28:37+08:00">2025-08-04</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -376,23 +382,17 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>cpu 内存, 系统总线, pci总线 早期简单设备GPIO直接控制 PCI/USB总线</p>
-<p>I/O传输方式: PIO(PMIO/MMIO轮询), Interrupt, DMA
-(中断不一定一定比PIO好) I/O传输内容: 操作系统组件与驱动交互,
-驱动与设备交互 驱动传递给设备命令和数据
-文件/流/virtio-mmio的共享内存(12略) I/O模型:
-阻塞/非阻塞/多路复用/信号驱动/异步(略)</p>
-<p>驱动程序设计: 1. 数据结构初始化(VirtIoHeader, 其中包含VirtQueue,
-其中包含设备描述符/Avail/Used) 2. 初始化设备, 设定设备状态 3.
-中断处理例程 4. 和操作系统组件交互</p>
-<p>设备的呈现模式与 probe 1. x86_64, 个人计算机通常采用 PCI
-总线的发现方式 2. arm/riscv 因为设备多种多样, 采用 device tree,
-Bootloader(如SBI)负责将dtb放入寄存器交给操作系统 3. 设备树的 reg
-是”总线地址”(对于在 PCI 总线上的设备) 或 直接的物理地址(对于 virtio-mmio
-设备), 前者需要 IOMMU 翻译 4.
-解析设备树主要是根据不同设备类型分派到不同处理过程, 主要是拿一下地址,
-还有相关信息等 PLIC:</p>
-<pre><code>传来中断时并不清楚是不是给自己的中断, 所以要检查一下www</code></pre>
+          <h2 id="组件介绍">组件介绍</h2>
+<ul>
+<li>cpu 内存, 系统总线, pci总线</li>
+<li>早期简单设备GPIO直接控制</li>
+<li>PCI/USB总线</li>
+</ul>
+<h2 id="io-相关概念">I/O 相关概念</h2>
+<h3 id="io传输方式">I/O传输方式:</h3>
+<ul>
+<li>PIO(PMIO/MMIO轮询), Interrupt, DMA (中断不一定一定比PIO好)</li>
+</ul>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/07/26/driver_tutorial/#more" rel="contents">
