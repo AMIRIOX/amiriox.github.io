@@ -758,7 +758,7 @@ x\ +_w^u\ y =
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-02-14 00:11:04" itemprop="dateModified" datetime="2025-02-14T00:11:04+08:00">2025-02-14</time>
+      <time title="修改时间：2025-08-04 22:36:13" itemprop="dateModified" datetime="2025-08-04T22:36:13+08:00">2025-08-04</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -780,13 +780,16 @@ x\ +_w^u\ y =
     
     
     <div class="post-body" itemprop="articleBody">
-          <hr>
-<p>Border relations with Canada have never been better. 直接读phase_1 的
-$rdi.</p>
-<hr>
-<p>1 2 4 8 16 32 利用断点跳到 read_six_number 后, 发现核心代码 add $eax
-$eax</p>
-<hr>
+          <p>这是我第一个完成的 lab, 这篇博客其实是边做边记的解决过程改的,
+所以比较简略, 其他 Lab 的记录博客会详细一点,
+这篇博客以后有时间也会补充</p>
+<h2 id="phase-0x1">Phase 0x1</h2>
+<p><code>Border relations with Canada have never been better.</code>
+根据调用约定, gdb 直接读 <code>phase_1()</code> 的 <code>$rdi</code>
+即可.</p>
+<h2 id="phase-0x2">Phase 0x2</h2>
+<p><code>1 2 4 8 16 32</code> 利用断点跳到 <code>read_six_number</code>
+后, 发现核心代码 <code>add %eax %eax</code>, 即不断 <span class="math inline">\(\times 2\)</span></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/12/14/CSAPP-Lab-Bomb/#more" rel="contents">
