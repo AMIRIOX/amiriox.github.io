@@ -22,25 +22,27 @@
 <script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
     <meta name="description" content="本文是 OSTEP (Operating System: Three Easy Pieces) 的简单笔记, 由于 OSTEP 和我写博客的叙述思路很像(日常往自己脸上贴近hhh), 所以这里就只列一个大纲供自己复习. 并且本文建立在 一条操作系统的使命 | Amiriox’s Storage 和 CSAPP3e第六章(存储器层次结构) | Amiriox’s Storage 两篇文章的叙述之上,">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Amiriox&#39;s Storage">
-<meta property="og:url" content="https://amiriox.github.io/1970/01/01/ostep/index.html">
+<meta property="og:title" content="CPU&#x2F;内存虚拟化, 调度和并发">
+<meta property="og:url" content="https://amiriox.github.io/2025/08/14/ostep/index.html">
 <meta property="og:site_name" content="Amiriox&#39;s Storage">
 <meta property="og:description" content="本文是 OSTEP (Operating System: Three Easy Pieces) 的简单笔记, 由于 OSTEP 和我写博客的叙述思路很像(日常往自己脸上贴近hhh), 所以这里就只列一个大纲供自己复习. 并且本文建立在 一条操作系统的使命 | Amiriox’s Storage 和 CSAPP3e第六章(存储器层次结构) | Amiriox’s Storage 两篇文章的叙述之上,">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="1970-01-01T00:00:00.000Z">
-<meta property="article:modified_time" content="2025-08-14T13:49:20.924Z">
+<meta property="article:published_time" content="2025-08-14T10:10:33.000Z">
+<meta property="article:modified_time" content="2025-08-14T14:06:06.810Z">
 <meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="OSTEP">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://amiriox.github.io/1970/01/01/ostep/">
+<link rel="canonical" href="https://amiriox.github.io/2025/08/14/ostep/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/1970/01/01/ostep/","path":"1970/01/01/ostep/","title":""}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/08/14/ostep/","path":"2025/08/14/ostep/","title":"CPU/内存虚拟化, 调度和并发"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title> | Amiriox's Storage</title>
+<title>CPU/内存虚拟化, 调度和并发 | Amiriox's Storage</title>
   
 
 
@@ -142,7 +144,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -199,7 +201,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/1970/01/01/ostep/">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/08/14/ostep/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/icon.jpg">
@@ -212,12 +214,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | Amiriox's Storage">
+      <meta itemprop="name" content="CPU/内存虚拟化, 调度和并发 | Amiriox's Storage">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          
+          CPU/内存虚拟化, 调度和并发
         </h1>
 
         <div class="post-meta-container">
@@ -227,15 +229,18 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：1970-01-01 08:00:00" itemprop="dateCreated datePublished" datetime="1970-01-01T08:00:00+08:00">1970-01-01</time>
+      <time title="创建时间：2025-08-14 18:10:33 / 修改时间：22:06:06" itemprop="dateCreated datePublished" datetime="2025-08-14T18:10:33+08:00">2025-08-14</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
+        <i class="far fa-folder"></i>
       </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-08-14 21:49:20" itemprop="dateModified" datetime="2025-08-14T21:49:20+08:00">2025-08-14</time>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
     </span>
 
   
@@ -484,7 +489,7 @@ target="_blank" rel="noopener" href="https://blog.m-ou.se/super-let/">Rust Tempo
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://amiriox.github.io/1970/01/01/ostep/" title="">https://amiriox.github.io/1970/01/01/ostep/</a>
+      <a href="https://amiriox.github.io/2025/08/14/ostep/" title="CPU&#x2F;内存虚拟化, 调度和并发">https://amiriox.github.io/2025/08/14/ostep/</a>
   </li>
   <li class="post-copyright-license">
       <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
@@ -515,19 +520,20 @@ target="_blank" rel="noopener" href="https://blog.m-ou.se/super-let/">Rust Tempo
   </div>
 </div>
 
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/OSTEP/" rel="tag"># OSTEP</a>
+          </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/1921/11/07/SDR2/" rel="prev" title="SDR02">
-                  <i class="fa fa-angle-left"></i> SDR02
+                <a href="/2025/07/26/driver_tutorial/" rel="prev" title="(草稿)从设备到操作系统: 如何编写驱动">
+                  <i class="fa fa-angle-left"></i> (草稿)从设备到操作系统: 如何编写驱动
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2020/11/14/CSAPP-2020-11-14/" rel="next" title="CSAPP 2020-11-14">
-                  CSAPP 2020-11-14 <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>
