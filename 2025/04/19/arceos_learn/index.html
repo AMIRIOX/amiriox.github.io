@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://amiriox.github.io/images/ArceOS_FileSystem_Final.PNG">
 <meta property="article:published_time" content="2025-04-19T07:10:50.000Z">
-<meta property="article:modified_time" content="2025-04-19T12:29:03.352Z">
+<meta property="article:modified_time" content="2025-08-14T09:42:26.339Z">
 <meta property="article:author" content="折鸦夜明け前">
 <meta property="article:tag" content="计算机科学">
 <meta property="article:tag" content="ArceOS">
@@ -137,7 +137,7 @@ Rust 的 feature 进行条件编译)</span></a></li><li class="nav-item nav-leve
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-count">45</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -233,9 +233,15 @@ Rust 的 feature 进行条件编译)</span></a></li><li class="nav-item nav-leve
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-04-19 15:10:50 / 修改时间：20:29:03" itemprop="dateCreated datePublished" datetime="2025-04-19T15:10:50+08:00">2025-04-19</time>
+      <time title="创建时间：2025-04-19 15:10:50" itemprop="dateCreated datePublished" datetime="2025-04-19T15:10:50+08:00">2025-04-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-14 17:42:26" itemprop="dateModified" datetime="2025-08-14T17:42:26+08:00">2025-08-14</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -375,7 +381,8 @@ API. 大部分 API 都非常直观, 操作相应含义的队列和任务控制�
 <ul>
 <li><span class="math inline">\(\text{vruntime}\)</span>
 最小的任务优先执行</li>
-<li>新任务的 $ $ 初始化为 <span
+<li>新任务的 <span class="math inline">\(\text{init_vruntime}\)</span>
+初始化为 <span
 class="math inline">\(min(\text{vruntime}_{tid})\)</span>,
 以便让新任务尽快被调度</li>
 <li>每次触发时钟中断对<strong>当前任务</strong>的 <span
