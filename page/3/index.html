@@ -360,7 +360,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-03-14 13:13:33" itemprop="dateModified" datetime="2025-03-14T13:13:33+08:00">2025-03-14</time>
+      <time title="修改时间：2025-08-19 00:47:09" itemprop="dateModified" datetime="2025-08-19T00:47:09+08:00">2025-08-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -388,7 +388,6 @@
 <p>我对了,我今天把这一篇补完了</p>
 <p>感觉是本书最难理解和应用的一章,
 所以得多花点功夫尽可能深入理解了然后写的好一点</p>
-<h2 id="影响优化的细节">影响优化的细节</h2>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/02/23/CSAPP-2025-02-23/#more" rel="contents">
@@ -459,7 +458,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-03-18 19:19:25" itemprop="dateModified" datetime="2025-03-18T19:19:25+08:00">2025-03-18</time>
+      <time title="修改时间：2025-08-19 00:47:38" itemprop="dateModified" datetime="2025-08-19T00:47:38+08:00">2025-08-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -485,27 +484,7 @@
 存储器层次结构(摘要与注解)</h1>
 <p>这一章也很好理解, 重点解释一些不太好理解或者书上介绍不是很清楚的地方,
 然后列大纲用于以后复习看。</p>
-<h2 id="存储器分类">存储器分类</h2>
-<p>当前存储技术主要可以做以下分类:</p>
-<ol type="1">
-<li>RAM 随机访问储存器, 断电后数据会消失
-<ol type="1">
-<li>SRAM, 静态随机范围储存器, 例如 CPU 的 <code>L1/L2/L3</code> 缓存,
-每个单元是六晶体管电路</li>
-<li>DRAM, 动态随机范围存储器,
-每个单元是一晶体管电路。我们常用的主存一般是双倍数据速率同步的 DRAM
-(Double Data-Rate DRAM), 这是 DDR 内存的实际传输情况一般要频率乘 2
-(有的会用 MT/s 作单位, 除以 2 就是频率)</li>
-</ol></li>
-<li>ROM, 名字不重要, 一般可以读也可以写, 非易失性的
-<ol type="1">
-<li>PROM, 可编程 ROM, 只能被编程一次</li>
-<li>EPROM, 可擦写可编程 ROM</li>
-<li>EEPROM, 电子可擦写可编程 ROM, 一般每个单元会在编程 <span class="math inline">\(10^5\)</span> 次后失效</li>
-<li>闪存, 基于 EEPROM, 我们用的固态硬盘中的颗粒就是这个</li>
-</ol></li>
-<li>旋转磁盘</li>
-</ol>
+<p>(UPD 做完 cache lab 后: 还是不太好理解的, cache lab 难度不小)</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/02/19/CSAPP-2025-02-20/#more" rel="contents">
@@ -576,7 +555,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-05-27 17:48:46" itemprop="dateModified" datetime="2025-05-27T17:48:46+08:00">2025-05-27</time>
+      <time title="修改时间：2025-08-19 00:47:49" itemprop="dateModified" datetime="2025-08-19T00:47:49+08:00">2025-08-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -604,6 +583,9 @@
 <p>另外 section 的翻译易引起歧义, 这里不作翻译</p>
 <h2 id="静态链接">静态链接:</h2>
 <p>静态链接包括两个阶段, 符号解析和重定位:</p>
+<h3 id="符号解析">符号解析</h3>
+<p>符号解析是要把每一个符号引用与符号定义联系起来</p>
+<p>首先要理解可重定向文件的各个 section</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/02/19/CSAPP-2025-02-19/#more" rel="contents">
@@ -674,7 +656,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-03-05 22:18:50" itemprop="dateModified" datetime="2025-03-05T22:18:50+08:00">2025-03-05</time>
+      <time title="修改时间：2025-08-19 00:40:40" itemprop="dateModified" datetime="2025-08-19T00:40:40+08:00">2025-08-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -699,10 +681,6 @@
           <p>在做 Codeforces Educational Round 169 D Colored Portals 时，需要找到
 i 前面距离 i 最近的颜色不完全相同但也不完全不同的 j，我随手写了个</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> vector&lt;string&gt; type = &#123;<span class="string">&quot;BG&quot;</span>, <span class="string">&quot;BR&quot;</span>, <span class="string">&quot;BY&quot;</span>, <span class="string">&quot;GR&quot;</span>, <span class="string">&quot;GY&quot;</span>, <span class="string">&quot;RY&quot;</span>&#125;;</span><br><span class="line">map&lt;string, <span class="type">int</span>&gt; m;</span><br><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">lc</span><span class="params">(n, <span class="number">-1</span>)</span>, <span class="title">rc</span><span class="params">(n, <span class="number">-1</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">    <span class="keyword">auto</span> condi = m | <span class="built_in">filter</span>([&amp;](<span class="type">const</span> <span class="keyword">auto</span> &amp;p) &#123; <span class="keyword">return</span> p.first != in[i] &amp;&amp; <span class="built_in">has_same</span>(p.first, in[i]); &#125;);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">auto</span> lci = ranges::<span class="built_in">max_element</span>(</span><br><span class="line">                condi, [](<span class="type">const</span> <span class="keyword">auto</span> &amp;a, <span class="type">const</span> <span class="keyword">auto</span> &amp;b) &#123; <span class="keyword">return</span> a.second &lt; b.second; &#125;);</span><br><span class="line">            lci != ranges::<span class="built_in">end</span>(condi)) &#123;</span><br><span class="line">            lc[i] = lci-&gt;second;</span><br><span class="line">    &#125;</span><br><span class="line">    m[in[i]] = i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后吐槽了下 C++ 没有 <code>.iter().filter()</code> 或者
-<code>.iter().map()</code> 这种写法</p>
-<p>于是我就建了个 D.rs 写了个 Rust 版本的:</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::collections::HashMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">has_same</span>(a: &amp;[<span class="type">char</span>; <span class="number">2</span>], b: &amp;[<span class="type">char</span>; <span class="number">2</span>]) <span class="punctuation">-&gt;</span> <span class="type">bool</span> &#123;</span><br><span class="line">    (a[<span class="number">0</span>] == b[<span class="number">0</span>] || a[<span class="number">0</span>] == b[<span class="number">1</span>]) || (a[<span class="number">1</span>] == b[<span class="number">0</span>] || a[<span class="number">1</span>] == b[<span class="number">1</span>])</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">n</span> : <span class="type">usize</span> = <span class="number">4</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">inv</span> : <span class="type">Vec</span>&lt;[<span class="type">char</span>; <span class="number">2</span>]&gt; = <span class="built_in">vec!</span>[[<span class="string">&#x27;B&#x27;</span>, <span class="string">&#x27;R&#x27;</span>], [<span class="string">&#x27;B&#x27;</span>, <span class="string">&#x27;R&#x27;</span>], [<span class="string">&#x27;G&#x27;</span>, <span class="string">&#x27;Y&#x27;</span>], [<span class="string">&#x27;G&#x27;</span>, <span class="string">&#x27;R&#x27;</span>]]; <span class="comment">// simple</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">map</span> : HashMap&lt;[<span class="type">char</span>; <span class="number">2</span>], <span class="type">i32</span>&gt; = HashMap::<span class="title function_ invoke__">new</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">lc</span> = <span class="built_in">vec!</span>[-<span class="number">1</span>; n];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">0usize</span>..n &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(lci) = map.<span class="title function_ invoke__">iter</span>()</span><br><span class="line">            .<span class="title function_ invoke__">filter</span>(|(key, _)| *key != &amp;inv[i] &amp;&amp; <span class="title function_ invoke__">has_same</span>(key, &amp;inv[i]))</span><br><span class="line">            .<span class="title function_ invoke__">max_by</span>(|a, b| a.<span class="number">1</span>.<span class="title function_ invoke__">cmp</span>(&amp;b.<span class="number">1</span>)) &#123;</span><br><span class="line">            lc[i] = *lci.<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        map.<span class="title function_ invoke__">insert</span>(inv[i].<span class="title function_ invoke__">clone</span>(), i <span class="keyword">as</span> <span class="type">i32</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, lc);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/01/31/problem-rust-ref/#more" rel="contents">
@@ -773,7 +751,7 @@ i 前面距离 i 最近的颜色不完全相同但也不完全不同的 j，我�
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-02-20 23:40:17" itemprop="dateModified" datetime="2025-02-20T23:40:17+08:00">2025-02-20</time>
+      <time title="修改时间：2025-08-19 00:47:58" itemprop="dateModified" datetime="2025-08-19T00:47:58+08:00">2025-08-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -797,7 +775,9 @@ i 前面距离 i 最近的颜色不完全相同但也不完全不同的 j，我�
     <div class="post-body" itemprop="articleBody">
           <h1 id="整数的运算第二章-part2">整数的运算(第二章 Part2)</h1>
 <h2 id="无符号数加法溢出">无符号数加法溢出</h2>
-<p>无符号的数的加法溢出规则很简单, 单纯截取后 <span class="math inline">\(w\)</span> 位, 或称对 <span class="math inline">\(2^w\)</span> 取模。因此:</p>
+<p>无符号的数的加法溢出规则很简单, 单纯截取后 <span
+class="math inline">\(w\)</span> 位, 或称对 <span
+class="math inline">\(2^w\)</span> 取模。因此:</p>
 <p><span class="math display">\[
 x\ +_w^u\ y =
 \begin{cases}
@@ -805,7 +785,18 @@ x\ +_w^u\ y =
     x + y - 2^w, &amp; 2^w \leq x + y &lt; 2^{w+1}.
 \end{cases}
 \]</span></p>
-<p>(<span class="math inline">\(+_w^u\)</span> 表示最多 <span class="math inline">\(w\)</span> 位下的二进制无符号数加法。下文<span class="math inline">\(+_w^t\)</span> 即 <span class="math inline">\(w\)</span> 位补码加法)</p>
+<p>(<span class="math inline">\(+_w^u\)</span> 表示最多 <span
+class="math inline">\(w\)</span> 位下的二进制无符号数加法。下文<span
+class="math inline">\(+_w^t\)</span> 即 <span
+class="math inline">\(w\)</span> 位补码加法)</p>
+<h2 id="检验无符号数加法溢出">检验无符号数加法溢出</h2>
+<p>若 <span class="math inline">\(s = x +_w^u y\)</span>, 当且仅当 <span
+class="math inline">\(s &lt; x\)</span> （或等价地 <span
+class="math inline">\(s &lt; y\)</span>） 时发生溢出。</p>
+<p>(当然, 默认 <span class="math inline">\(x\)</span> 和 <span
+class="math inline">\(y\)</span> 本身不会溢出, 即在 <span
+class="math inline">\([0, UMax_w]\)</span> 的范围内)</p>
+<p>原理易证, 分别证明充分性必要性即可, 注意利用以上公式</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/01/25/CSAPP-2025-01-25/#more" rel="contents">
@@ -876,7 +867,7 @@ x\ +_w^u\ y =
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-08-04 01:07:37" itemprop="dateModified" datetime="2025-08-04T01:07:37+08:00">2025-08-04</time>
+      <time title="修改时间：2025-08-19 00:48:51" itemprop="dateModified" datetime="2025-08-19T00:48:51+08:00">2025-08-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -899,10 +890,24 @@ x\ +_w^u\ y =
     
     <div class="post-body" itemprop="articleBody">
           <h1 id="整数的表示第二章-part1">整数的表示(第二章 Part1)</h1>
-<p><del>博客还没装 Mathjax 插件，所以下面的 <span class="math inline">\(\LaTeX\)</span> 应该都是乱的</del> 已修</p>
+<p><del>博客还没装 Mathjax 插件，所以下面的 <span
+class="math inline">\(\LaTeX\)</span> 应该都是乱的</del> 已修</p>
 <h2 id="整数表示">整数表示</h2>
 <p>这一段如果没有目的和顺序地硬看会觉得关系很多很复杂，但其实只要按照一定的目的和顺序结构就会很清晰。</p>
 <h3 id="以设计者的视角思考如何设计">以设计者的视角思考如何设计</h3>
+<p>如果我们是设计用二进制表示整数的人，我们需要如何表示二进制？</p>
+<p>利用 <span class="math inline">\(w\)</span> 位二进制的最高位 $
+x_{w-1} $ 为 <span class="math inline">\(1\)</span>
+代表这个数是负数，剩下的部分正常用二进制表示即 <span
+class="math inline">\(\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i\)</span></p>
+<p>但显然光表示是完全不够的，我们还需要运算，<strong>而符号位由于不对具体数值做贡献，会导致运算错误。</strong>
+因此我们需要让符号位也代表数值，用另一种映射方式计算，于是我们令最高位的符号位具有负的权重
+<span class="math inline">\(-x_{w-1} \cdot
+2^{w-1}\)</span>，这样符号位也参与了计算。但是这样数值又对不上了，因此我们需要把后面的位也变一下。由于我们不是真的设计师，所以我们直接看答案：取反后面的每一位后再
++1。例如<code>10010</code><strong>除符号位</strong>取反后变为<code>11101</code>，
++1后是<code>11110</code>。这样的表示方法计算出的数值是 <span
+class="math inline">\(-x_{w-1}\cdot2^{w-1}+\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i\)</span>
+如何论证这样的数值是”对”的呢？</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/01/19/CSAPP-2025-01-19/#more" rel="contents">
@@ -973,7 +978,7 @@ x\ +_w^u\ y =
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-02-14 00:11:18" itemprop="dateModified" datetime="2025-02-14T00:11:18+08:00">2025-02-14</time>
+      <time title="修改时间：2025-08-19 00:51:24" itemprop="dateModified" datetime="2025-08-19T00:51:24+08:00">2025-08-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1072,7 +1077,7 @@ x\ +_w^u\ y =
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-08-04 22:36:13" itemprop="dateModified" datetime="2025-08-04T22:36:13+08:00">2025-08-04</time>
+      <time title="修改时间：2025-08-19 00:51:34" itemprop="dateModified" datetime="2025-08-19T00:51:34+08:00">2025-08-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1103,7 +1108,15 @@ x\ +_w^u\ y =
 即可.</p>
 <h2 id="phase-0x2">Phase 0x2</h2>
 <p><code>1 2 4 8 16 32</code> 利用断点跳到 <code>read_six_number</code>
-后, 发现核心代码 <code>add %eax %eax</code>, 即不断 <span class="math inline">\(\times 2\)</span></p>
+后, 发现核心代码 <code>add %eax %eax</code>, 即不断 <span
+class="math inline">\(\times 2\)</span></p>
+<h2 id="phase-0x3">Phase 0x3</h2>
+<p><code>5 206</code> <code>rsp+8</code>, <code>rsp+12</code>
+分别是输入的两个数, <code>int</code> 占四字节.</p>
+<p>发现一堆 <code>mov</code>, <code>jmp</code>, 里只有第五个的差能整除
+<span class="math inline">\(8\)</span> 并且 <code>mov</code> 过去的值是
+<code>206</code></p>
+<p>(最后几行是核心代码 <code>cmp 0xc(%rsp), %eax</code>)</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/12/14/CSAPP-Lab-Bomb/#more" rel="contents">

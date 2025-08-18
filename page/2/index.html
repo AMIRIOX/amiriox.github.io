@@ -360,7 +360,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-08-14 17:42:26" itemprop="dateModified" datetime="2025-08-14T17:42:26+08:00">2025-08-14</time>
+      <time title="修改时间：2025-08-19 00:51:44" itemprop="dateModified" datetime="2025-08-19T00:51:44+08:00">2025-08-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -459,9 +459,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-04-19 11:19:06 / 修改时间：20:30:06" itemprop="dateCreated datePublished" datetime="2025-04-19T11:19:06+08:00">2025-04-19</time>
+      <time title="创建时间：2025-04-19 11:19:06" itemprop="dateCreated datePublished" datetime="2025-04-19T11:19:06+08:00">2025-04-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-19 00:40:13" itemprop="dateModified" datetime="2025-08-19T00:40:13+08:00">2025-08-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -488,9 +494,6 @@ Rust 特性</h1>
 <p>oscamp 第一阶段的 rustlings 总结, 但因为去年写过一次 rustlings 了,
 题目比较基础(<del>除了最后的算法和数据结构实现有点麻烦</del>)之前也接触过不少
 Rust, 所以这次是总结一下二三阶段中特别需要的 Rust 特性</p>
-<h2 id="结构体和枚举">结构体和枚举</h2>
-<p>注意<strong>元组结构体</strong></p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">TupleStruct</span>(<span class="type">u32</span>, <span class="type">u32</span>, <span class="type">u32</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">tuple_obj</span> = TupleStruct &#123;<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>&#125;;</span><br><span class="line"><span class="built_in">assert!</span>(tuple_obj.<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">UnitStruct</span>;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/04/19/rustlings/#more" rel="contents">
@@ -561,7 +564,7 @@ Rust, 所以这次是总结一下二三阶段中特别需要的 Rust 特性</p>
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-05-27 17:47:57" itemprop="dateModified" datetime="2025-05-27T17:47:57+08:00">2025-05-27</time>
+      <time title="修改时间：2025-08-19 00:40:29" itemprop="dateModified" datetime="2025-08-19T00:40:29+08:00">2025-08-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -589,12 +592,6 @@ Rust, 所以这次是总结一下二三阶段中特别需要的 Rust 特性</p>
 从批处理系统到分时多任务系统, 包括地址空间/进程/文件系统的实现,
 最后实现多线程以及同步互斥的各种机制.</p>
 <p>暂时集中在一篇文章里, 以后有需要再分章节记录</p>
-<h2 id="运行环境配置">运行环境配置</h2>
-<p>用 Rust 开发操作系统内核源代码, 通过 <code>rustc</code> 交叉编译到
-<code>riscv64gc-unknown-none-elf</code> (一般情况下是
-<code>x86_64-unknown-linux-gnu</code>), 通过 <code>rust-objcopy</code>
-提取出 bin, 然后放到 <code>qemu-system-riscv64</code> 模拟器进行模拟,
-大概是这么个工具链.</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/03/26/rCore_learn/#more" rel="contents">
@@ -665,7 +662,7 @@ Rust, 所以这次是总结一下二三阶段中特别需要的 Rust 特性</p>
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-06-20 13:09:00" itemprop="dateModified" datetime="2025-06-20T13:09:00+08:00">2025-06-20</time>
+      <time title="修改时间：2025-08-19 00:46:51" itemprop="dateModified" datetime="2025-08-19T00:46:51+08:00">2025-08-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -689,17 +686,15 @@ Rust, 所以这次是总结一下二三阶段中特别需要的 Rust 特性</p>
     <div class="post-body" itemprop="articleBody">
           <h1 id="csapp3e第四章处理器体系结构">CSAPP3e第四章(处理器体系结构)</h1>
 <p>这一章理解难度不大, 但是内容很多, 比较复杂,
-你可能读着读着时而觉得”我去这简直是艺术品”时而觉得”我他妈快睡着了”。</p>
+读着读着时而觉得”我艹这简直是艺术品”时而觉得”我他妈快睡着了”。</p>
 <h2 id="指令集体系结构">指令集体系结构</h2>
 <ul>
-<li>指令集与指令编码<br>
+<li>指令集与指令编码<br />
 <code>pushq</code>/<code>popq</code>二义性(数据操作在外侧,
 栈指针变化在内测)</li>
 <li>编码寄存器</li>
 <li>异常处理</li>
 </ul>
-<h2 id="描述体系结构的方法-硬件设计语言-hcl">描述体系结构的方法:
-硬件设计语言 HCL</h2>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/03/13/CSAPP-2025-03-13/#more" rel="contents">

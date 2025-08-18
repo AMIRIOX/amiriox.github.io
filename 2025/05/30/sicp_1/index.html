@@ -20,18 +20,18 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
-    <meta name="description" content="程序设计需要考虑的基本元素  基本的表达形式: 基本的数据表达与基本的过程表达 组合的方法: 将基本表达组合起来构成复合的元素, 如 Lisp 的组合式 抽象的方法: 为复合对象命名, 从一个新的抽象层次操作非基本单元  在 lisp (SICP 使用 scheme 方言) 中有如下体现: 上述概念在 Lisp 的体现 表达式:">
+    <meta name="description" content="程序设计需要考虑的基本元素  基本的表达形式: 基本的数据表达与基本的过程表达 组合的方法: 将基本表达组合起来构成复合的元素, 如 Lisp 的组合式 抽象的方法: 为复合对象命名, 从一个新的抽象层次操作非基本单元  在 lisp (SICP 使用 scheme 方言) 中有如下体现:">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SICP 第一章(构造过程抽象)">
 <meta property="og:url" content="https://amiriox.github.io/2025/05/30/sicp_1/index.html">
 <meta property="og:site_name" content="Amiriox&#39;s Storage">
-<meta property="og:description" content="程序设计需要考虑的基本元素  基本的表达形式: 基本的数据表达与基本的过程表达 组合的方法: 将基本表达组合起来构成复合的元素, 如 Lisp 的组合式 抽象的方法: 为复合对象命名, 从一个新的抽象层次操作非基本单元  在 lisp (SICP 使用 scheme 方言) 中有如下体现: 上述概念在 Lisp 的体现 表达式:">
+<meta property="og:description" content="程序设计需要考虑的基本元素  基本的表达形式: 基本的数据表达与基本的过程表达 组合的方法: 将基本表达组合起来构成复合的元素, 如 Lisp 的组合式 抽象的方法: 为复合对象命名, 从一个新的抽象层次操作非基本单元  在 lisp (SICP 使用 scheme 方言) 中有如下体现:">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://amiriox.github.io/images/image-20250530113707542.png">
 <meta property="og:image" content="https://amiriox.github.io/images/image-20250530124016847.png">
 <meta property="og:image" content="https://amiriox.github.io/images/image-20250530123735194.png">
 <meta property="article:published_time" content="2025-05-30T00:17:39.000Z">
-<meta property="article:modified_time" content="2025-05-30T04:46:51.897Z">
+<meta property="article:modified_time" content="2025-08-18T16:39:53.400Z">
 <meta property="article:author" content="折鸦夜明け前">
 <meta property="article:tag" content="计算机科学">
 <meta property="article:tag" content="SICP">
@@ -233,9 +233,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-05-30 08:17:39 / 修改时间：12:46:51" itemprop="dateCreated datePublished" datetime="2025-05-30T08:17:39+08:00">2025-05-30</time>
+      <time title="创建时间：2025-05-30 08:17:39" itemprop="dateCreated datePublished" datetime="2025-05-30T08:17:39+08:00">2025-05-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-19 00:39:53" itemprop="dateModified" datetime="2025-08-19T00:39:53+08:00">2025-08-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -271,6 +277,7 @@
 <li>抽象的方法: 为复合对象命名, 从一个新的抽象层次操作非基本单元</li>
 </ol>
 <p>在 lisp (SICP 使用 scheme 方言) 中有如下体现:</p>
+<span id="more"></span>
 <h2 id="上述概念在-lisp-的体现">上述概念在 Lisp 的体现</h2>
 <h3 id="表达式">表达式:</h3>
 <p><strong>基本表达式</strong>(如数这样的自求值原子表达式 或
