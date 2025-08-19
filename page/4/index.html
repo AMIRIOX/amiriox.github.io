@@ -128,7 +128,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">47</span>
+          <span class="site-state-item-count">48</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -315,6 +315,116 @@
       }
     }
   </script>
+      
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2024/12/14/CSAPP-Lab-Bomb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/12/14/CSAPP-Lab-Bomb/" class="post-title-link" itemprop="url">CSAPP Bomb Lab 达成</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-12-14 19:58:00" itemprop="dateCreated datePublished" datetime="2024-12-14T19:58:00+08:00">2024-12-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-19 00:51:34" itemprop="dateModified" datetime="2025-08-19T00:51:34+08:00">2025-08-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>这是我第一个完成的 lab, 这篇博客其实是边做边记的解决过程改的,
+所以比较简略, 其他 Lab 的记录博客会详细一点,
+这篇博客以后有时间也会补充</p>
+<h2 id="phase-0x1">Phase 0x1</h2>
+<p><code>Border relations with Canada have never been better.</code>
+根据调用约定, gdb 直接读 <code>phase_1()</code> 的 <code>$rdi</code>
+即可.</p>
+<h2 id="phase-0x2">Phase 0x2</h2>
+<p><code>1 2 4 8 16 32</code> 利用断点跳到 <code>read_six_number</code>
+后, 发现核心代码 <code>add %eax %eax</code>, 即不断 <span
+class="math inline">\(\times 2\)</span></p>
+<h2 id="phase-0x3">Phase 0x3</h2>
+<p><code>5 206</code> <code>rsp+8</code>, <code>rsp+12</code>
+分别是输入的两个数, <code>int</code> 占四字节.</p>
+<p>发现一堆 <code>mov</code>, <code>jmp</code>, 里只有第五个的差能整除
+<span class="math inline">\(8\)</span> 并且 <code>mov</code> 过去的值是
+<code>206</code></p>
+<p>(最后几行是核心代码 <code>cmp 0xc(%rsp), %eax</code>)</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/12/14/CSAPP-Lab-Bomb/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
       
 
 
@@ -1298,109 +1408,6 @@ master(下面会说) ## 场景二: 开发者A写了一个功能,然后提交到�
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/11/20/GIT_1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-      
-
-
-<div class="post-block">
-
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2020/11/20/VSCODE_EXTENSION_1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/icon.jpg">
-      <meta itemprop="name" content="折鸦夜明け前">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Amiriox's Storage">
-      <meta itemprop="description" content="世界再大 不过是些代价">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Amiriox's Storage">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/11/20/VSCODE_EXTENSION_1/" class="post-title-link" itemprop="url">VSCODE 扩展开发 01</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-11-20 00:00:00" itemprop="dateCreated datePublished" datetime="2020-11-20T00:00:00+08:00">2020-11-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-02-14 00:17:08" itemprop="dateModified" datetime="2025-02-14T00:17:08+08:00">2025-02-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%89%A9%E5%B1%95%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">扩展开发</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>此文章的 <em>撰写时间</em> <em>撰写日期</em> 绝对有问题</p>
-</blockquote>
-<blockquote>
-<p>此文章的部分图片可能无法加载。这是因为大概这一版的博客搭建在云服务器上所以图片没有用图床<br>
-<del>为什么呢？难道云服务器流量不要钱吗？白嫖图床不好吗？</del></p>
-</blockquote>
-<p>开新坑了,<code>VSCode: 扩展开发攻略</code>系列主要介绍如何从零开始(<strong>不需要Js/TS基础</strong>)开发一个VSCode插件</p>
-<h1 id="序-写在前面的废话">序: 写在前面的废话</h1>
-<p>由于<del>英语不好</del>谷歌翻译后的<a target="_blank" rel="noopener" href="https://code.visualstudio.com/api">官方文档</a>
-很迷惑,我就打算自己简单翻翻看 翻一下 顺便加上一些注解</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/20/VSCODE_EXTENSION_1/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
