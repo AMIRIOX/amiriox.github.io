@@ -128,7 +128,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-count">50</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -315,6 +315,216 @@
       }
     }
   </script>
+      
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/01/19/CSAPP-2025-01-19/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/01/19/CSAPP-2025-01-19/" class="post-title-link" itemprop="url">CSAPP3e第二章(整数的表示)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-01-19 10:43:30" itemprop="dateCreated datePublished" datetime="2025-01-19T10:43:30+08:00">2025-01-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-19 00:48:51" itemprop="dateModified" datetime="2025-08-19T00:48:51+08:00">2025-08-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="整数的表示第二章-part1">整数的表示(第二章 Part1)</h1>
+<p><del>博客还没装 Mathjax 插件，所以下面的 <span
+class="math inline">\(\LaTeX\)</span> 应该都是乱的</del> 已修</p>
+<h2 id="整数表示">整数表示</h2>
+<p>这一段如果没有目的和顺序地硬看会觉得关系很多很复杂，但其实只要按照一定的目的和顺序结构就会很清晰。</p>
+<h3 id="以设计者的视角思考如何设计">以设计者的视角思考如何设计</h3>
+<p>如果我们是设计用二进制表示整数的人，我们需要如何表示二进制？</p>
+<p>利用 <span class="math inline">\(w\)</span> 位二进制的最高位 $
+x_{w-1} $ 为 <span class="math inline">\(1\)</span>
+代表这个数是负数，剩下的部分正常用二进制表示即 <span
+class="math inline">\(\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i\)</span></p>
+<p>但显然光表示是完全不够的，我们还需要运算，<strong>而符号位由于不对具体数值做贡献，会导致运算错误。</strong>
+因此我们需要让符号位也代表数值，用另一种映射方式计算，于是我们令最高位的符号位具有负的权重
+<span class="math inline">\(-x_{w-1} \cdot
+2^{w-1}\)</span>，这样符号位也参与了计算。但是这样数值又对不上了，因此我们需要把后面的位也变一下。由于我们不是真的设计师，所以我们直接看答案：取反后面的每一位后再
++1。例如<code>10010</code><strong>除符号位</strong>取反后变为<code>11101</code>，
++1后是<code>11110</code>。这样的表示方法计算出的数值是 <span
+class="math inline">\(-x_{w-1}\cdot2^{w-1}+\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i\)</span>
+如何论证这样的数值是”对”的呢？</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/01/19/CSAPP-2025-01-19/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+      
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2024/12/29/CSAPP-Lab-Attack/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/12/29/CSAPP-Lab-Attack/" class="post-title-link" itemprop="url">CSAPP Attack Lab 笔记</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-12-29 21:53:00" itemprop="dateCreated datePublished" datetime="2024-12-29T21:53:00+08:00">2024-12-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-19 00:51:24" itemprop="dateModified" datetime="2025-08-19T00:51:24+08:00">2025-08-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="phase-0x1">Phase 0x1</h2>
+<p>一个练手的，要求通过缓冲区栈溢出攻击来调用 touch1</p>
+<p><code>gdb ctarget</code> 然后 <code>set args -q</code>
+防止与不存在的服务器通信（<code>run -q</code> 也可以)
+<code>b Gets</code> <code>run -q</code></p>
+<p>看一下栈信息:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">────────────────────────[ STACK ]────────────────────────</span><br><span class="line">00:0000│ rsp 0x5561dc70 —▸ 0x4017b4 (getbuf+12) ◂— movl $1, %eax</span><br><span class="line">01:0008│ rdi 0x5561dc78 ◂— 0</span><br><span class="line">... ↓        3 skipped</span><br><span class="line">05:0028│     0x5561dc98 —▸ 0x55586000 ◂— 0</span><br><span class="line">06:0030│     0x5561dca0 —▸ 0x401976 (test+14) ◂— movl %eax, %edx</span><br><span class="line">07:0038│     0x5561dca8 —▸ 0x55685fe8 —▸ 0x402fa5 ◂— pushq $0x3a6971 /* &#x27;hqi:&#x27; */</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/12/29/CSAPP-Lab-Attack/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
       
 
 
@@ -1197,217 +1407,6 @@ T_{old} + (a\times T_{old})/k}=\frac{1}{(1-a)+a/k}\]</span></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/11/20/CSAPP-2020-11-20/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-      
-
-
-<div class="post-block">
-
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2020/11/20/CSSC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/icon.jpg">
-      <meta itemprop="name" content="折鸦夜明け前">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Amiriox's Storage">
-      <meta itemprop="description" content="世界再大 不过是些代价">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Amiriox's Storage">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/11/20/CSSC/" class="post-title-link" itemprop="url">Crash Course Computer Science</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-11-20 00:00:00" itemprop="dateCreated datePublished" datetime="2020-11-20T00:00:00+08:00">2020-11-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-02-14 00:22:17" itemprop="dateModified" datetime="2025-02-14T00:22:17+08:00">2025-02-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>此文章的 <em>撰写时间</em> <em>撰写时间</em> 可能有误</p>
-</blockquote>
-<p>继电器|真空管|晶体管</p>
-<p>def <code>‘a new level of abstraction’</code>
-<code>[-=&gt;]</code></p>
-<p>晶体管 [=&gt;] 逻辑门（AND/OR/XOR/NOT）[=&gt;] 半加器/全加器 [=&gt;]
-ALU</p>
-<p>晶体管 [=&gt;] 逻辑门（AND/OR/XOR/NOT）[=&gt;] 锁存器/门锁 [=&gt;]
-寄存器 + （并列|矩阵）+ 多路复用器 -&gt; SRAM （definition linking to
-<code>RAM</code>）</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/20/CSSC/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-      
-
-
-<div class="post-block">
-
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2020/11/20/GIT_1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/icon.jpg">
-      <meta itemprop="name" content="折鸦夜明け前">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Amiriox's Storage">
-      <meta itemprop="description" content="世界再大 不过是些代价">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Amiriox's Storage">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/11/20/GIT_1/" class="post-title-link" itemprop="url">Git 版本控制</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-11-20 00:00:00" itemprop="dateCreated datePublished" datetime="2020-11-20T00:00:00+08:00">2020-11-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-08-19 00:41:52" itemprop="dateModified" datetime="2025-08-19T00:41:52+08:00">2025-08-19</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">软件工程</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>此文章的 <em>撰写时间</em> <em>撰写日期</em> 绝对有问题</p>
-</blockquote>
-<blockquote>
-<p>此文章 没有写完</p>
-</blockquote>
-<h1 id="了解git">了解Git:</h1>
-<blockquote>
-<p>Git是一个版本控制系统. 常用场景如下 ## 场景一:
-程序员A写了个功能,但写好后怎么交?直接替换文件?非也 直接git merge
-master(下面会说) ## 场景二: 开发者A写了一个功能,然后提交到开发环境
-开发者B发现开发者A代码里的一个bug,修好后提交到开发环境
-开发者B修bug时写出了一个bug,只好返回原来版本(即下面要说的checkout)修bug</p>
-</blockquote>
-<p>总之, git是一个在不断更新产品/修复bug过程中倒腾版本的东西
-当然,也可以和github.com或gitee.com等代码托管平台(远程仓库)配合</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/20/GIT_1/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

@@ -128,7 +128,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-count">50</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -315,6 +315,216 @@
       }
     }
   </script>
+      
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/06/17/sicp_2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/06/17/sicp_2/" class="post-title-link" itemprop="url">SICP 第二章(构造数据抽象)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-06-17 16:24:39" itemprop="dateCreated datePublished" datetime="2025-06-17T16:24:39+08:00">2025-06-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-19 00:40:02" itemprop="dateModified" datetime="2025-08-19T00:40:02+08:00">2025-08-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">编程语言理论</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="复合数据">复合数据</h2>
+<p>在实际的程序设计中(模拟数学或现实系统),
+操作(过程)要应用到的数据往往不是一个单独的基本类型数据,
+而是多个基本类型数据复合起来的: 例如分数是由分子和分母确定起来的,
+单一的分子和分母都不能称为分数.
+而将分子和分母以某种方式复合起来比单独管理分子和分母具有更强的可读性,
+减少了编码中的精力消耗;
+同时加强分子和分母之间的关系(分子和分母的关系应当强于这两个符号之于别的数据的关系)也符合某种(<del>哲学上的</del>)道理.</p>
+<p>为此, 我们需要构造一种抽象使得这两个数据被复合起来:</p>
+<ul>
+<li>首先要有构造函数, 将这分子和分母复合为另一个新的数据</li>
+<li>然后还要有选择函数,
+因为在实际操作中我们需要操作分子和分母本身(来模拟分数的运算)而不是分数本身</li>
+<li>最后,
+分子和分母及其操作应当符合某些规则(即数学上分数运算上的规则)</li>
+</ul>
+<p>这就是复合数据的需求: 将数据定义为一组适当的选择函数和构造函数,
+以及为了使得这些过程成为一套合法表示, 它们就必须满足一组特定的条件.</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/06/17/sicp_2/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+      
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/05/30/sicp_1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/05/30/sicp_1/" class="post-title-link" itemprop="url">SICP 第一章(构造过程抽象)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-05-30 08:17:39" itemprop="dateCreated datePublished" datetime="2025-05-30T08:17:39+08:00">2025-05-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-19 00:39:53" itemprop="dateModified" datetime="2025-08-19T00:39:53+08:00">2025-08-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">编程语言理论</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="程序设计需要考虑的基本元素">程序设计需要考虑的基本元素</h2>
+<ol type="1">
+<li>基本的表达形式:
+<strong>基本的数据表达</strong>与<strong>基本的过程表达</strong></li>
+<li>组合的方法: 将基本表达组合起来构成复合的元素, 如 Lisp 的组合式</li>
+<li>抽象的方法: 为复合对象命名, 从一个新的抽象层次操作非基本单元</li>
+</ol>
+<p>在 lisp (SICP 使用 scheme 方言) 中有如下体现:</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/05/30/sicp_1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
       
 
 
@@ -769,7 +979,7 @@ Rust, 所以这次是总结一下二三阶段中特别需要的 Rust 特性</p>
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-08-19 00:46:51" itemprop="dateModified" datetime="2025-08-19T00:46:51+08:00">2025-08-19</time>
+      <time title="修改时间：2025-08-29 19:54:10" itemprop="dateModified" datetime="2025-08-29T19:54:10+08:00">2025-08-29</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
