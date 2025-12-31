@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="上一篇博客: 数据库系统的基本概念 | Amiriox’s Storage 存储管理: 数据存储模型 上一篇博客提到了数据库管理系统本身的抽象层次, 其中就有 Disk Manager 和 Buffer Pool Manager 作为数据库的存储管理器。 提到”数据库的数据存储方式”时, (尽管有些早)一半涉及到三个层次的存储方式: 文件的存储方式、页面内部的布局、元组的内部布局. 其中为什么需要">
+<meta property="og:type" content="article">
+<meta property="og:title" content="&lt;未完成&gt;数据库系统的数据存储方式">
+<meta property="og:url" content="https://amiriox.github.io/2025/10/19/db-15445-2-storage/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="上一篇博客: 数据库系统的基本概念 | Amiriox’s Storage 存储管理: 数据存储模型 上一篇博客提到了数据库管理系统本身的抽象层次, 其中就有 Disk Manager 和 Buffer Pool Manager 作为数据库的存储管理器。 提到”数据库的数据存储方式”时, (尽管有些早)一半涉及到三个层次的存储方式: 文件的存储方式、页面内部的布局、元组的内部布局. 其中为什么需要">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-10-19T10:07:30.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.825Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="cmu15445">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2025/10/19/db-15445-2-storage/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/10/19/db-15445-2-storage/","path":"2025/10/19/db-15445-2-storage/","title":"\u003c未完成>数据库系统的数据存储方式"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title><未完成>数据库系统的数据存储方式 | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86-%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">存储管理: 数据存储模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F-heap-file"><span class="nav-number">1.1.</span> <span class="nav-text">文件存储方式: Heap File</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B5%E9%9D%A2%E5%B8%83%E5%B1%80"><span class="nav-number">1.2.</span> <span class="nav-text">页面布局:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#nsm%E9%9D%A2%E5%90%91%E8%A1%8C%E5%AD%98%E5%82%A8"><span class="nav-number">1.2.1.</span> <span class="nav-text">NSM&#x2F;面向行存储</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dsm%E5%88%86%E7%A6%BB%E5%BC%8F%E5%AD%98%E5%82%A8%E6%A8%A1%E5%9E%8B%E9%9D%A2%E5%90%91%E5%88%97%E5%AD%98%E5%82%A8"><span class="nav-number">1.2.2.</span> <span class="nav-text">DSM&#x2F;分离式存储模型&#x2F;面向列存储</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pax-%E6%B7%B7%E5%90%88%E5%9E%8B%E5%AD%98%E5%82%A8"><span class="nav-number">1.2.3.</span> <span class="nav-text">PAX, 混合型存储</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.</span> <span class="nav-text">具体实现结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#tuple-orientation-storage"><span class="nav-number">1.3.1.</span> <span class="nav-text">Tuple-orientation Storage</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#log-structure-storage"><span class="nav-number">1.3.2.</span> <span class="nav-text">Log Structure Storage</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#index-organization-storage"><span class="nav-number">1.3.3.</span> <span class="nav-text">Index-organization Storage</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#record-id-aka.-tuple-id"><span class="nav-number">1.4.</span> <span class="nav-text">Record ID (aka. Tuple ID)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E7%AD%96%E7%95%A5"><span class="nav-number">1.5.</span> <span class="nav-text">压缩策略:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E5%85%B6%E4%BB%96%E5%85%83%E7%BB%84%E5%86%85%E9%83%A8%E5%80%BC%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.6.</span> <span class="nav-text">处理其他元组内部值的问题:</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/10/19/db-15445-2-storage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="<未完成>数据库系统的数据存储方式 | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          <未完成>数据库系统的数据存储方式
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-10-19 18:07:30" itemprop="dateCreated datePublished" datetime="2025-10-19T18:07:30+08:00">2025-10-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>上一篇博客: <a
+target="_blank" rel="noopener" href="https://zheya.cc/2025/09/23/db-15445-1-intro/">数据库系统的基本概念
+| Amiriox’s Storage</a></p>
+<h2 id="存储管理-数据存储模型">存储管理: 数据存储模型</h2>
+<p>上一篇博客提到了数据库管理系统本身的抽象层次, 其中就有 Disk Manager
+和 Buffer Pool Manager 作为数据库的存储管理器。</p>
+<p>提到”数据库的数据存储方式”时,
+(尽管有些早)一半涉及到三个层次的存储方式:
+文件的存储方式、页面内部的布局、元组的内部布局.
+其中为什么需要文件的存储方式与元组的内部布局较好理解,
+而数据库中页面的概念将会在下面说明, 为什么数据库需要实现自己的页面.</p>
+<h3 id="文件存储方式-heap-file">文件存储方式: Heap File</h3>
+<p>您可能需要阅读 <a
+target="_blank" rel="noopener" href="https://zheya.cc/2025/02/19/CSAPP-2025-02-20/">CSAPP3e第六章(存储器层次结构)
+| Amiriox’s Storage</a>
+来对计算机存储器的层次结构的意义有一定的认识.</p>
+<p>简单来说, 由于不同存储设备的访问速度不同,
+在冯诺依曼体系的计算机不可避免地数据传输中会拖慢更快速的存储设备的效率,
+所以按照存取效率进行排序, 利用时间/空间局部性,
+将更快的存储器作为次快的存储器的缓存, 最大化利用存储器的存取效率.</p>
+<p>很显然, 数据库的数据必须是可持久化的, 也就是最终要存在文件系统上, 而
+CPU 对磁盘的访问通常较慢(尽管有 DMA),
+<del>最主要的原因是某个公司曾推出的可持久化的快速主存没能发展起来(大雾)</del>
+所以我们需要将主存作为磁盘的缓存, 利用磁盘加载到内存中的页面,
+主要的数据操作在主存中进行, 最后将修改后的(脏页)写回磁盘.
+这些页面交由执行引擎使用, 而与 Disk Manager 交互,
+提供这个页面交换功能本身的组件叫 <strong>Buffer Pool Manager</strong>
+(BPM)</p>
+<p>具体来说, 数据库的一个文件分为若干个固定大小的连续空间, 称为页,
+这个文件称之为 Heap File, 也就是一堆无序的页面的集合;
+同时还会有一页称为页目录 (Page Directory), 记录某个页在哪个 Heap File
+上的哪个偏移量(位置).</p>
+<p>当执行引擎指明我需要页号为 <span
+class="math inline">\(\text{page_id}\)</span> 的页时, BPM
+负责从磁盘中先提取 Page Directory 所在页, 解析其中的布局,
+获取到一些元信息: <span class="math inline">\(\text{page_id}\)</span>
+这一页存在哪个文件里, 偏移量是多少; 然后通过文件和便宜量找到对应页,
+加载到内存(单纯的复制). 当然, BPM 还要负责标记脏页/驱逐页面/写回等任务.
+(当然, 实现上肯定会分为不同组件, 单一职责)</p>
+<blockquote>
+<p>为什么重造轮子?</p>
+<p>以上这些东西听起来像是操作系统虚拟内存的功能, 甚至也有对应功能的实现:
+<code>sys_mmap</code> 系统调用, 映射磁盘页到内存, 标记脏页, 写回磁盘,
+甚至还有 COW, 看上去非常”最佳实践”. 事实上也的确有很多数据库完全采用
+<code>mmap</code> 系统调用来实现数据的, 但实际上 <code>mmap</code>
+会导致许多问题: * 首先,
+数据库的事务必须是原子性的(设想一个修改余额的操作进行了一半会怎么样?),
+而操作系统诞生之初就是对一些功能的封装和抽象,
+这意味着其资源管理是完全透明的(这意味着我们对其细节不可知), 具体来说,
+它可能在任何时候 flush dirty page, 我们没法控制何时把脏页写回磁盘</p>
+<ul>
+<li><p>其次, 由于操作系统对页面资源的管理完全透明,
+我们对页面是否在内存中并不了解, 每一次对页面的访问都可能导致一个 PAGE
+FAULT. 这往往是很耗时的,
+操作系统会阻塞当前线程并从磁盘加载页面到主存</p></li>
+<li><p>由于 BPM 中可能存在驱逐等操作, 会改变磁盘页到内存帧上的映射,
+在使用 <code>mmap</code> 时, 这些 page id to frame id
+的映射是在页表中的(事实上,
+有经验的开发者应该提到页表就开始敏感性能问题), 修改页表需要粒度较大的锁,
+而且为了维护多核 CPU 的缓存一致性, 修改页表的 CPU
+核心必须通过处理期间中断通知其他核心也及时更新 TLB, 造成 TLB Shootdown;
+那么使用自己的 BPM 会怎么样呢? 所有的锁都是用户态的锁(POSIX
+互斥锁的实现通常是 <code>futex</code>, 而实际上 <code>futex</code>
+的特点就是在用户态执行大部分锁操作), 不涉及任何 TLB Shootdown,
+性能很高</p>
+<p>所以手动实现一个 Buffer Pool Manager 是有意义的.</p></li>
+</ul>
+</blockquote>
+<p>之所以称这样的存储方式下的文件为 “Heap File”,
+因为其中的页只是无序地存在, 并通过 Page Directory 查询页的位置,
+没有树形组织或者哈希等应用.</p>
+<h3 id="页面布局">页面布局:</h3>
+<p>页面应该存储什么信息应当是显然的: 具体的关系表中的信息,
+以及一些元数据, 视情况可能还有一些方便查询等操作的辅助数据结构.</p>
+<p>把数据库中的行和列存到页面中有几种方式, 可以选择以行为单位存 <span
+class="math inline">\(r\)</span> 个行, 也可以选择以列为单位存 <span
+class="math inline">\(c\)</span> 个列</p>
+<h4 id="nsm面向行存储">NSM/面向行存储</h4>
+<p>将元组作为基本单位存入页面文件,
+即一个页面文件存储的是多个元组(行).</p>
+<p>这样做的优点是插入删除等操作快,
+但是缺点是读取某一属性(列)时需要加载整个元组,
+导致从磁盘加载过多无用数据并且空间局部性很差;
+另外也无法实现压缩(后文将提及, 大多数压缩策略是基于对同类数据的,
+对同一属性元素压缩收益很大, 而 NSM 是元组连续,
+而属性是混杂在一起的).</p>
+<p>由于写友好而读不友好, 适用于多次写(而每次写入少量)少读的 OLTP
+(事务型数据库), 如 PostgreSQL 就是行存储.</p>
+<h4 id="dsm分离式存储模型面向列存储">DSM/分离式存储模型/面向列存储</h4>
+<p>适用于复杂 SQL 查询而写入操作较少的 OLAP (分析型数据库)</p>
+<p>考虑到 NSM 的缺陷, 我们可以在一个页面文件中存储连续的列元素,
+这样在查询某个属性时 (如 <code>WHERE age &gt;= 18</code>)
+就可以减少多余数据并保持良好的局部性.</p>
+<p>也因此, 插入/删除操作变得较为复杂 (需要在多个页内进行协调)</p>
+<h4 id="pax-混合型存储">PAX, 混合型存储</h4>
+<p>若干个完整的行存入同一页面中, 但页内的存储是按照列存</p>
+<p>先将若干行为一组形成<strong>行组</strong>(row group),
+然后将每个行组按列分为列块, 以列块为单位进行存储 (当然, 这样要记录大量的
+metadata)</p>
+<h3 id="具体实现结构">具体实现结构</h3>
+<p>以上主要介绍总体的存储策略, 而根据行存/列存方案选取不同,
+具体的实现目前主要有以下几种:</p>
+<h4 id="tuple-orientation-storage">Tuple-orientation Storage</h4>
+<p>在一个页面的开头一段区域存储 Page Header,
+包括元组数目/schema/压缩方法(见下文)元信息;</p>
+<p>紧接着的一段区域存储一个槽数组(Slot Array), 每个 slot
+记录一个元组在这个页面的位置(通过偏移量);</p>
+<p>由于 slot 的数量会随着新元组的插入变化, 所以元组本身的数据需要从 Heap
+File 文件末尾往前存储, 并且更新 slot 记录的偏移量.</p>
+<p>这种方式的缺点也有很多:</p>
+<ul>
+<li>由于删除是直接删除元组所在位置的数据, 所以会出现一些空白位置; 同时
+Slot 和 元组本身之间也有空白. 这些空白的区域浪费了很多存储空间</li>
+<li>为了操作一个元组, 需要读这整个页进来,
+即使这个页(数据库的页往往有几十到几百 KB)可能有几百个元组是我们不需要的;
+读入在不同页上的多个元组那就是更糟糕的情况了</li>
+</ul>
+<p>由于只能存储元组, 所以是 NSM 方案的实现.</p>
+<h4 id="log-structure-storage">Log Structure Storage</h4>
+<p>通过 Log Structure Merge-Tree (LSM-Tree) 数据结构管理写入. LSM-Tree
+包括 MemTable 和多级压缩的、不可变的 SSTable, 可能还包括摘要表.</p>
+<p>对于插入/删除/更新等写入操作, 分为以下几个阶段</p>
+<ol start="0" type="1">
+<li>整理日志为一个键值对. 如操作
+<code>PUT(table_id.row_id.age, 18)</code> 会变成一个 <span
+class="math inline">\((K, V)\)</span> 的键值对, 其中键 <span
+class="math inline">\(K\)</span> 为表 <code>table_id</code> 和
+<code>row_id</code> 的组合, 还有一个用于表明操作顺序的全局计数器
+<code>seq_num</code>, 值 <span class="math inline">\(V\)</span>
+为<strong>整个元组的新值</strong>, 如
+<code>['Alice', 18, 337845818]</code>
+(当然实际可能是通过序列化等方式实现的, 这里不深入具体实现)</li>
+<li>写入内存中的 MemTable 数据结构, 具体的实现可以是多样的, 功能是将元素
+<span class="math inline">\((K, V)\)</span> 按 Key 排序. (比如跳表,
+后面我们会说 Skip List 是优秀的内存数据结构)</li>
+<li>当 MemTable 中的元素满了或到达一定阈值时, 将其中已有序的键值对进行
+Flush 操作, 首先按照 <code>seq_num</code>
+对冗余的记录只保留最新的记录<span class="math inline">\(^{[1]}\)</span>,
+然后写入到磁盘上的 SSTable 文件上. SSTable 中的键值对同样是有序的,
+便于进行二分查找; 并且 SSTable 是不可变的文件, 一旦生成除非销毁(压缩后),
+不会被修改. 此外还要注意, 对于同一个 SSTable 内部是不存在冗余记录的,
+因为一个 SSTable 是一个 MemTable 一次 Flush 的产物, 而 Flush
+时会去重.</li>
+<li>上面这些由 MemTable 生成的 SSTable 文件是第一级 SSTable, 当第一级
+SSTable 数量较多时, 可以把第一级多个 SSTable 合并成一个更大的第二级
+SSTable. 具体来说, 例如存在一个较早的
+<code>(table1.row3, ['Alice', 18])</code> 和一个较新的
+<code>(table1.row3, &lt;tombstone&gt;)</code> (其中墓碑标记
+<code>tombstone</code> 表示已被删除), 则可以直接清除这两条键值对.
+这里的早晚的规则是: 更低一级的 SSTable 来自上层 SSTable 的压缩,
+所以越低的 SSTable 越早; 同一级的 SSTable
+按照生成顺序即可辨别记录新旧.</li>
+</ol>
+<p>对于查询操作:</p>
+<ol start="0" type="1">
+<li>我们会设置内存中的摘要表, 对每一级 SSTable
+设置过滤器来判断这一层是否存在我们需要的键 (过滤器以后的文章中会提及),
+还会记录每个 SSTable 的最大/最小键, 用来支持范围查询操作.</li>
+<li>除此之外, 就只能对每个符合查询条件的 SSTable 进行二分查找了.</li>
+</ol>
+<p>$[1]: $ 之所以在 MemTable 中保留冗余项还要记录 <code>seq_num</code>,
+是因为原地更新需要对元素项加锁, 并发效率不好.</p>
+<h4 id="index-organization-storage">Index-organization Storage</h4>
+<p>使用平衡树(考虑到并发和缓存性能等, 通常是 B+ Tree)组织索引, 而 B+
+Tree 的每个叶子节点存储的键值对是实际的数据, 其中值为标记着元组物理位置
+Record ID.</p>
+<p>B+ Tree 是较为重要的数据结构, 在后面 &lt;TODO:
+数据库系统设计中的访问方法&gt; 有详细介绍.</p>
+<h3 id="record-id-aka.-tuple-id">Record ID (aka. Tuple ID)</h3>
+<p>上面的实现过程中能发现我们有时会需要唯一标识一个元组, 比如 Log
+Structure Storage 的 <code>row_id</code>,</p>
+<p>具体来说, 数据库会为每一个元组分配一个 Record ID,
+用来标记这个元组唯一的物理位置.</p>
+<ul>
+<li>对于 NSM 的行存方式: 一般是一个 <span
+class="math inline">\((\text{File ID, Page ID, Slot})\)</span>
+的三元组(的加工); SQLite 的策略是一个自增的 <code>rowid</code>, 以这个
+<code>rowid</code> 为 Key 在 B+ Tree 建立的索引中查找叶子节点的页面
+(关于索引和 B+ Tree 见本博客后面的文章)</li>
+<li>对于 DSM 或 PAX 的方式: 存储一个列位置 (Fixed-length Offsets),
+这个行的所有元素在所有页面的列中是对齐的</li>
+</ul>
+<h3 id="压缩策略">压缩策略:</h3>
+<p>上文也提及了, 对于元组这样不同类数据是不太好压缩的,
+所以主要存在对一列内容的压缩上(比如 <code>temperature</code>
+列的温度可能相邻两者差距不大, 有些 <code>isValid</code>
+列可能会出现连续的 0 或 1).</p>
+<p>&lt;TODO: 具体的压缩策略&gt;</p>
+<p>此外还可以通过传统压缩算法对若干元组组成的块进行压缩, 并以 mod log
+来辅助进行延迟更新.</p>
+<h3 id="处理其他元组内部值的问题">处理其他元组内部值的问题:</h3>
+<p>&lt;TODO: &gt;</p>
+<p>下一篇博客: <a
+target="_blank" rel="noopener" href="https://zheya.cc/2025/12/16/db-15445-3-access/">数据库系统的访问方法
+| Amiriox’s Storage</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/10/19/db-15445-2-storage/" title="&lt;未完成&gt;数据库系统的数据存储方式">https://amiriox.github.io/2025/10/19/db-15445-2-storage/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/cmu15445/" rel="tag"># cmu15445</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/09/23/db-15445-1-intro/" rel="prev" title="<未完成>数据库系统的基本概念">
+                  <i class="fa fa-angle-left"></i> <未完成>数据库系统的基本概念
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/12/16/db-15445-3-access/" rel="next" title="<未完成>数据库系统的访问方法">
+                  <未完成>数据库系统的访问方法 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

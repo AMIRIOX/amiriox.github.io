@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="现代计算机通过每一层都是下一层的缓存的抽象构建出存储器的层次结构, 依据程序的局部性原理巧妙解决了存取信息的速度远小于 CPU 处理速度的问题. 前置知识可看: CSAPP3e第六章(存储器层次结构) | Amiriox’s Storage Cache lab 分为两个部分:  第一部分写一个模拟程序, 模拟缓存的行为; 如果对缓存的原理和行为理解透了难度不高, 主要难点是必须用 C 写 第二部分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP Cache Lab 笔记">
+<meta property="og:url" content="https://amiriox.github.io/2025/08/19/CSAPP-Lab-Cache/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="现代计算机通过每一层都是下一层的缓存的抽象构建出存储器的层次结构, 依据程序的局部性原理巧妙解决了存取信息的速度远小于 CPU 处理速度的问题. 前置知识可看: CSAPP3e第六章(存储器层次结构) | Amiriox’s Storage Cache lab 分为两个部分:  第一部分写一个模拟程序, 模拟缓存的行为; 如果对缓存的原理和行为理解透了难度不高, 主要难点是必须用 C 写 第二部分">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-19T05:21:00.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.823Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="CSAPP&#x2F;cmu15213">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2025/08/19/CSAPP-Lab-Cache/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/08/19/CSAPP-Lab-Cache/","path":"2025/08/19/CSAPP-Lab-Cache/","title":"CSAPP Cache Lab 笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CSAPP Cache Lab 笔记 | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#part-a"><span class="nav-number">1.</span> <span class="nav-text">Part A</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E6%97%B6%E9%97%B4%E6%88%B3"><span class="nav-number">1.1.</span> <span class="nav-text">构造缓存行和时间戳</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E7%BC%93%E5%AD%98%E7%BB%84"><span class="nav-number">1.2.</span> <span class="nav-text">构造缓存组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E7%BC%93%E5%AD%98"><span class="nav-number">1.3.</span> <span class="nav-text">初始化缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E7%BC%93%E5%AD%98"><span class="nav-number">1.4.</span> <span class="nav-text">查找缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E7%BC%93%E5%AD%98%E8%A1%8C%E4%B8%8E%E6%9B%BF%E6%8D%A2%E7%AD%96%E7%95%A5"><span class="nav-number">1.5.</span> <span class="nav-text">插入缓存行与替换策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0"><span class="nav-number">1.6.</span> <span class="nav-text">处理命令行参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#part-b"><span class="nav-number">2.</span> <span class="nav-text">Part B</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#x32-%E4%B8%8E-61x67-%E5%88%86%E5%9D%97%E7%AD%96%E7%95%A5%E4%B8%8E%E5%BE%AA%E7%8E%AF%E5%B1%95%E5%BC%80"><span class="nav-number">2.1.</span> <span class="nav-text">32x32 与 61x67:
+分块策略与循环展开</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#x64-%E9%98%B2%E6%AD%A2%E5%86%B2%E7%AA%81%E7%9A%84%E8%AE%BF%E9%97%AE%E9%A1%BA%E5%BA%8F"><span class="nav-number">2.2.</span> <span class="nav-text">64x64: 防止冲突的访问顺序</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/08/19/CSAPP-Lab-Cache/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CSAPP Cache Lab 笔记 | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSAPP Cache Lab 笔记
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-08-19 13:21:00" itemprop="dateCreated datePublished" datetime="2025-08-19T13:21:00+08:00">2025-08-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>现代计算机通过每一层都是下一层的缓存的抽象构建出存储器的层次结构,
+依据程序的局部性原理巧妙解决了存取信息的速度远小于 CPU
+处理速度的问题.</p>
+<p>前置知识可看: <a
+target="_blank" rel="noopener" href="https://zheya.cc/2025/02/19/CSAPP-2025-02-20/">CSAPP3e第六章(存储器层次结构)
+| Amiriox’s Storage</a></p>
+<p>Cache lab 分为两个部分:</p>
+<ol type="1">
+<li>第一部分写一个模拟程序, 模拟缓存的行为;
+如果对缓存的原理和行为理解透了难度不高, <del>主要难点是必须用 C
+写</del></li>
+<li>第二部分是优化一个矩阵转置的函数,
+转置有着鲜明的”两个数组访问模式相反”的特点,
+导致必然有一个数组的访问模式缓存不友好.
+要理解分块技术和缓存冲突不命中的常见情况及调整措施. 这个 lab
+要求比较极端, 给定的缓存组关联度是 <span
+class="math inline">\(1\)</span>,
+也就是说只要是同一组的就会冲突不命中抢夺缓存行.</li>
+</ol>
+<p>这是我做起来体感最痛苦的一个, 很多人也有相同的感受. 不过 lab
+本身是没什么问题的, <del>CMU 是一款我的问题</del></p>
+<h2 id="part-a">Part A</h2>
+<p>首先要组织出缓存的数据结构: 缓存由几组缓存组构成,
+每组缓存组有一行或多行缓存行构成, 每行缓存行有<strong>标记</strong>,
+<strong>有效位</strong>, <strong>实际记录信息的块</strong>.</p>
+<h3 id="构造缓存行和时间戳">构造缓存行和时间戳</h3>
+<p>首先构造缓存行, 注意要求的冲突替换策略是 LRU,
+所以每一行还需要维护一个时间戳判断哪一行需要被踢出</p>
+<p>真的写 UNIX 时间戳又有些麻烦, 我直接维护了一个全局的
+<code>tick</code>, 每次插入新行时新行的时间戳就是 <code>++tick</code>.
+这样冲突需要 evict 一行的时候在对应组里找时间戳最小的.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">int</span> tick;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> tag;</span><br><span class="line">    <span class="type">int</span> valid;</span><br><span class="line">    <span class="type">int</span> timestamp;   <span class="comment">// hit 和 push 时更新</span></span><br><span class="line">    <span class="type">uint8_t</span> *blocks; <span class="comment">// 实际上不需要</span></span><br><span class="line">&#125; Line;</span><br><span class="line"></span><br><span class="line">Line <span class="title function_">create_line</span><span class="params">(<span class="type">size_t</span> b, <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> tag)</span> &#123;</span><br><span class="line">    Line ret;</span><br><span class="line">    ret.tag = tag;</span><br><span class="line">    ret.valid = <span class="number">0</span>;</span><br><span class="line">    ret.timestamp = <span class="number">-1</span>;</span><br><span class="line">    ret.blocks = (<span class="type">uint8_t</span> *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">uint8_t</span>) * b);</span><br><span class="line">    <span class="built_in">memset</span>(ret.blocks, <span class="number">0</span>, <span class="keyword">sizeof</span>(<span class="type">uint8_t</span>) * b);</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">destory_line</span><span class="params">(Line *line)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!line || !line-&gt;blocks)</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    <span class="built_in">free</span>(line-&gt;blocks);</span><br><span class="line">    line-&gt;blocks = <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="构造缓存组">构造缓存组</h3>
+<p>缓存组需要维护一个大小, 判断何时缓存组满了, 还需要插入一个缓存行 (
+<code>push_line</code> 的实现后面提及 )</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="type">size_t</span> line_count;</span><br><span class="line">    Line *lines;</span><br><span class="line">    <span class="comment">// Find line by iterating lines with O(n)</span></span><br><span class="line">    <span class="comment">// CPU 高速缓存上一般有硬件优化, 这里只写了个很朴素的 O(n) 查找</span></span><br><span class="line">&#125; Set;</span><br><span class="line"></span><br><span class="line">Set *<span class="title function_">create_set</span><span class="params">(<span class="type">size_t</span> e, <span class="type">size_t</span> b)</span> &#123;</span><br><span class="line">    Set *ret = (Set *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(Set));</span><br><span class="line">    <span class="keyword">if</span> (ret) &#123;</span><br><span class="line">        ret-&gt;line_count = <span class="number">0</span>; <span class="comment">// e;</span></span><br><span class="line">        ret-&gt;lines = (Line *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(Line) * e);</span><br><span class="line">        <span class="keyword">if</span> (ret-&gt;lines) &#123;</span><br><span class="line">            <span class="built_in">memset</span>(ret-&gt;lines, <span class="number">0</span>, <span class="keyword">sizeof</span>(Line) * e);</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; e; i++) &#123;</span><br><span class="line">                ret-&gt;lines[i] = create_line(b, <span class="number">0</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> ret;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">139</span> + <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">push_line</span><span class="params">(Set *<span class="built_in">set</span>, <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> tag, <span class="type">int</span> e)</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">destory_set</span><span class="params">(Set *<span class="built_in">set</span>)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">set</span> || !<span class="built_in">set</span>-&gt;lines)</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    <span class="comment">// 这里实际上应该对组里每一行都 destory_line</span></span><br><span class="line">    <span class="comment">// 带 RRID 的语言写习惯了就会对这个不太敏感(并不</span></span><br><span class="line">    <span class="built_in">free</span>(<span class="built_in">set</span>-&gt;lines);</span><br><span class="line">    <span class="built_in">set</span>-&gt;lines = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="built_in">free</span>(<span class="built_in">set</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="初始化缓存">初始化缓存</h3>
+<p>紧接着, 一个缓存包含很多缓存组</p>
+<p>初始化时按照命令行传参进来的 <code>s</code> 计算组数 <span
+class="math inline">\(S = 2^s\)</span>, 直接开好每一组, 每一组也开好行,
+组大小和有效位都置 <span class="math inline">\(0\)</span></p>
+<p>更健壮更 C 的写法, create_set 应该在失败是返回 <code>NULL</code>,
+这里内层 <code>for</code>
+循环如果检查到某个组未能成功初始化还需要回滚之前的元素.
+这就是由于不同语言的语言特性所造成的不同的写法和思维方式.
+<del>但是我并不像在一个模拟程序上浪费太多时间</del>
+<del>尽管写这两句话的时间完全足够我把这个修了</del></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="type">size_t</span> set_count;</span><br><span class="line">    Set **sets;</span><br><span class="line">&#125; Cache;</span><br><span class="line"></span><br><span class="line">Cache *<span class="title function_">init_cache</span><span class="params">(<span class="type">size_t</span> S, <span class="type">size_t</span> e, <span class="type">size_t</span> b)</span> &#123;</span><br><span class="line">    Cache *ret = (Cache *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(Cache));</span><br><span class="line">    <span class="keyword">if</span> (ret) &#123;</span><br><span class="line">        ret-&gt;set_count = S;</span><br><span class="line">        ret-&gt;sets = (Set **)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(Set *) * S);</span><br><span class="line">        <span class="keyword">if</span> (ret-&gt;sets) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; S; i++) &#123;</span><br><span class="line">                ret-&gt;sets[i] = create_set(e, b);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> ret;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">139</span> + <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">destory_cache</span><span class="params">(Cache *cache)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!cache || !cache-&gt;sets)</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; cache-&gt;set_count; i++) &#123;</span><br><span class="line">        destory_set(cache-&gt;sets[i]);</span><br><span class="line">        cache-&gt;sets[i] = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">free</span>(cache);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="查找缓存">查找缓存</h3>
+<p>查找某一个地址的缓存, 需要把地址拆解为<strong>标记位,
+组索引和偏移量</strong></p>
+<p>如果在对应组找到带有对应标记为的行, 且有效位为 <code>1</code>
+则是一次 <code>hit</code>, 更新这一行的时间戳</p>
+<p>否则就是一次 <code>miss</code>, 这个 lab 采用写分配策略,
+无论读不命中还是写不命中都需要加载进缓存, 进行 <code>push_line</code>
+操作来完成这一点.</p>
+<p>关于获取标记和组索引: 这里最好直接通过位移拆出这三段,
+如果手写十六进制转十进制可能很痛苦, 因为 <code>s</code>, <code>e</code>,
+<code>b</code> 都是二进制的位数, 还需要手动对齐一下 (lab
+没要求真的返回缓存的值, 所以块偏移可以不实现. 到 Part B
+的时候可以看到这个程序的作用)</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 标记 | 组索引 | 块偏移</span></span><br><span class="line"><span class="comment">// Set, E-associativity, Block</span></span><br><span class="line"><span class="comment">// ttt sss bbb</span></span><br><span class="line"><span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> <span class="title function_">get_addr_s</span><span class="params">(<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> wrap, <span class="type">int</span> len, <span class="type">int</span> s, <span class="type">int</span> e, <span class="type">int</span> b)</span> &#123;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> mask = ((<span class="number">1LL</span> &lt;&lt; s) - <span class="number">1</span>);</span><br><span class="line">    wrap = (wrap &gt;&gt; b) &amp; mask;</span><br><span class="line">    <span class="keyword">return</span> wrap;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> <span class="title function_">get_addr_t</span><span class="params">(<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> wrap, <span class="type">int</span> len, <span class="type">int</span> s, <span class="type">int</span> e, <span class="type">int</span> b)</span> &#123;</span><br><span class="line">    wrap = wrap &gt;&gt; (s + b);</span><br><span class="line">    <span class="keyword">return</span> wrap;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">find_cache</span><span class="params">(Cache *cache, <span class="type">char</span> *addr, <span class="type">int</span> len, <span class="type">int</span> s, <span class="type">int</span> e, <span class="type">int</span> b)</span> &#123;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> wrap = <span class="number">0</span>;</span><br><span class="line">    <span class="built_in">sscanf</span>(addr, <span class="string">&quot;%llx&quot;</span>, &amp;wrap);</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> set_id = get_addr_s(wrap, len, s, e, b);</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> tag = <span class="type">get_addr_t</span>(wrap, len, s, e, b);</span><br><span class="line">    Set *<span class="built_in">set</span> = cache-&gt;sets[set_id];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; e; i++) &#123;</span><br><span class="line">        Line *li = &amp;<span class="built_in">set</span>-&gt;lines[i];</span><br><span class="line">        <span class="keyword">if</span> (li-&gt;valid &amp;&amp; li-&gt;tag == tag) &#123;</span><br><span class="line">            hit++;</span><br><span class="line">            li-&gt;timestamp = ++tick;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// should not be executed if hit</span></span><br><span class="line">    miss++;</span><br><span class="line">    push_line(<span class="built_in">set</span>, tag, e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="插入缓存行与替换策略">插入缓存行与替换策略</h3>
+<p><code>push_line</code> 是可能出现冲突不命中和驱逐的情况, 按照 LRU
+替换缓存行</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">push_line</span><span class="params">(Set *<span class="built_in">set</span>, <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> tag, <span class="type">int</span> e)</span> &#123;</span><br><span class="line">    <span class="comment">// WARN: eviction occurs</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">set</span>-&gt;line_count == e) &#123;</span><br><span class="line">        evic++;</span><br><span class="line">        <span class="comment">// <span class="doctag">TODO:</span> LRU</span></span><br><span class="line">        <span class="type">int</span> lru = <span class="number">0x7fffffff</span>;</span><br><span class="line">        Line *arg = <span class="literal">NULL</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; e; i++) &#123;</span><br><span class="line">            Line *li = &amp;<span class="built_in">set</span>-&gt;lines[i];</span><br><span class="line">            assert(li-&gt;valid);</span><br><span class="line">            <span class="keyword">if</span> (lru &gt; li-&gt;timestamp) &#123;</span><br><span class="line">                <span class="comment">/*</span></span><br><span class="line"><span class="comment">                 * &lt; : max(|tick - timestamp|)</span></span><br><span class="line"><span class="comment">                 * timestamp 越大越新, 找最旧也就是最小的</span></span><br><span class="line"><span class="comment">                 * */</span></span><br><span class="line">                lru = li-&gt;timestamp;</span><br><span class="line">                arg = li;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (arg) &#123;</span><br><span class="line">            arg-&gt;tag = tag;</span><br><span class="line">            arg-&gt;timestamp = ++tick;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// <span class="doctag">TODO:</span> bad impl</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; e; i++) &#123;</span><br><span class="line">            Line *li = &amp;<span class="built_in">set</span>-&gt;lines[i];</span><br><span class="line">            <span class="keyword">if</span> (!li-&gt;valid) &#123;</span><br><span class="line">                li-&gt;valid = <span class="number">1</span>;</span><br><span class="line">                li-&gt;tag = tag;</span><br><span class="line">                li-&gt;timestamp = ++tick;</span><br><span class="line">                <span class="built_in">set</span>-&gt;line_count++;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="处理命令行参数">处理命令行参数</h3>
+<p>最后再写个处理命令行参数的. Part A 比较简单, 没有什么好说的.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> opt;</span><br><span class="line"><span class="comment">// int verbose = 0;</span></span><br><span class="line"><span class="type">int</span> s = <span class="number">0</span>, E = <span class="number">0</span>, b = <span class="number">0</span>;</span><br><span class="line">FILE *trace_file = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> ((opt = getopt(argc, argv, <span class="string">&quot;vs:E:b:t:&quot;</span>)) != <span class="number">-1</span>) &#123;</span><br><span class="line">    <span class="keyword">switch</span> (opt) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;v&#x27;</span>:</span><br><span class="line">        <span class="comment">// verbose = 1;</span></span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;s&#x27;</span>:</span><br><span class="line">        s = atoi(optarg);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;E&#x27;</span>:</span><br><span class="line">        E = atoi(optarg);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;b&#x27;</span>:</span><br><span class="line">        b = atoi(optarg);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;t&#x27;</span>:</span><br><span class="line">        trace_file = fopen(optarg, <span class="string">&quot;r&quot;</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Cache *cache = init_cache((<span class="number">1</span> &lt;&lt; s), E, b);</span><br><span class="line"><span class="comment">// <span class="doctag">TODO:</span> parse $trace_file</span></span><br><span class="line"><span class="keyword">if</span> (!trace_file)</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">139</span> + <span class="number">1</span>);</span><br><span class="line"><span class="type">char</span> trace[<span class="number">256</span>];</span><br><span class="line"></span><br><span class="line"><span class="type">char</span> ins;</span><br><span class="line"><span class="type">char</span> addr[<span class="number">256</span>];</span><br><span class="line"><span class="type">int</span> blksz;</span><br><span class="line"><span class="keyword">while</span> (fgets(trace, <span class="keyword">sizeof</span>(trace), trace_file)) &#123;</span><br><span class="line">    <span class="built_in">sscanf</span>(trace, <span class="string">&quot; %c %s,%d&quot;</span>, &amp;ins, addr, &amp;blksz);</span><br><span class="line">    <span class="type">int</span> len = <span class="built_in">strlen</span>(addr);</span><br><span class="line">    <span class="keyword">switch</span> (ins) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;I&#x27;</span>:</span><br><span class="line">        <span class="comment">// find_cache(cache, addr, len, s, E, b);</span></span><br><span class="line">        <span class="comment">// 指令加载的缓存在 I-Cache, 我们只需要模拟 D-Cache</span></span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;S&#x27;</span>:</span><br><span class="line">        find_cache(cache, addr, len, s, E, b);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;L&#x27;</span>:</span><br><span class="line">        find_cache(cache, addr, len, s, E, b);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;M&#x27;</span>:</span><br><span class="line">        find_cache(cache, addr, len, s, E, b);</span><br><span class="line">        find_cache(cache, addr, len, s, E, b);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">printSummary(hit, miss, evic);</span><br></pre></td></tr></table></figure>
+<h2 id="part-b">Part B</h2>
+<p>在 <code>trans.c</code> 中编写缓存友好的转置函数.
+“缓存友好”的具体要求是对缓存不明中的次数 <span
+class="math inline">\(m\)</span> 满足以下条件:</p>
+<ul>
+<li><span class="math inline">\(32 \times 32: \text{8 points if }m \lt
+300, \text{ 0 points if } m \gt 600\)</span></li>
+<li><span class="math inline">\(64 \times 64: \text{8 points if }m \lt
+1,300, \text{ 0 points if } m \gt 2,000\)</span></li>
+<li><span class="math inline">\(61 \times 67: \text{10 points if }m \lt
+2,000, \text{ 0 points if } m \gt 3,000\)</span></li>
+</ul>
+<p>我一开始没看这个要求, 试图直接写通用的转置函数,
+在计算缓存访问冲突模式时<em>试图将 <span
+class="math inline">\(4n\)</span> 从十进制转换为二进制</em></p>
+<p>首先观察常规写法的矩阵转置:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">trans</span><span class="params">(<span class="type">int</span> M, <span class="type">int</span> N, <span class="type">int</span> A[N][M], <span class="type">int</span> B[M][N])</span> &#123;</span><br><span class="line">    <span class="type">int</span> i, j, tmp;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; N; i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; M; j++) &#123;</span><br><span class="line">            tmp = A[i][j];</span><br><span class="line">            B[j][i] = tmp;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>分析访问模式:</p>
+<ul>
+<li>内循环对于 <code>A</code> 数组元素的读访问是步长为 <span
+class="math inline">\(1\)</span> 的连续访问, 空间局部性良好, 在一次 miss
+并加载缓存行之后可以连续访问这一缓存行的所有元素直到再次 miss.
+这是缓存友好的.</li>
+<li>内循环对于 <code>B</code> 数组元素的写访问是步长为 <code>N</code>
+的跨行访问 (<code>B[j][i]</code> 的下一次访问是
+<code>B[j + 1][i]</code>, 中间差一行的元素数量), 这导致每次访问 miss
+后加载的缓存行都不会被再次利用到从而导致每次访问都会 miss,
+空间局部性很差, 缓存不友好.</li>
+</ul>
+<p>然而, 我们意识到矩阵转置的行列是必然相反的, <code>A</code> 和
+<code>B</code> 必然呈现相反的访问模式,
+肯定会有一个数组的访问模式很差</p>
+<p>根据 lab 提供的 pdf 的提示, 考虑<strong>分块策略</strong>.</p>
+<p>缓存友好的分块策略, 是指将一个需要处理的矩阵分为特定 <span
+class="math inline">\(b \times b\)</span> 的小块,
+在每个小块中进行需要的操作.</p>
+<p>为什么这样能够使得缓存友好呢? 重点就在于 <span
+class="math inline">\(b\)</span> 块大小的选择,
+选择合适的块大小使得缓存可以装下 <code>A</code> 和 <code>B</code>
+的一个分块(子矩阵), 这样即使 <code>B</code>
+的访问模式<strong>依然空间局部性差, 但是时间局部性友好</strong>:
+缓存足够装下这一小块的多行元素, <code>B</code> 的每次访问都能在缓存中
+hit.</p>
+<h3 id="x32-与-61x67-分块策略与循环展开">32x32 与 61x67:
+分块策略与循环展开</h3>
+<p>于是我们可以开始计算如何设计块大小. lab 给定的缓存是 <span
+class="math inline">\(s = 5, E = 1, b = 5\)</span>. 每个地址有 <span
+class="math inline">\(5\)</span> 位的块偏移, 意味着一个缓存行大小为
+<span class="math inline">\(2^5 = 32\)</span> 字节, 也就是 <span
+class="math inline">\(8\)</span> 个 <span
+class="math inline">\(4\)</span> 字节整型——这暗示我们分块的每一行设置为
+<span class="math inline">\(8\)</span> 个整型来适配缓存行大小. 同时,
+每个地址有 <span class="math inline">\(5\)</span> 位组索引, 一共 <span
+class="math inline">\(2^5 = 32\)</span> 组, 一组一行即缓存一共有 <span
+class="math inline">\(32\)</span> 个这样的缓存行,
+足以装下四个分块了.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> BSIZE 8</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> kk = <span class="number">0</span>; kk &lt; N; kk += BSIZE) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> jj = <span class="number">0</span>; jj &lt; M; jj += BSIZE) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = jj; i &lt; min(jj + BSIZE, M); i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = kk; j &lt; min(kk + BSIZE, N); j++) &#123;</span><br><span class="line">                B[i][j] = A[j][i];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然而事情并没这么简单, 这段代码的表现还是比较差. 这是比较反直觉的:
+既然现在所有元素都在缓存内, 只有少数冷启动的 miss, 剩下都是 hit,
+那理应是最优了吧? 所以只有一种可能, 并不是所有元素都在缓存内!</p>
+<p>这时通过缓存模拟器, 以 <code>valgrind</code> 生成的
+<code>trace.f0</code> 为输入模拟缓存, 发现许多 eviction,
+这才想起来可能有两个元素的地址被映射到同一组内, 由于这个严厉的 <span
+class="math inline">\(E = 1\)</span> 也就是直接映射高速缓存限制,
+可能会出现很多冲突.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ./csim-ref -v -s 5 -E 1 -b 5 -t trace.f0</span><br></pre></td></tr></table></figure>
+<p>但我实在是懒得把十六进制地址转二进制再提取组索引找规律了,
+所以还是先想一些可能出现的情况:</p>
+<p>回顾文章开头的博客, 我记得我曾经写过这样一段话:</p>
+<blockquote>
+<p>这里块偏移是要求连续所以是最后几位很好理解,
+但为什么组索引不设置为头部的 位而是分配在中间呢?</p>
+<p>这是因为如果是分配在头部,
+连续的几个地址就回分配在同一组(比如设置为前两位的话,
+<code>0x1000</code>, <code>0x1001</code>, <code>0x1010</code>,
+<code>0x1011</code>这连续四个就分配在同一组了),
+而缓存每次不命中都会加载一整块相邻的地址,
+我们希望相邻的地址分散到不同的组,
+来让缓存加载整个地址空间上尽可能多的地址, 增加缓存效率</p>
+</blockquote>
+<p>缓存的核心就是局部性, 所以块偏移必须连续, 所以必须放在最后几位;
+而组索引的要求是相邻的最好不放在同一组以减少冲突,
+所以也放在尽可能靠后的位 (块偏移位前). 但是这也可能不够,
+如果”相邻”的要求扩大, 比如我们需要在一个分块内都尽可能不分在同一组,
+就可能不太满足了.</p>
+<p>考虑一下 <code>A</code> 的两次访问之间的地址差值: <code>A[j]</code>
+到 <code>A[j + 1]</code> 是跨行访问, 地址差距是 <span
+class="math inline">\(4 \times M\)</span>, 即元素大小乘以行元素数量.
+对于 <span class="math inline">\(32\times32\)</span> 的矩阵, 地址差距是
+<span class="math inline">\(4 \times 32 = 128\)</span>.</p>
+<p>对每次访问的偏移计算组索引 <span class="math inline">\((128)_{10} =
+(10000000)_2\)</span>, 组索引位是 <code>100</code> 也就是每次 <span
+class="math inline">\(+4\)</span>. 相邻两次访问 <code>A</code>
+数组元素地址, 组索引的变化为 <span class="math inline">\(4, 8, 12, 16,
+20, 24, 28, 32\)</span>, 在 <span class="math inline">\(8\)</span>
+次内是不会从组索引位溢出导致冲突到 <span class="math inline">\(4 ,8,
+...\)</span> 的 (如果再 <span class="math inline">\(+4\)</span> 相当于模
+<span class="math inline">\(32\)</span>,
+因为进位超出了组索引的位到了标记位).</p>
+<p>由于我们的分块每一行长度是 <span class="math inline">\(8\)</span>,
+<span class="math inline">\(8\)</span>
+次访问后已经无需再维持这一行的缓存了, 即使冲突了直接丢弃也没关系.<br />
+虽然对当前研究的问题没有帮助, 但是通过同样的方法计算 <span
+class="math inline">\(64\times64\)</span> 的矩阵,
+发现会出现数组内部冲突的情况, 每四次访问就会冲突,
+这给了我们一些警示.</p>
+<p>tips: 如果懒得换算可以直接把 gdb 当进制转换器用. <code>/t</code>,
+<code>/d</code>, <code>/x</code> 分别是以二进制, 十进制,
+十六进制形式输出, Bomb lab 时的小技巧</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p /t 128</span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">1 = 10000000</span></span><br></pre></td></tr></table></figure>
+<p>既然 <code>A</code> 自己内部不会有冲突, 那会不会是 <code>A</code> 和
+<code>B</code> 的某些元素地址映射到了同一行? 这里 lab 的 pdf
+其实给了一些提示 (好像是阅读资料里给的):
+<strong>对角线上可能会出现大量冲突</strong></p>
+<p>我研究了一会其实没弄明白, 查阅资料后发现在分块的方法中,
+如果这个分块位于整体矩阵的对角线上 (<span class="math inline">\(kk =
+jj\)</span> 时), 就会产生读 <span class="math inline">\(A[x][x]\)</span>
+写 <span class="math inline">\(B[x][x]\)</span> 的情况,
+这两者的元素地址是极大概率映射到同一组的.</p>
+<p>所以就需要尽可能延长读 <span class="math inline">\(A[x][x]\)</span>
+和写 <code>B[x][x]</code> 这两个操作的距离, 使得 <code>A</code>
+全部读进(缓存被充分使用, 可以被驱逐丢弃了)后, 再进行写 <code>B</code>
+的操作, 此时即使冲突, <code>B</code> 也可以放心驱逐 <code>A</code>
+的缓存行, 因为未来不会再用到了, 不会出现以后读 <code>A</code>
+还映射到这一缓存行导致 <code>A</code> 和 <code>B</code>
+交替抢夺这一缓存行的情况.
+<strong>采用局部变量和循环展开分离读写操作:</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> BSIZE 8</span></span><br><span class="line"><span class="type">int</span> a, b, c, d, e, f, g, h;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> kk = <span class="number">0</span>; kk &lt; N; kk += BSIZE) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> jj = <span class="number">0</span>; jj &lt; M; jj += BSIZE) &#123;</span><br><span class="line">        <span class="comment">// a chunk with left-top corner (kk, jj)</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = jj; i &lt; min(jj + BSIZE, M); i++) &#123;</span><br><span class="line">            <span class="comment">// 写 A</span></span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">0</span> &lt; N)</span><br><span class="line">                a = A[kk][i];</span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">1</span> &lt; N)</span><br><span class="line">                b = A[kk + <span class="number">1</span>][i];</span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">2</span> &lt; N)</span><br><span class="line">                c = A[kk + <span class="number">2</span>][i];</span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">3</span> &lt; N)</span><br><span class="line">                d = A[kk + <span class="number">3</span>][i];</span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">4</span> &lt; N)</span><br><span class="line">                e = A[kk + <span class="number">4</span>][i];</span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">5</span> &lt; N)</span><br><span class="line">                f = A[kk + <span class="number">5</span>][i];</span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">6</span> &lt; N)</span><br><span class="line">                g = A[kk + <span class="number">6</span>][i];</span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">7</span> &lt; N)</span><br><span class="line">                h = A[kk + <span class="number">7</span>][i];</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 写 B</span></span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">0</span> &lt; N)</span><br><span class="line">                B[i][kk] = a;</span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">1</span> &lt; N)</span><br><span class="line">                B[i][kk + <span class="number">1</span>] = b;</span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">2</span> &lt; N)</span><br><span class="line">                B[i][kk + <span class="number">2</span>] = c;</span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">3</span> &lt; N)</span><br><span class="line">                B[i][kk + <span class="number">3</span>] = d;</span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">4</span> &lt; N)</span><br><span class="line">                B[i][kk + <span class="number">4</span>] = e;</span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">5</span> &lt; N)</span><br><span class="line">                B[i][kk + <span class="number">5</span>] = f;</span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">6</span> &lt; N)</span><br><span class="line">                B[i][kk + <span class="number">6</span>] = g;</span><br><span class="line">            <span class="keyword">if</span> (kk + <span class="number">7</span> &lt; N)</span><br><span class="line">                B[i][kk + <span class="number">7</span>] = h;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">undef</span> BSIZE</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>模拟一下, <span class="math inline">\(kk == jj\)</span> 时,
+对于内循环第一次迭代 <span class="math inline">\(i = jj\)</span></p>
+<ul>
+<li>上面读 <code>A</code> 的一列的第一个 <code>if</code> 就会变成
+<code>a = A[kk][jj]</code> 也就是对角线上的的 <code>A[x][x]</code></li>
+<li>上面写 <code>B</code> 的一行的第一个 <code>if</code> 就会变成
+<code>B[jj][kk] = a</code> 同上</li>
+<li><code>A[x][x]</code> 和 <code>B[x][x]</code>
+的地址大概率映射在同一组上, 而对于 <span class="math inline">\(E =
+1\)</span> 的直接映射缓存, 只有一个缓存行, 所以 <code>A</code> 的第
+<span class="math inline">\(x\)</span> 行会和 <code>B</code> 的第 <span
+class="math inline">\(x\)</span> 行冲突在统一缓存行, <code>B</code>
+会因为冲突残忍地把 <code>A</code> 这一整行踢出缓存行</li>
+<li>内循环第二次迭代 <code>i = jj + 1</code> 时, <code>A[kk]</code>
+这一整行的缓存就没有了, 但是得益于循环展开带来的读写分离, <code>A</code>
+这一行的缓存每次大循环只会 miss 一次. 如果不循环展开, 写完整的循环,
+小循环每次迭代, <code>A</code> 和 <code>B</code>
+都会反复争抢一个缓存行</li>
+<li>非对角线块不会出现这个情况, 因为读写的缓存行没有交集, 不会冲突</li>
+</ul>
+<p>于是 <span class="math inline">\(32 \times 32\)</span>
+的情况顺利过了(实际上我走了很多弯路, 在错误的思路上浪费了很多时间),
+顺便还过了个 <span class="math inline">\(61\times67\)</span> 的,
+这个应该主要考察分块遇到不规整的情况是否能满足, 由于我们写的是
+<code>&lt; min(jj + BSIZE, M)</code>, 所以可以正常处理边角上的元素,
+也不会越界.</p>
+<h3 id="x64-防止冲突的访问顺序">64x64: 防止冲突的访问顺序</h3>
+<p>然而真正的难点才刚开始, <span class="math inline">\(64\times
+64\)</span> 的矩阵有一些问题需要解决. 虽然上述代码也能取得一些分数,
+但是看 miss 远不能拿到满分</p>
+<p>首先是上述说的 <code>A</code> 的访问冲突模式, 对于 <span
+class="math inline">\(64\times64\)</span>, 矩阵行元素增多一倍,
+使得冲突频率也增多一倍: 每 <span class="math inline">\(4\)</span>
+次相邻访问 <code>A</code> (<code>A[i]</code> 和 <code>A[i+4]</code>)
+就会造成冲突.</p>
+<p>最直观的想法肯定是把 <code>BSIZE</code> 改为 <span
+class="math inline">\(4\)</span>, 然后修改一下循环展开的地方删掉读
+<code>A</code> 和写 <code>B</code> 的后四行. 可惜这样并不能拿到满分,
+甚至分数还低了一些. 动脑子想一下, 一个缓存行能容纳 <span
+class="math inline">\(8\)</span> 个元素, 如果分块的一行只有 <span
+class="math inline">\(4\)</span> 个元素,
+那每个缓存行的有效利用率只有一半, 所以还是要考虑 <span
+class="math inline">\(\text{BSIZE} = 8\)</span> 的方案</p>
+<p>呃, 我实际上没考虑出来. 折腾了很久后最后失去心气,
+在耻辱地参阅了他人的做法后大概逆向出了这种做法的逻辑:</p>
+<p><span class="math inline">\(8 \times 8\)</span> 的结论是对的,
+但是到第五行时还是 <code>A[0]</code> 会和 <code>A[4]</code> 冲突,
+所以需要一种方案能够在 <span class="math inline">\(8\times 8\)</span>
+的分块内<strong>以能够充分利用缓存的方式再分部分处理</strong>.</p>
+<p>对于前 <span class="math inline">\(4\)</span> 行(分块的上半部分),
+我们需要在充分利用这 <span class="math inline">\(4\)</span>
+行缓存后再去碰下半部分,
+<strong>只有在已经用不到上半部分缓存之后才能访问下半部分,
+加载下半部分缓存</strong>, 否则就会出现冲突不命中.</p>
+<p>首先转置并复制 <code>A</code> 的这前 <span
+class="math inline">\(4\)</span> 行到 <code>B</code> 的前 <span
+class="math inline">\(4\)</span> 行, 此时 <code>A</code> 和
+<code>B</code> 的上半部分都在缓存中, 且<code>A</code>
+的上半部分缓存已经没什么用了可以放心踢出</p>
+<p>但实际上在前四行中, <code>A</code> 右上角的 <span
+class="math inline">\(2 \times 2\)</span> 块应当被转置到 <code>B</code>
+的左下角, 所以目前 <code>B</code> 右上角的位置是错误的, 需要把这 <span
+class="math inline">\(4\)</span> 个数试图放到 <code>B</code>
+的正确位置(左下角); 假设我们真的这么做了, 下一步就应该是把
+<code>A</code> 的左下角复制到 <code>B</code> 的右上角,
+我们审视一下这个操作的缓存友好性:</p>
+<ul>
+<li><code>A</code> 的上半部分缓存没有用了, 可以放心踢出, 所以访问
+<code>A</code> 的下半部分是合理的.</li>
+<li>之前修正 <code>B</code> 右上角到左下角时踢出了上半部分的缓存,
+导致我们现在再写入 <code>B</code> 的右上角时需要重新加载缓存, 而后面再写
+<code>B</code> 的右下角有需要加载上半部分缓存, 总结来说就是:
+加载上半部分-&gt;踢上半部分并加载下半部分-&gt;踢下半部分并加载上半部分-&gt;踢下半部分并加载上半部分,
+出现缓存抖动.</li>
+</ul>
+<p>所以那 <span class="math inline">\(4\)</span>
+个错误的数需要先用局部变量存起来, 尽可能等上半部分利用完毕再执行修正</p>
+<p>先把 <code>A</code> 的左下角复制到 <code>B</code> 的右上角,
+再从局部变量恢复 <code>B</code> 的左下角, 此时 <code>B</code>
+的上半部分没用了, <code>B</code> 的下半部分才初次进入缓存.</p>
+<p>最后只需要把 <code>A</code> 的右下角转置到 <code>B</code>
+的右下角收尾即可.</p>
+<p>需要注意的是 <code>A</code> 的 <span class="math inline">\((kk,
+jj)\)</span> 块要转置到 <code>B</code> 的 <span
+class="math inline">\((jj, kk)\)</span> 块</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> BSIZE 8</span></span><br><span class="line"><span class="type">int</span> a, b, c, d, e, f, g, h;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> kk = <span class="number">0</span>; kk &lt; N; kk += BSIZE) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> jj = <span class="number">0</span>; jj &lt; M; jj += BSIZE) &#123;</span><br><span class="line">        <span class="comment">// 还是 8 * 8, 但是要对每一分块再分块</span></span><br><span class="line">        <span class="comment">// 先复制前四行, 因为第五行会出现 A[0] 和 A[4] 冲突</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++) &#123;</span><br><span class="line">            a = A[kk + i][jj + <span class="number">0</span>];</span><br><span class="line">            b = A[kk + i][jj + <span class="number">1</span>];</span><br><span class="line">            c = A[kk + i][jj + <span class="number">2</span>];</span><br><span class="line">            d = A[kk + i][jj + <span class="number">3</span>];</span><br><span class="line">            e = A[kk + i][jj + <span class="number">4</span>];</span><br><span class="line">            f = A[kk + i][jj + <span class="number">5</span>];</span><br><span class="line">            g = A[kk + i][jj + <span class="number">6</span>];</span><br><span class="line">            h = A[kk + i][jj + <span class="number">7</span>];</span><br><span class="line"></span><br><span class="line">            B[jj + <span class="number">0</span>][kk + i] = a;</span><br><span class="line">            B[jj + <span class="number">1</span>][kk + i] = b;</span><br><span class="line">            B[jj + <span class="number">2</span>][kk + i] = c;</span><br><span class="line">            B[jj + <span class="number">3</span>][kk + i] = d;</span><br><span class="line">            B[jj + <span class="number">0</span>][kk + <span class="number">4</span> + i] = e;</span><br><span class="line">            B[jj + <span class="number">1</span>][kk + <span class="number">4</span> + i] = f;</span><br><span class="line">            B[jj + <span class="number">2</span>][kk + <span class="number">4</span> + i] = g;</span><br><span class="line">            B[jj + <span class="number">3</span>][kk + <span class="number">4</span> + i] = h;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// A 的前四行, B 的前四行都在缓存里</span></span><br><span class="line">        <span class="comment">// A 的前四行已经没用了, 可以直接踢出</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++) &#123;</span><br><span class="line">            <span class="comment">// 缓冲 B 的右上角(此时位置错误)</span></span><br><span class="line">            <span class="comment">// hit B 第 i 行一行后半的缓存</span></span><br><span class="line">            a = B[jj + i][kk + <span class="number">4</span> + <span class="number">0</span>];</span><br><span class="line">            b = B[jj + i][kk + <span class="number">4</span> + <span class="number">1</span>];</span><br><span class="line">            c = B[jj + i][kk + <span class="number">4</span> + <span class="number">2</span>];</span><br><span class="line">            d = B[jj + i][kk + <span class="number">4</span> + <span class="number">3</span>];</span><br><span class="line"></span><br><span class="line">            <span class="comment">// A 的左下角转置并正确放置到 B 的右上角</span></span><br><span class="line">            <span class="comment">// evict A 前四行的缓存, 加载/hit 后四行</span></span><br><span class="line">            <span class="comment">// hit B 第 i 行一行后半的缓存</span></span><br><span class="line">            e = A[kk + <span class="number">4</span> + <span class="number">0</span>][jj + i];</span><br><span class="line">            f = A[kk + <span class="number">4</span> + <span class="number">1</span>][jj + i];</span><br><span class="line">            g = A[kk + <span class="number">4</span> + <span class="number">2</span>][jj + i];</span><br><span class="line">            h = A[kk + <span class="number">4</span> + <span class="number">3</span>][jj + i];</span><br><span class="line">            B[jj + i][kk + <span class="number">4</span>] = e;</span><br><span class="line">            B[jj + i][kk + <span class="number">4</span> + <span class="number">1</span>] = f;</span><br><span class="line">            B[jj + i][kk + <span class="number">4</span> + <span class="number">2</span>] = g;</span><br><span class="line">            B[jj + i][kk + <span class="number">4</span> + <span class="number">3</span>] = h;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 此时 B 的第 i 行缓存已经没用了, 可以直接踢出</span></span><br><span class="line">            <span class="comment">// 恢复 B 的右上角到正确的位置(左下)</span></span><br><span class="line">            <span class="comment">// evict B 第 i 行的缓存, 加载第 i + 4 行</span></span><br><span class="line">            B[jj + i + <span class="number">4</span>][kk + <span class="number">0</span>] = a;</span><br><span class="line">            B[jj + i + <span class="number">4</span>][kk + <span class="number">1</span>] = b;</span><br><span class="line">            B[jj + i + <span class="number">4</span>][kk + <span class="number">2</span>] = c;</span><br><span class="line">            B[jj + i + <span class="number">4</span>][kk + <span class="number">3</span>] = d;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 还剩 B 的右下角</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++) &#123;</span><br><span class="line">            <span class="comment">// A 的下半部分第 i 行</span></span><br><span class="line">            a = A[kk + <span class="number">4</span> + i][jj + <span class="number">4</span> + <span class="number">0</span>];</span><br><span class="line">            b = A[kk + <span class="number">4</span> + i][jj + <span class="number">4</span> + <span class="number">1</span>];</span><br><span class="line">            c = A[kk + <span class="number">4</span> + i][jj + <span class="number">4</span> + <span class="number">2</span>];</span><br><span class="line">            d = A[kk + <span class="number">4</span> + i][jj + <span class="number">4</span> + <span class="number">3</span>];</span><br><span class="line">            <span class="comment">// B 的下半部分 4 行</span></span><br><span class="line">            B[jj + <span class="number">4</span> + <span class="number">0</span>][kk + <span class="number">4</span> + i] = a;</span><br><span class="line">            B[jj + <span class="number">4</span> + <span class="number">1</span>][kk + <span class="number">4</span> + i] = b;</span><br><span class="line">            B[jj + <span class="number">4</span> + <span class="number">2</span>][kk + <span class="number">4</span> + i] = c;</span><br><span class="line">            B[jj + <span class="number">4</span> + <span class="number">3</span>][kk + <span class="number">4</span> + i] = d;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 妈的终于过了, 我快写死了</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">undef</span> BSIZE</span></span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/08/19/CSAPP-Lab-Cache/" title="CSAPP Cache Lab 笔记">https://amiriox.github.io/2025/08/19/CSAPP-Lab-Cache/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/CSAPP-cmu15213/" rel="tag"># CSAPP/cmu15213</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/08/17/CSAPP-Lab-Data/" rel="prev" title="CSAPP Data Lab 笔记">
+                  <i class="fa fa-angle-left"></i> CSAPP Data Lab 笔记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/09/01/Dairy_250901/" rel="next" title="词穷, 但也总比写点废话要好">
+                  词穷, 但也总比写点废话要好 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

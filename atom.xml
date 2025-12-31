@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Amiriox&#39;s Storage</title>
+  <icon>https://amiriox.github.io/images/favicon.ico</icon>
+  <subtitle>Declaration does not declare anything.</subtitle>
+  <link href="https://amiriox.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://amiriox.github.io/"/>
+  <updated>2025-12-31T14:56:30.225Z</updated>
+  <id>https://amiriox.github.io/</id>
+  
+  <author>
+    <name>折鸦夜明け前</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>占位 -- 2025 年终总结</title>
+    <link href="https://amiriox.github.io/2025/12/31/2025_first_failed_resistance/"/>
+    <id>https://amiriox.github.io/2025/12/31/2025_first_failed_resistance/</id>
+    <published>2025-12-31T14:54:33.000Z</published>
+    <updated>2025-12-31T14:56:30.225Z</updated>
+    
+    <content type="html"><![CDATA[<p>该写点什么呢？退役，折腾lecture，迷茫，比较，怀念，自我批判，一些微妙的改变</p><p>等期末周过去，放假再写吧。毕竟传统是在除夕前后去写年终总结。</p>]]></content>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="年终总结" scheme="https://amiriox.github.io/categories/%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>&lt;未完成&gt;数据库系统的算子执行</title>
+    <link href="https://amiriox.github.io/2025/12/19/db-15445-4-operator/"/>
+    <id>https://amiriox.github.io/2025/12/19/db-15445-4-operator/</id>
+    <published>2025-12-19T11:35:30.000Z</published>
+    <updated>2025-12-31T14:39:18.825Z</updated>
+    
+    <content type="html"><![CDATA[<p>上一篇博客: <ahref="https://zheya.cc/2025/12/16/db-15445-3-access/">数据库系统的访问方法| Amiriox’s Storage</a></p><p>一觉醒来发现自己变成反面教材了, 我是不是不该退役啊?</p><h2 id="查询计划">查询计划</h2><p>在关系型数据库中, 操作可以视为在可重集合上的关系代数运算的组合.在第一篇文章中介绍了一些最常见的关系代数运算和对应的 SQL 语句.关系代数的每个运算都根据其语义接受一个或多个关系, 并产出新的关系.将每个运算视作一个算子, 接受一个或多个表, 产出新的表.这个由<strong>算子(operator)</strong>组成的有向无环图(DAG)就是<strong>查询计划(QueryPlan)</strong>.</p><p>例如, 对于 SQL 语句</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name</span><br><span class="line"><span class="keyword">FROM</span> R <span class="keyword">JOIN</span> S <span class="keyword">ON</span> R.id <span class="operator">=</span> S.id</span><br><span class="line"><span class="keyword">WHERE</span> S.age <span class="operator">&gt;</span> <span class="number">18</span></span><br></pre></td></tr></table></figure><p>这其中包含 连接 <span class="math inline">\(\bowtie\)</span>、投影<span class="math inline">\(\pi\)</span>、选择 <spanclass="math inline">\(\sigma\)</span>. 从算子的角度来看, 首先是从关系<span class="math inline">\(R\)</span> 和 <spanclass="math inline">\(S\)</span> 中提取元组的 access method, 接着是对<span class="math inline">\(S\)</span> 中的元组进行选择的 operator:<span class="math inline">\(\sigma_{age&gt;18}(S)\)</span>,然后是将选择后的 <span class="math inline">\(S&#39;\)</span> 中的元组与<span class="math inline">\(R\)</span> 做连接的 operator: <spanclass="math inline">\(T = R \bowtie_{R.sid=S&#39;.sid} S&#39;\)</span>,最后对这个连接后的临时表的元组进行投影操作的 operator: <spanclass="math inline">\(\pi_{name}(T)\)</span>. (实际上不一定会成表,即不会在 Catalog 中有这个临时表的元数据, 不过无论是什么,在算子看来只是一堆元组而已)</p><p>而上一篇博客介绍了从表中提取元组、执行查询(包括高效的单点查询和范围查询)的Access Method, 本文主要介绍一些常见算子的实现方式, 如 <code>JOIN</code>,<code>ORDER BY</code>, <code>GROUP BY</code>. &lt;TODO: 查证一下<code>SELECT</code>, <code>WHERE</code> 等算子实现&gt;</p><p>总结来说: 数据在算子构成的逻辑管道中流通最终被塑造为查询结果.</p><p>在查询计划的有向无环图中,一个让元组能够连续流动而无需间接存储的过程就是一个 pipeline, 而阻碍某个pipeline (导致元组被迫”停下”被存储等待) 的运算符就是 pipeline break,例如 <code>JOIN</code>, <code>ORDER BY</code>. 对于 Hash Join,需要对其中一个表建立哈希表(Pipeline #1), 而另一个表则可以作为另一条Pipeline #2 在 #1 结束后启动, 则对于另一个表来说这条数据流动没有阻塞;对于 Sort-Merge Join, 则需要三条 pipeline: 两个表分别 sort 都是 breaker,最后再在 <code>JOIN</code> 那个算子节点上继续流动; 对于<code>ORDER BY</code>, 必须间接存储, 等所有元组都获取到后才能排序.</p><p>不过这是总体上的概念, 具体的实现上大致可分为三种模型,主要的区别在于获取元组的多少: 是”一次获取一个元组”(迭代器模型),还是”一次获取全部元组”(物化模型),还是”一次获取一部分元组”(向量批处理模型).</p><h2 id="三种算子执行模型">三种算子执行模型</h2><h3 id="迭代器模型">迭代器模型</h3><p>就像迭代器一样, 每个算子有一个 <code>Next()</code> 函数,负责计算并返回下一个元组, 通常是更高层的算子调用 <code>Next()</code>并且进一步导致其子节点调用 <code>Next()</code>, 直到最底层的<code>FROM</code> 负责 <strong>emit</strong> 出表中的原始元组,整体就像从顶层往上拉数据一样, 所以称作 Top-to-Bottom Pull-based.</p><p>利于, 对于一个最简单的 <code>FROM S</code>:</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> S:</span><br><span class="line">    emit(t)</span><br></pre></td></tr></table></figure><p>而选择则是:</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> child.Next():</span><br><span class="line">    <span class="keyword">if</span> predicate(t): emit(t)</span><br></pre></td></tr></table></figure><p>Hash Join:</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> t1 <span class="keyword">in</span> left.Next():</span><br><span class="line">    buildHashTable(t1)</span><br><span class="line"><span class="keyword">for</span> t2 <span class="keyword">in</span> right.Next():</span><br><span class="line">    <span class="keyword">if</span> Some(t1) = probe(t2):</span><br><span class="line">        emit(t1 ⨝ t2)</span><br></pre></td></tr></table></figure><h3 id="物化模型">物化模型</h3><h3 id="和向量批处理模型">和向量批处理模型</h3><h2 id="两种方向">两种方向</h2><p>自底向上推, 自顶向下拉</p><p>概念, 优势</p><h2 id="具体的算子执行">具体的算子执行</h2><h3 id="提供数据">提供数据</h3><p>Sequential Scan 的优化</p><h3 id="更新">更新</h3><h3 id="表达式求值和-jit">表达式求值和 JIT</h3><h3 id="sorting">Sorting</h3><p>意义, 外部归并, Clustered B+ Tree 索引</p><h3 id="aggregation">Aggregation</h3><p>排序, 外部哈希</p><h3 id="join">Join</h3><p>意义, Sort-Merge Join 和 Hash Join</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;上一篇博客: &lt;a href=&quot;https://zheya.cc/2025/12/16/db-15445-3-access/&quot;&gt;数据库系统的访问方法
+| Amiriox’s Storage&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;一觉醒来发现自己变成反面教材了, 我是不是不该退役啊?&lt;/p&gt;
+&lt;h2 id=&quot;查询计划&quot;&gt;查询计划&lt;/h2&gt;
+&lt;p&gt;在关系型数据库中, 操作可以视为在可重集合上的关系代数运算的组合.
+在第一篇文章中介绍了一些最常见的关系代数运算和对应的 SQL 语句.
+关系代数的每个运算都根据其语义接受一个或多个关系, 并产出新的关系.
+将每个运算视作一个算子, 接受一个或多个表, 产出新的表.
+这个由&lt;strong&gt;算子(operator)&lt;/strong&gt;组成的有向无环图(DAG)就是&lt;strong&gt;查询计划(Query
+Plan)&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;例如, 对于 SQL 语句&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://amiriox.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="计算机科学" scheme="https://amiriox.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/"/>
+    
+    <category term="cmu15445" scheme="https://amiriox.github.io/tags/cmu15445/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>&lt;未完成&gt;数据库系统的访问方法</title>
+    <link href="https://amiriox.github.io/2025/12/16/db-15445-3-access/"/>
+    <id>https://amiriox.github.io/2025/12/16/db-15445-3-access/</id>
+    <published>2025-12-16T12:35:30.000Z</published>
+    <updated>2025-12-31T14:39:18.825Z</updated>
+    
+    <content type="html"><![CDATA[<p>上一篇博客: <ahref="https://zheya.cc/2025/10/19/db-15445-2-storage/">数据库系统的数据存储方式| Amiriox’s Storage</a></p><p>上次写博客是在一个多月前了, 最近比较忙, 博客只能抽空写.精神状态也不是很好, 得想想办法 ()</p><h2 id="数据库系统的访问方法">数据库系统的访问方法</h2><p>我们在这个系列的第一篇文章(<ahref="https://zheya.cc/2025/09/23/db-15445-1-intro/">数据库系统的基本概念| Amiriox’s Storage</a>)中就介绍了数据库的架构分层, 但没能真正展开.</p><table><thead><tr><th style="text-align: center;">典型关系型数据库的架构分层</th></tr></thead><tbody><tr><td style="text-align: center;">查询优化(Query Planning)</td></tr><tr><td style="text-align: center;">算子执行(Operator Execution)</td></tr><tr><td style="text-align: center;">访问方法(Access Method) &lt;-</td></tr><tr><td style="text-align: center;">缓冲池管理器(Buffer Pool Manager)</td></tr><tr><td style="text-align: center;">磁盘管理器(Disk Manager)</td></tr></tbody></table><p>具体来说:</p><ul><li>磁盘管理器单纯用来和磁盘进行交互,不过通常实现一些异步方案进行优化(Bustub 就利用了<code>std::promise</code>)</li><li>缓冲池在上一篇文章(<ahref="https://zheya.cc/2025/10/19/db-15445-2-storage/">数据库系统的数据存储方式| Amiriox’s Storage</a>)中介绍了, 为防止磁盘 I/O 成为性能瓶颈,有计划地(一些页驱逐策略)将磁盘中的页加载到内存中作为内存中的一个页帧<spanclass="math inline">\(^{[*]}\)</span></li><li>访问方法通过特定的数据结构从页中找到上层算子执行所需要的信息,本文将详细解释这些数据结构</li><li>算子是关系代数中的具体操作实现(当然, 事实上是基于可重集合,甚至有序可重集合的特殊关系代数), 这在后面的文章中会详细介绍,例如数据和逻辑是如何在这些算子间流动最终得出查询结果的,算子的执行体现了程序究竟在做什么:“用逻辑塑造一个管道让数据在其中塑形”。</li><li>查询优化, 面对一个已知的 SQL 语句, 预估大概的执行成本,选择采用什么索引, 某些算子的执行顺序交换, 以形成相对更优的执行计划</li></ul><h2 id="页中的数据如何被解释">页中的数据如何被解释</h2><p>上一篇文章中介绍了各种数据存储模型。将各种数据模型联系到一起, 并向Access Method 负责的就是 Record ID,即包含了一个元组存储位置的元组唯一标识,对列存就是对齐的列位置(详见上一篇文章).</p><p>那么, 具体来说, 这些访问方法就是用一些数据结构找这些 Record ID,从而访问到数据库中一行又一行元组.</p><p>最简单的方法自然是全表扫描线性查找, 通过全局的 Catalog(这个目录中包含表的各种元数据) 找到表数据的第一个页面(例如, 这个表的Page Directory, 对于 Heap File 存储), 然后由 Page Directory中的数据找到某个页的位置(文件+偏移量), 由 Disk Manager 和 BPM管理读进内存, 然后按照约定的页面结构(比如之前介绍过的槽页面)解析,顺序扫描.</p><p>需要注意的是, 数据库系统的规模可能非常大(后面我们会看到,将数据存在磁盘上除了可持久化需求, 另一个原因是内存是存不下了),例如对一条在几亿条记录的表中查找某个 id 的记录,线性查找除了时间复杂度问题, 还会造成大量的磁盘 I/O.因此我们需要找到时间复杂度更优、磁盘 I/O 较少(或尽可能保证顺序磁盘I/O)的办法来获取 Record ID.</p><h2 id="数据结构">数据结构</h2><p>重复一下我们的需求: 维护一个可重复的集合,尽可能地支持高效插入、删除、查找(尤其对于 OLAP workload)</p><p>其次, 对于查找(或者说数据库的查询), 存在单点查找、范围查找等不同情况,而通常是具有查询的具体类型的,所以我们可以对不同查询采取不同的数据结构。</p><p>最后, 我们还希望数据结构的磁盘 I/O 能尽可能少, 或者尽可能是顺序 I/O而不是随机 I/O</p><h3 id="单点查询">单点查询</h3><p>从复杂度上来讲, 毫无疑问是哈希表的 <spanclass="math inline">\(O(1)\)</span> 查询在一众数据结构中最亮眼。Yes, butat what cost? 哈希表基本都是随机 I/O, 但这毕竟是单点查询,相对于”在可能规模极大的数据中 O(1) 查找的优势”,在单点查询中造成一次或几次随机磁盘 I/O 并非无法接受。(No free lunchhere)</p><p>这里哈希表的键可以是主键, 或某一属性; 值可以是元组(剩余元素)本身,或是 Record ID(常见).</p><h4 id="静态哈希">静态哈希</h4><p>对于键个数已知的 scenario,可以采用静态哈希。静态哈希解决冲突的手段通常是<strong>开放定址</strong>:</p><ol type="1"><li><p>探测: 线性探测/平方探测</p><p>插入 <span class="math inline">\(k_2\)</span> 时若 <spanclass="math inline">\(H(k_2) = H(k_1)\)</span>,进而尝试其他位置(所谓”开放定址”), 对于线性探测来说可能是 <spanclass="math inline">\(H(k_2) + f(i), f(i) = c i, i=1,2,3,...\)</span>如果觉得线性探测可能造成堆积现象, 也可以采用 <spanclass="math inline">\(f(i)=c i^2\)</span> 进一步避免冲突的键堆积在一起.查找时也按相同规则找位置即可. 但要注意删除不能直接删除, 而是要 rehash或标记墓碑(通常采用后者): 在被删除元素的位置上打上特殊标记,让查找操作并不在此处终止而是继续向下寻找,直到在某次新的插入操作中复用这个墓碑的位置。</p></li><li><p>Cuckoo Hashing</p><p>非常古怪的名字.杜鹃这种生物会把自己的蛋下到别人窝里然后把别人的蛋挤走, Cuckoo Hash也是类似的策略:<br />在 <span class="math inline">\(H_1(k_2) = H_1(k_1)\)</span> 即新插入的<span class="math inline">\(k_2\)</span> 和先前的 <spanclass="math inline">\(k_1\)</span> 发生冲突时,</p><ul><li>先使用另一个哈希函数计算 <spanclass="math inline">\(H_2(k_2)\)</span>,如果那个位置恰好空缺则插入成功</li><li>如果仍然不成功(存在 <span class="math inline">\(H_2(k_0) =H_2(k_2)\)</span>) 就只好把那里的冲突键 <spanclass="math inline">\(k_0\)</span> 踢掉, 把 <spanclass="math inline">\(k_2\)</span> 放进去</li><li>当然, 我们决不会对还未出生的鸟宝宝坐视不管: 继续执行将被抢走位置的键<span class="math inline">\(k_0\)</span> 插回去的操作,同样可能涉及到其他无辜键被踢出然后重新插入(谁还不是一只杜鹃了呢?).由于我们有两个哈希函数 <span class="math inline">\(H_1(x)\)</span> 和<span class="math inline">\(H_2(x)\)</span>, 通常我们都能找到某个在<span class="math inline">\(H_1(k_i)\)</span> 位置的 <spanclass="math inline">\(k_i\)</span> 并且其备选位置 <spanclass="math inline">\(H_2(k_i)\)</span> 为空的键.如果不存在就只能自认倒霉(这可能造成死循环, 通常需要终止操作, 扩容哈希表,然后重新 rehash 所有元素)</li></ul><p>Cuckoo Hashing 的优点在于绝对的最坏 <spanclass="math inline">\(O(1)\)</span> 查询复杂度(探测法在极端数据下可能因为需要不断向下探测找下一个位置导致 O(n)的查询复杂度), 但代价就是插入操作复杂, 同时可能触发扩容.</p></li></ol><p>静态哈希仅仅适用于我们(大致)知道有多少键需要维护的情况,否则就需要重建整个哈希表并且 rehash.</p><h4 id="动态哈希">动态哈希</h4><p>最令人熟知的应该是 Chained Hashing,也就是国内常叫的拉链法(为什么你们总喜欢这么弱智的翻译? “拉链”? “主码”?).通常的实现是, 每个 <span class="math inline">\(H(x)\)</span>值域对应的位置上是一个链表的表头,每次冲突时只需要头插法(同样弱智的翻译)插在这个链表头即可. 然而,拉链法同样可能像探测法一样造成查询的退化(你可能会说这主要是哈希函数太烂导致多个键冲突在一起,但是总有这种情况发生, 对吧?<span class="math inline">\(^{[*]}\)</span>),以下是一些优化:</p><ol type="1"><li><p>Extendible Hashing</p><p>设立一些桶和桶对应的局部计数器 <spanclass="math inline">\(d_i\)</span>, 其意义是: 在桶 <spanclass="math inline">\(i\)</span> 容纳的键值对中, 最少需要查看 <spanclass="math inline">\(d_i\)</span>个键的哈希值的二进制位才能区分开桶里的这些键值对 (例如 <code>010</code>和 <code>110</code> 只需要 <span class="math inline">\(1\)</span>位区分, 而 <code>010111</code> 和 <code>011111</code> 需要至少两位 <spanclass="math inline">\(2\)</span> 位才能区分)</p><p>维护一个全局计数器 <span class="math inline">\(d\)</span>,其意义是对当前哈希表中所有键值对的键的哈希值, 最少需要 <spanclass="math inline">\(d\)</span> 个二进制位才能进行区分.以及配套的一个长为 <span class="math inline">\(2^d\)</span> 的目录,这个目录记录了对一个哈希值应该去哪个桶来找 (例如, <spanclass="math inline">\(d=3, H(k) = 0b0110010\)</span>, 则在前三位<code>011</code> 对应的目录指向的桶中查找/插入/删除这个键值对)</p><p>一条<strong>不变量</strong>是: 局部计数器 <spanclass="math inline">\(d_i\)</span> 永远小于全局计数器 <spanclass="math inline">\(d\)</span>. (否则目录项一定会是错的,导致查找到的桶无法正确离散不同键的哈希值)</p><p>对于查找操作, 计算哈希值, 取哈希值的前 <spanclass="math inline">\(d\)</span> 位二进制, 通过目录中这 <spanclass="math inline">\(d\)</span> 位二进制对应的目录项指针找到对应的桶,最多查找 <span class="math inline">\(2^d\)</span> 次就能找到(更确切来说,只需要查找 <span class="math inline">\(2^{d_i}\)</span>即局部计数器即可)</p><p>对于插入操作, 定位过程类似, 但是若插入导致桶满了需要分裂,则存在以下情况:</p><ul><li><span class="math inline">\(d_i + 1 \leq d\)</span>: 创建新桶,并且修改新旧两个桶的局部计数器为 <spanclass="math inline">\(d_i+1\)</span>, 因为超出 <spanclass="math inline">\(2^{d_i}\)</span> 个(不重复的)键意味着仅靠 <spanclass="math inline">\(d_i\)</span> 位无法区分这 <spanclass="math inline">\(\gt 2^{d_i}\)</span> 个(不重复的)键的哈希值了.不过此时局部计数器较小仍不需要动全局计数器</li><li><span class="math inline">\(d_i + 1 \gt d\)</span>: 准确来说是 <spanclass="math inline">\(d_i = d\)</span>.此时强行扩展局部计数器会导致一个目录项必须指向两个桶(这显然是不符合规则的).所以要扩展全局计数器, 将目录从 <span class="math inline">\(2^d\)</span>扩展为 <span class="math inline">\(2^{d+1}\)</span> 项,此时两个目录项会指向同一个桶(对于未分裂的桶),或是两个目录项分别指向分裂操作造成的两个桶, 桶分裂的过程和上面一样.</li></ul><p>是靠”哈希值的二进制位”对哈希表中的位置进行了一次离散化,然后在这个离散化精度不够高的时候在(惰性地)增加精度(<spanclass="math inline">\(d\)</span> 位到 <spanclass="math inline">\(d+1\)</span> 位)</p></li><li><p>Linear Hashing</p><p>&lt;TODO: 也是个很有想法的哈希, 但是解释起来有点麻烦,先鸽一下&gt;</p></li></ol><h3 id="范围查找">范围查找</h3><p>范围查找通常是基于索引的, 而提到数据库的索引就不得不提到 B+ Tree,时间复杂度和体系结构友好的完美权衡.</p><p>从需求下手,我们需要一个能够以优良时间复杂度维护元素有序性质的、磁盘随机 I/O次数较少的数据结构.</p><p>那么, 链表怎么样? 有序链表维护有序性代价太高了,插入等操作需要遍历定位(注意链表是不能二分查找的, 因为不具有 <spanclass="math inline">\(O(1)\)</span> 随机访问性质).</p><p>跳表(跳跃表, <code>SkipList</code>) 怎么样?跳表可以通过不同层数的节点巧妙界定范围, 并且依据随机性可以勉强维持 log的时间复杂度, 但是跳表的节点定位几乎都是随机磁盘 I/O, 因此也否决了.但跳表的确在数据库系统中得到了一些应用,主要是在纯内存数据结构上(不涉及磁盘 I/O)的情境下.</p><p>因为类似的原因, 平衡树也同样被否决了(而且常规平衡树也只能做单点查询,当然这不是主要问题, Splay, FHQ Treap,线段树这样的数据结构也能进行区间查询, 但是依然存在随机磁盘 I/O次数较多的问题).</p><p>那么有没有一种办法, 可以把跳表和平衡树的优势结合起来?</p><ol type="1"><li>跳表可以通过不同层次的节点确定查找范围,平衡树可以根据二叉查找树的节点性质和平衡树的平衡性质(防退化)以 <spanclass="math inline">\(O(\log n)\)</span> 的复杂度确定查找范围;但在这两个问题上两者的缺陷是一致的: 需要跳转太多次导致随机磁盘 I/O 太多,那么能不能通过添加分叉数的方式降低平衡树的树高,从而降低查找结点所需的跳转次数呢? 对于平衡树不能,因为平衡树几乎都是基于二叉搜索树添加了一系列平衡规则,但我们可以记着这一点, 称为 <em>性质1</em>.</li><li>在跳表中, 一旦达到最低层次, 就可以通过链表结点的连接指针向后遍历,这是常规平衡树所不具备的. 我们称之为 <em>性质2</em></li></ol><p>而 B+ Tree 就是具备 <em>性质1</em> 和 <em>性质2</em> 的数据结构.具体来说:</p><ul><li>只在叶子节点存储实际数据,且每个节点存储多个<strong>相邻且处于同一范围</strong>的(单调的)数据,相邻叶子节点通过 sibling pointer 连接, 形成一个链表,用于加速范围查询.</li><li>内部节点不存储实际数据, 而是发挥类似跳表上层的定位功能. 具体来说,内部节点存储一系列单调的元素(<span class="math inline">\(e_1 &lt; e_2&lt; e_3 &lt; ...\)</span>),而在每两个元素间存在一个指针指向下一层的节点,含义是这个指针指向的子树中的所有元素大小都在这两个元素之间 (例如 <spanclass="math inline">\(e_1\)</span> 和 <spanclass="math inline">\(e_2\)</span> 之间的指针指向的子树中所有的元素<span class="math inline">\(e\)</span> 都保证 <spanclass="math inline">\(e_1 \leq e \lt e_2\)</span>, 取等取决于具体实现).由于每个节点能够索引到的范围变多了(对平衡树来说,一个节点只能区分出两个范围: 大于这个节点值的子树,和小于这个节点值的元素), 树高可以明显降低,而在由于每个节点的元素都是单调的, 可以通过二分查找加速索引过程,依然可以保证 log 复杂度.</li><li>完美平衡, 节点平衡因子为0. 这一点保证了 log 级别的查找复杂度,实现上是通过保证每个节点内的元素个数大于半满小于全满从而防止太多范围聚集到一个节点上而很多节点几乎为空导致退化为链的情况.(取决于具体实现, 对于叶子节点和内部节点实际上要求略有不同,这一点后面会说)</li></ul><p>仅仅从数据结构的定义形态上来看, B+ Tree 是简洁自然的,然而为了保证这些性质, <del>可遭老罪了</del>, <code>Insert</code> 和<code>Remove</code> 操作真的要处理很多种 case:</p><ul><li>插入导致节点满了, 进行 split, 同时要保持上述性质</li><li>删除导致节点空了, 或者小于半满(这些约束称为”不变量约束”), 需要re-distribute 或者 merge</li></ul><p>而这些操作需要在 B+ Tree 复杂结构的条件下, 区分叶子节点和内部节点,还要对根节点特判, 同时数据库系统中通常还要保证并发安全… 没错, 这就是cmu15445 的 <ahref="https://15445.courses.cs.cmu.edu/fall2024/project2/">Project #2:Database Index</a>: 手写一个并发安全的 B+ Tree.</p><p>split, re-distribute 和 merge 操作, 以及兼顾并发安全和效率的 LatchCoupling 技术, 我会接着展开, 同时我还会介绍一些使用 <code>cgdb</code> 和<code>rr</code>, 包括使用自己的 <code>GTest</code> 测试进行调试的经验.&lt;TODO: 但因为太麻烦所以暂时先鸽着&gt;</p><p>此外, 对于倒排索引、Trie树等在数据库系统中广泛运用的数据结构这里不做展开.</p><h2 id="辅助优化">辅助优化</h2><p>&lt;TODO: 概率数据结构(如布隆过滤器)&gt;</p><hr /><p>下一篇博客: <ahref="https://zheya.cc/2025/12/19/db-15445-4-operator/">数据库系统的算子执行| Amiriox’s Storage</a></p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;上一篇博客: &lt;a href=&quot;https://zheya.cc/2025/10/19/db-15445-2-storage/&quot;&gt;数据库系统的数据存储方式
+| Amiriox’s Storage&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;上次写博客是在一个多月前了, 最近比较忙, 博客只能抽空写.
+精神状态也不是很好, 得想想办法 ()&lt;/p&gt;
+&lt;h2 id=&quot;数据库系统的访问方法&quot;&gt;数据库系统的访问方法&lt;/h2&gt;
+&lt;p&gt;我们在这个系列的第一篇文章(&lt;a href=&quot;https://zheya.cc/2025/09/23/db-15445-1-intro/&quot;&gt;数据库系统的基本概念
+| Amiriox’s Storage&lt;/a&gt;)中就介绍了数据库的架构分层, 但没能真正展开.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&quot;text-align: center;&quot;&gt;典型关系型数据库的架构分层&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align: center;&quot;&gt;查询优化(Query Planning)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align: center;&quot;&gt;算子执行(Operator Execution)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align: center;&quot;&gt;访问方法(Access Method) &amp;lt;-&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align: center;&quot;&gt;缓冲池管理器(Buffer Pool Manager)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align: center;&quot;&gt;磁盘管理器(Disk Manager)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://amiriox.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="计算机科学" scheme="https://amiriox.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/"/>
+    
+    <category term="cmu15445" scheme="https://amiriox.github.io/tags/cmu15445/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>&lt;未完成&gt;数据库系统的数据存储方式</title>
+    <link href="https://amiriox.github.io/2025/10/19/db-15445-2-storage/"/>
+    <id>https://amiriox.github.io/2025/10/19/db-15445-2-storage/</id>
+    <published>2025-10-19T10:07:30.000Z</published>
+    <updated>2025-12-31T14:39:18.825Z</updated>
+    
+    <content type="html"><![CDATA[<p>上一篇博客: <ahref="https://zheya.cc/2025/09/23/db-15445-1-intro/">数据库系统的基本概念| Amiriox’s Storage</a></p><h2 id="存储管理-数据存储模型">存储管理: 数据存储模型</h2><p>上一篇博客提到了数据库管理系统本身的抽象层次, 其中就有 Disk Manager和 Buffer Pool Manager 作为数据库的存储管理器。</p><p>提到”数据库的数据存储方式”时,(尽管有些早)一半涉及到三个层次的存储方式:文件的存储方式、页面内部的布局、元组的内部布局.其中为什么需要文件的存储方式与元组的内部布局较好理解,而数据库中页面的概念将会在下面说明, 为什么数据库需要实现自己的页面.</p><h3 id="文件存储方式-heap-file">文件存储方式: Heap File</h3><p>您可能需要阅读 <ahref="https://zheya.cc/2025/02/19/CSAPP-2025-02-20/">CSAPP3e第六章(存储器层次结构)| Amiriox’s Storage</a>来对计算机存储器的层次结构的意义有一定的认识.</p><p>简单来说, 由于不同存储设备的访问速度不同,在冯诺依曼体系的计算机不可避免地数据传输中会拖慢更快速的存储设备的效率,所以按照存取效率进行排序, 利用时间/空间局部性,将更快的存储器作为次快的存储器的缓存, 最大化利用存储器的存取效率.</p><p>很显然, 数据库的数据必须是可持久化的, 也就是最终要存在文件系统上, 而CPU 对磁盘的访问通常较慢(尽管有 DMA),<del>最主要的原因是某个公司曾推出的可持久化的快速主存没能发展起来(大雾)</del>所以我们需要将主存作为磁盘的缓存, 利用磁盘加载到内存中的页面,主要的数据操作在主存中进行, 最后将修改后的(脏页)写回磁盘.这些页面交由执行引擎使用, 而与 Disk Manager 交互,提供这个页面交换功能本身的组件叫 <strong>Buffer Pool Manager</strong>(BPM)</p><p>具体来说, 数据库的一个文件分为若干个固定大小的连续空间, 称为页,这个文件称之为 Heap File, 也就是一堆无序的页面的集合;同时还会有一页称为页目录 (Page Directory), 记录某个页在哪个 Heap File上的哪个偏移量(位置).</p><p>当执行引擎指明我需要页号为 <spanclass="math inline">\(\text{page_id}\)</span> 的页时, BPM负责从磁盘中先提取 Page Directory 所在页, 解析其中的布局,获取到一些元信息: <span class="math inline">\(\text{page_id}\)</span>这一页存在哪个文件里, 偏移量是多少; 然后通过文件和便宜量找到对应页,加载到内存(单纯的复制). 当然, BPM 还要负责标记脏页/驱逐页面/写回等任务.(当然, 实现上肯定会分为不同组件, 单一职责)</p><blockquote><p>为什么重造轮子?</p><p>以上这些东西听起来像是操作系统虚拟内存的功能, 甚至也有对应功能的实现:<code>sys_mmap</code> 系统调用, 映射磁盘页到内存, 标记脏页, 写回磁盘,甚至还有 COW, 看上去非常”最佳实践”. 事实上也的确有很多数据库完全采用<code>mmap</code> 系统调用来实现数据的, 但实际上 <code>mmap</code>会导致许多问题: * 首先,数据库的事务必须是原子性的(设想一个修改余额的操作进行了一半会怎么样?),而操作系统诞生之初就是对一些功能的封装和抽象,这意味着其资源管理是完全透明的(这意味着我们对其细节不可知), 具体来说,它可能在任何时候 flush dirty page, 我们没法控制何时把脏页写回磁盘</p><ul><li><p>其次, 由于操作系统对页面资源的管理完全透明,我们对页面是否在内存中并不了解, 每一次对页面的访问都可能导致一个 PAGEFAULT. 这往往是很耗时的,操作系统会阻塞当前线程并从磁盘加载页面到主存</p></li><li><p>由于 BPM 中可能存在驱逐等操作, 会改变磁盘页到内存帧上的映射,在使用 <code>mmap</code> 时, 这些 page id to frame id的映射是在页表中的(事实上,有经验的开发者应该提到页表就开始敏感性能问题), 修改页表需要粒度较大的锁,而且为了维护多核 CPU 的缓存一致性, 修改页表的 CPU核心必须通过处理期间中断通知其他核心也及时更新 TLB, 造成 TLB Shootdown;那么使用自己的 BPM 会怎么样呢? 所有的锁都是用户态的锁(POSIX互斥锁的实现通常是 <code>futex</code>, 而实际上 <code>futex</code>的特点就是在用户态执行大部分锁操作), 不涉及任何 TLB Shootdown,性能很高</p><p>所以手动实现一个 Buffer Pool Manager 是有意义的.</p></li></ul></blockquote><p>之所以称这样的存储方式下的文件为 “Heap File”,因为其中的页只是无序地存在, 并通过 Page Directory 查询页的位置,没有树形组织或者哈希等应用.</p><h3 id="页面布局">页面布局:</h3><p>页面应该存储什么信息应当是显然的: 具体的关系表中的信息,以及一些元数据, 视情况可能还有一些方便查询等操作的辅助数据结构.</p><p>把数据库中的行和列存到页面中有几种方式, 可以选择以行为单位存 <spanclass="math inline">\(r\)</span> 个行, 也可以选择以列为单位存 <spanclass="math inline">\(c\)</span> 个列</p><h4 id="nsm面向行存储">NSM/面向行存储</h4><p>将元组作为基本单位存入页面文件,即一个页面文件存储的是多个元组(行).</p><p>这样做的优点是插入删除等操作快,但是缺点是读取某一属性(列)时需要加载整个元组,导致从磁盘加载过多无用数据并且空间局部性很差;另外也无法实现压缩(后文将提及, 大多数压缩策略是基于对同类数据的,对同一属性元素压缩收益很大, 而 NSM 是元组连续,而属性是混杂在一起的).</p><p>由于写友好而读不友好, 适用于多次写(而每次写入少量)少读的 OLTP(事务型数据库), 如 PostgreSQL 就是行存储.</p><h4 id="dsm分离式存储模型面向列存储">DSM/分离式存储模型/面向列存储</h4><p>适用于复杂 SQL 查询而写入操作较少的 OLAP (分析型数据库)</p><p>考虑到 NSM 的缺陷, 我们可以在一个页面文件中存储连续的列元素,这样在查询某个属性时 (如 <code>WHERE age &gt;= 18</code>)就可以减少多余数据并保持良好的局部性.</p><p>也因此, 插入/删除操作变得较为复杂 (需要在多个页内进行协调)</p><h4 id="pax-混合型存储">PAX, 混合型存储</h4><p>若干个完整的行存入同一页面中, 但页内的存储是按照列存</p><p>先将若干行为一组形成<strong>行组</strong>(row group),然后将每个行组按列分为列块, 以列块为单位进行存储 (当然, 这样要记录大量的metadata)</p><h3 id="具体实现结构">具体实现结构</h3><p>以上主要介绍总体的存储策略, 而根据行存/列存方案选取不同,具体的实现目前主要有以下几种:</p><h4 id="tuple-orientation-storage">Tuple-orientation Storage</h4><p>在一个页面的开头一段区域存储 Page Header,包括元组数目/schema/压缩方法(见下文)元信息;</p><p>紧接着的一段区域存储一个槽数组(Slot Array), 每个 slot记录一个元组在这个页面的位置(通过偏移量);</p><p>由于 slot 的数量会随着新元组的插入变化, 所以元组本身的数据需要从 HeapFile 文件末尾往前存储, 并且更新 slot 记录的偏移量.</p><p>这种方式的缺点也有很多:</p><ul><li>由于删除是直接删除元组所在位置的数据, 所以会出现一些空白位置; 同时Slot 和 元组本身之间也有空白. 这些空白的区域浪费了很多存储空间</li><li>为了操作一个元组, 需要读这整个页进来,即使这个页(数据库的页往往有几十到几百 KB)可能有几百个元组是我们不需要的;读入在不同页上的多个元组那就是更糟糕的情况了</li></ul><p>由于只能存储元组, 所以是 NSM 方案的实现.</p><h4 id="log-structure-storage">Log Structure Storage</h4><p>通过 Log Structure Merge-Tree (LSM-Tree) 数据结构管理写入. LSM-Tree包括 MemTable 和多级压缩的、不可变的 SSTable, 可能还包括摘要表.</p><p>对于插入/删除/更新等写入操作, 分为以下几个阶段</p><ol start="0" type="1"><li>整理日志为一个键值对. 如操作<code>PUT(table_id.row_id.age, 18)</code> 会变成一个 <spanclass="math inline">\((K, V)\)</span> 的键值对, 其中键 <spanclass="math inline">\(K\)</span> 为表 <code>table_id</code> 和<code>row_id</code> 的组合, 还有一个用于表明操作顺序的全局计数器<code>seq_num</code>, 值 <span class="math inline">\(V\)</span>为<strong>整个元组的新值</strong>, 如<code>['Alice', 18, 337845818]</code>(当然实际可能是通过序列化等方式实现的, 这里不深入具体实现)</li><li>写入内存中的 MemTable 数据结构, 具体的实现可以是多样的, 功能是将元素<span class="math inline">\((K, V)\)</span> 按 Key 排序. (比如跳表,后面我们会说 Skip List 是优秀的内存数据结构)</li><li>当 MemTable 中的元素满了或到达一定阈值时, 将其中已有序的键值对进行Flush 操作, 首先按照 <code>seq_num</code>对冗余的记录只保留最新的记录<span class="math inline">\(^{[1]}\)</span>,然后写入到磁盘上的 SSTable 文件上. SSTable 中的键值对同样是有序的,便于进行二分查找; 并且 SSTable 是不可变的文件, 一旦生成除非销毁(压缩后),不会被修改. 此外还要注意, 对于同一个 SSTable 内部是不存在冗余记录的,因为一个 SSTable 是一个 MemTable 一次 Flush 的产物, 而 Flush时会去重.</li><li>上面这些由 MemTable 生成的 SSTable 文件是第一级 SSTable, 当第一级SSTable 数量较多时, 可以把第一级多个 SSTable 合并成一个更大的第二级SSTable. 具体来说, 例如存在一个较早的<code>(table1.row3, ['Alice', 18])</code> 和一个较新的<code>(table1.row3, &lt;tombstone&gt;)</code> (其中墓碑标记<code>tombstone</code> 表示已被删除), 则可以直接清除这两条键值对.这里的早晚的规则是: 更低一级的 SSTable 来自上层 SSTable 的压缩,所以越低的 SSTable 越早; 同一级的 SSTable按照生成顺序即可辨别记录新旧.</li></ol><p>对于查询操作:</p><ol start="0" type="1"><li>我们会设置内存中的摘要表, 对每一级 SSTable设置过滤器来判断这一层是否存在我们需要的键 (过滤器以后的文章中会提及),还会记录每个 SSTable 的最大/最小键, 用来支持范围查询操作.</li><li>除此之外, 就只能对每个符合查询条件的 SSTable 进行二分查找了.</li></ol><p>$[1]: $ 之所以在 MemTable 中保留冗余项还要记录 <code>seq_num</code>,是因为原地更新需要对元素项加锁, 并发效率不好.</p><h4 id="index-organization-storage">Index-organization Storage</h4><p>使用平衡树(考虑到并发和缓存性能等, 通常是 B+ Tree)组织索引, 而 B+Tree 的每个叶子节点存储的键值对是实际的数据, 其中值为标记着元组物理位置Record ID.</p><p>B+ Tree 是较为重要的数据结构, 在后面 &lt;TODO:数据库系统设计中的访问方法&gt; 有详细介绍.</p><h3 id="record-id-aka.-tuple-id">Record ID (aka. Tuple ID)</h3><p>上面的实现过程中能发现我们有时会需要唯一标识一个元组, 比如 LogStructure Storage 的 <code>row_id</code>,</p><p>具体来说, 数据库会为每一个元组分配一个 Record ID,用来标记这个元组唯一的物理位置.</p><ul><li>对于 NSM 的行存方式: 一般是一个 <spanclass="math inline">\((\text{File ID, Page ID, Slot})\)</span>的三元组(的加工); SQLite 的策略是一个自增的 <code>rowid</code>, 以这个<code>rowid</code> 为 Key 在 B+ Tree 建立的索引中查找叶子节点的页面(关于索引和 B+ Tree 见本博客后面的文章)</li><li>对于 DSM 或 PAX 的方式: 存储一个列位置 (Fixed-length Offsets),这个行的所有元素在所有页面的列中是对齐的</li></ul><h3 id="压缩策略">压缩策略:</h3><p>上文也提及了, 对于元组这样不同类数据是不太好压缩的,所以主要存在对一列内容的压缩上(比如 <code>temperature</code>列的温度可能相邻两者差距不大, 有些 <code>isValid</code>列可能会出现连续的 0 或 1).</p><p>&lt;TODO: 具体的压缩策略&gt;</p><p>此外还可以通过传统压缩算法对若干元组组成的块进行压缩, 并以 mod log来辅助进行延迟更新.</p><h3 id="处理其他元组内部值的问题">处理其他元组内部值的问题:</h3><p>&lt;TODO: &gt;</p><p>下一篇博客: <ahref="https://zheya.cc/2025/12/16/db-15445-3-access/">数据库系统的访问方法| Amiriox’s Storage</a></p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;上一篇博客: &lt;a href=&quot;https://zheya.cc/2025/09/23/db-15445-1-intro/&quot;&gt;数据库系统的基本概念
+| Amiriox’s Storage&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&quot;存储管理-数据存储模型&quot;&gt;存储管理: 数据存储模型&lt;/h2&gt;
+&lt;p&gt;上一篇博客提到了数据库管理系统本身的抽象层次, 其中就有 Disk Manager
+和 Buffer Pool Manager 作为数据库的存储管理器。&lt;/p&gt;
+&lt;p&gt;提到”数据库的数据存储方式”时,
+(尽管有些早)一半涉及到三个层次的存储方式:
+文件的存储方式、页面内部的布局、元组的内部布局.
+其中为什么需要文件的存储方式与元组的内部布局较好理解,
+而数据库中页面的概念将会在下面说明, 为什么数据库需要实现自己的页面.&lt;/p&gt;
+&lt;h3 id=&quot;文件存储方式-heap-file&quot;&gt;文件存储方式: Heap File&lt;/h3&gt;</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://amiriox.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="计算机科学" scheme="https://amiriox.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/"/>
+    
+    <category term="cmu15445" scheme="https://amiriox.github.io/tags/cmu15445/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>&lt;未完成&gt;数据库系统的基本概念</title>
+    <link href="https://amiriox.github.io/2025/09/23/db-15445-1-intro/"/>
+    <id>https://amiriox.github.io/2025/09/23/db-15445-1-intro/</id>
+    <published>2025-09-23T05:31:30.000Z</published>
+    <updated>2025-12-31T14:39:18.825Z</updated>
+    
+    <content type="html"><![CDATA[<h2id="数据的可持久化需求的抽象层次矛盾">数据的可持久化需求的抽象层次矛盾</h2><p>为什么需要数据库?</p><p>绝大多数学校的程序设计课节课时或开课期间的实验课都会有一个工程实践,一般是 XX 管理系统,向刚刚学习程序设计的学生浅显地介绍实际工程中的一些应用(输入输出交互/控制流/数据处理/可持久化),b 格高一点的如 <code>gitlet</code>针对可持久化还会有对象的序列化/反序列化等介绍,建立起对于可持久化数据的基本认知.</p><p>一个运行中的程序的实例(进程以及其中可能存在的多个线程)实质上是一段内存中的数据(代码区/数据区, 堆/栈, 环境和参数),例如局部变量或者动态分配的内存,而这些都是<strong>不可持久化的数据</strong>,在程序关闭后大部分数据会被操作系统清理.此时如果想可持久化某些数据使得下次程序启动仍然可以打开,就需要将数据可持久化到磁盘上(更现代来说是闪存). 例如, 在 XX管理系统中会通过语言标准库提供的文件输出接口把用户数据或日志逐行存在文件中,在 <code>gitlet</code> 项目中会把 Commit 的对象等序列化后写入文件.</p><p>当然, 这些看似朴素的做法也并不是错误的,事实上早期的数据库就是这种数据的结构和存储方式耦合度较高的做法(直到关系型数据库的提出),而直到现在许多数据库(某些 NoSQL)也使用 JSON等文件格式来表达一个对象的方式来存储数据. 然而, 这样的方式存在许多问题.其中的主要矛盾是, 现实工程中的数据和数据间关系是复杂的,而计算机科学中处理复杂问题的最主要手段(可能是唯一的手段)就是<strong>抽象</strong>.</p><blockquote><p>“对复杂性管理的关键是<strong>抽象</strong>这个概念.”</p></blockquote><p>序列化与反序列化一个对象的方式尚且较为灵活, 此处以纯文件输入输出举例:我们可以明显看出从”纯粹文本文件”到”有语义的数据”之间有一个较大的跨度,如果用户数据新增了某个属性(酒店管理系统新增了检验年龄的功能),则需要重新构建整个数据文件; 除此之外, CRUD等基本操作也过于朴素不利于优化. 这种抽象层次的缺失造成了一种耦合:如果数据间的关系发生变化, 就会对较底层的文本文件有较大的影响,引入无关复杂性而不利于维护(白话说就是麻烦).</p><p>因此, 我们需要将”纯粹的文本”和”有意义的数据”区分开来,就需要新增一层抽象, 我们称之为数据库的 <strong>Schema</strong>. Schema是数据库的蓝图和框架, 定义了数据的结构, 关系和约束等规则. 在逻辑层面上,Schema 包含表/列/主键/外键等<span class="math inline">\(^{[1]}\)</span>.为了实现这一层抽象, 我们需要维护操作数据的一套行为, 包括DDL(数据定义语言, 用于表示一个 Schema), DML(数据操作语言,用于在数据上进行操作). 有了这一层抽象,我们在刚才的例子中就可以简单地使用 DDL 为 Schema新增一个”年龄”列(<strong>Schema 是可变的!</strong>), 我们只需要使用 DDL就可以了, 真正要考虑多的是这一套行为的具体实现——我们称之为DBMS(数据库管理系统).</p><blockquote><p>$[1]: $ 在实现上, 不同数据的差异可能较大, 例如 MySQL 中 SCHEMA 和DATABASE 是同义词, 而 PostgreSQL 的一个 DATABASE 可能包含多个SCHEMA.</p></blockquote><h2 id="基本概念">基本概念</h2><p>我们已经介绍了 Schema 的基本概念, 这里不再赘述.</p><h3 id="关系型数据库">关系型数据库</h3><p>对于关系型数据库,我们把表中的某一列属性(比如用户的年龄)建模为一个年龄的集合,而整个关系型数据库实际上就是不同集合(年龄集合, 名字集合,电话号码集合)之间的关系运算:整个数据表也就是这些集合的笛卡尔积的子集(笛卡尔积的概念参考 Wikipedia,没学过离散数学也可以轻易理解概念). 同样地,其他操作也可以看作集合间的关系运算,我们会在后面详细介绍其中的主要运算.</p><p>从而, 数据表就是一个”关系”. 还记得离散数学中”n 元关系”的定义吗?<del>我忘了</del> 反正就是笛卡尔积的子集</p><h3 id="一些术语">一些术语:</h3><h4 id="列属性集合字段">列/属性/集合/字段</h4><p>列, 也称为一个属性或一个集合(在关系代数的语境下), 上文已介绍.</p><p>需要注意的是, 在具体的 SQL 语言语境下,通常会将属性的名字称为<strong>字段</strong>.</p><h4 id="行记录元组">行/记录/元组</h4><p>行, 也称为一个元组. 在关系代数的语境下,集合之间的笛卡尔积运算可以得到一个元组.</p><p>例如, 一个名字集合 <span class="math inline">\(N =\{\text{Adam},\text{Eve}\}\)</span> 年龄集合 <spanclass="math inline">\(A = \{930, \text{929}\}\)</span> 作笛卡尔积得到<span class="math inline">\(N \times A = \{ (n, a) \mid n \in N, a \in A\} = \{ (\text{Adam}, 930), (\text{Adam}, 929), (\text{Eve}, 930),(\text{Eve}, 929) \}\)</span>.</p><p>一张数据表往往是笛卡尔积结果的子集,即从所有可能的组合中选取那些符合业务逻辑和现实约束的有意义组合: <spanclass="math inline">\(\{ (\text{Adam}, 930), (\text{Eve}, 929)\}\)</span>. 即:</p><table><thead><tr><th style="text-align: center;">Name</th><th style="text-align: center;">Age</th></tr></thead><tbody><tr><td style="text-align: center;">Adam</td><td style="text-align: center;">930</td></tr><tr><td style="text-align: center;">Eve</td><td style="text-align: center;">929</td></tr></tbody></table><p>所以数据库中的一行也称为一个元组, 一列也称为一个集合.这是在关系代数中对现实数据的建模.</p><p>笑点解析: 我本来想随便编个 A/B 开头的人名,突然蹦出了个写亚当夏娃的念头, 然后现查的活了多少岁</p><p>笑点解析2: 实际上夏娃的年龄没有准确的定论. 为了处理这种情况,现实中的数据库往往不会严格按照关系代数实现, 现实数据库往往是基于 bags(背包, 允许重复元素) 而不是 sets (集合, 不允许重复元组)的, 同时允许<code>NULL</code> 值 (如果 Schema 没有明确 <code>NOT NULL</code>).</p><p>另外, 一行/一元组有时也称”一条记录”.这是为了区分在不同语境下同一样事物的特点.</p><h4 id="主键primary-key">主键(Primary Key)</h4><p>拒绝主码翻译谢谢喵。用来唯一确认一条记录<spanclass="math inline">\(^{[2]}\)</span>, 例如学生 id.主键这一集合必然是纯粹的集合, 不允许重复的主键存在, 毕竟 Primary Key也叫 Unique Key.</p><blockquote><p>$[2]: $ 大部分数据库管理系统中,不定义主键会导致数据变成一坨东西(具体来说, 没有行标识符, 没有聚簇索引…后面再说). 而 SQLite 中, 即使你不在 Schema 中手动写<code>id INTEGER PRIMARY KEY</code>, 也会自动分配一个<code>rowid</code>, 承担类似主键的职责. (如果手动定义了主键也会有<code>rowid</code>, 但此时主键是用户定义的主键)</p></blockquote><h4 id="外键alien-foreign-key">外键(<del>Alien</del> Foreign Key)</h4><p>用于在当前表中引用其他表的主键, 强制两个表之间的数据同步和数据完整性.例如, 不应当在订单列表插入一个根本不存在的客户 ID.<del>棍母下的订单说是</del></p><h3 id="sql-基础">SQL 基础</h3><p>这里只介绍简单的 SQL 语法及语义. SQL 的语法并不难,应当把重点放在”如何写出好的查询”这一类问题上, 故对语法不作过多赘述.</p><h4id="子句的逻辑执行顺序from-join-where-group-by-having-select-order-by">子句的逻辑执行顺序(<code>FROM</code>,<code>JOIN</code>, <code>WHERE</code>, <code>GROUP BY</code>,<code>HAVING</code>, <code>SELECT</code>, <code>ORDER BY</code>)</h4><p>SQL 的子句书写顺序贴近英语语法, 但是实际执行并非按照书写顺序执行.简单来说分为以下步骤:</p><ol type="1"><li><code>FROM</code> 和 <code>JOIN</code> 子句: 数据库确认数据来源,找到需要操作的表: 可以是已经存在的表, 也可以是两个表的连接</li><li><code>WHERE</code> 子句: 过滤行, 挑选出符合要求的行, 如<code>WHERE s.age &gt;= 18</code></li><li><code>GROUP BY</code> 子句:按照要求将符合要求的行聚合为一个逻辑组(这也是一张表,但是每一行包含了多个”同类”的行). 例如 <code>GROUP BY dept</code>, 会把<code>dept</code> 列相同的所有行聚集为一行, 所有部门每个不同的<code>dept</code> 一行形成一个逻辑组.</li><li><code>HAVING</code> 子句: 对于 <code>GROUP BY</code> 结果的过滤</li><li><code>SELECT</code> 子句: 对上一步结果表的<strong>每一行</strong>,独立计算 <code>SELECT</code> 子句中的表达式,形成最终输出表的一行中的一个单元格.<ul><li>最常见的用法, <code>SELECT t.salary * 1.1</code>, 对于输出的每一行,直接获取 <code>salary</code> 列的值增加 <spanclass="math inline">\(10\%\)</span> 的结果;<br /></li><li>聚合函数, <code>SELECT AVG(t.salary) ... GROUP BY t.dept</code>,输入是 <code>GROUP BY</code> 产生的结果表中的一行(也就是一个逻辑组,对于本例一个逻辑组是同一部门的所有行); 如果没有 <code>GROUP BY</code>,则将整个表视为一个逻辑组. 总结来说,聚合函数的作用对象是<strong>行的集合</strong>,<strong>逻辑组</strong>或<strong>将子查询整个表的所有行视为一整个的逻辑组</strong></li><li>一个标量子查询(只有一行一列即一个单元格的值):对于每一行都执行一次这个子查询, 把返回的单一值作为这一行的结果</li></ul></li><li><code>ORDER BY</code>: 字面意思.<code>ORDER BY name ASC, salary DESC</code>, 对行进行排序</li></ol><p>这里的描述(尤其是 <code>SELECT</code>的实际语义)写得较为繁琐(相比其他教程), 但正因为如此才能避免一些编写 SQL语句时可能遇到的陷阱致使初学者困惑. (<del>困惑是必然的, 区别只是学<code>SELECT</code> 时就开始困惑还是 <code>SELECT</code>的语义没掌握好导致到写出陷阱时才开始困惑</del>)</p><p>我们来看一个简单的聚合例子:</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">AVG</span>(score), major</span><br><span class="line"><span class="keyword">FROM</span> students <span class="keyword">AS</span> s</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> major</span><br></pre></td></tr></table></figure><p>计算学生表中每个专业学生的平均分数. 考虑 <code>SELECT</code>子句:</p><ul><li><code>AVG(score)</code>: 聚合函数, 对 <code>GROUP BY</code>产生的逻辑组 (例如 <code>major</code> 为 <code>CS</code> 的所有同学) 的score 列计算均值, 没有问题</li><li><code>major</code>: 每一行(由于存在 <code>GROUP BY</code>,这里一行是一个逻辑组)中的 <code>major</code> 是相同的,都是同一专业的学生, 也没有问题.</li></ul><p>如果我此时我们想顺便也查看每个学生的名字,缺乏经验的人可能会这样写</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name, <span class="built_in">AVG</span>(score), major</span><br><span class="line"><span class="keyword">FROM</span> students <span class="keyword">AS</span> s</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> major</span><br></pre></td></tr></table></figure><p>此时便出现错误, 此时的”一行”实际上是一个”逻辑组”,包含了许多同专业的学生, 显然不会全部是一个名字<spanclass="math inline">\(^{[3]}\)</span>.<strong>聚合函数会把单独的学生行聚集成逻辑组, 导致 <code>SELECT</code>无法 SELECT 单个行的属性!</strong></p><p>由此可以得出使用 <code>GROUP BY</code> 子句时 <code>SELECT</code>子句的相应规则: 要么是一个聚合函数, 要么是一个 <code>GROUP BY</code>的列本身. 当然死记硬背也可以写对,但是就缺乏了”为什么会有这样规则”的理解.</p><blockquote><p>$[3]: $ 遇到这种情况就需要使用窗口函数, 请自行查阅.</p></blockquote><h4 id="关系代数模型及其闭包性质">关系代数模型及其闭包性质</h4><p><strong>SQL 是一门编程语言</strong>. 这看上去比较反直觉, 因为<strong>SQL 实际上是一种领域特定语言 (DSL)</strong>. 有关 DSL其实有很多好玩的东西, 但是这里尽可能不偏离主题. 正因如此,许多熟悉了常见高级语言的人学习 SQL 时往往会感到疑惑,最具代表性的是有关类型的疑问: “这个子句执行后得到的结果是什么类型?”</p><p>产生此疑惑的原因之一是 <del>许多高校并没有专门的编程语言理论课</del>SQL 的类型系统高度基于关系模型(这里只讨论表等关系类型, 除此之外如<code>INTEGER</code> 等标量类型不做讨论).</p><p>你可能已经注意到了, 所有关系运算符 (<code>SELECT</code>,<code>JOIN</code>, <code>GROUP BY</code> 等) 的输入都是一个或多个关系,输出是一个新的关系 (或者说表也可以), 这是关系代数的封闭性(也叫闭包性质,指对一个集合进行运算后的结果仍然属于该集合),使得代数大大简化(子句操作的都是关系,整个语言中只分为关系类型和标量类型),毕竟数据表的规模和大小可能有非常多的形式.</p><p><TODO 此处补充: 关系代数与关系演算></p><h4 id="关系代数的常见运算">关系代数的常见运算</h4><p>注意, 虽然关系表是集合的笛卡尔积的子集,但是关系代数几乎都是<strong>对关系中的元组(行)进行操作</strong>(而不是对于属性(列))</p><ul><li>选择运算: 选择运算 <spanclass="math inline">\(\sigma_{p}(r)\)</span> 接受一个谓词 <spanclass="math inline">\(p\)</span> 和一个关系 <spanclass="math inline">\(r\)</span>, 生成一个新的关系,其中包含关系中符合谓词 <span class="math inline">\(p\)</span> 的元组;对应 <code>WHERE</code> 子句.</li><li>投影运算: 投影运算 <spanclass="math inline">\(\pi_{A_1,A_2,A_3,...,A_n}(r)\)</span>接受若干在关系 <span class="math inline">\(r\)</span> 中存在的属性 <spanclass="math inline">\(A_i\)</span>, 生成一个新的关系,其中列均以给出属性顺序出现, 并且未出现在 <spanclass="math inline">\(A_i\)</span> 中的列不会出现在新的关系中. 除此之外,还可以对属性进行计算(如 <spanclass="math inline">\(\pi_{\text{salary}/12}(r)\)</span>可用来根据年薪列显示月薪列, 即将年薪属性投影到新关系中的月薪属性); 对应<code>SELECT</code> 子句.</li><li>笛卡尔积: <span class="math inline">\(r_1 \times r_2\)</span>生成一个新的关系, 其中包含 <span class="math inline">\(r_1\)</span> 与<span class="math inline">\(r_2\)</span> 中元组的所有可能组合; 对应<code>CROSS JOIN</code> 子句</li><li>连接运算: 连接运算 <span class="math inline">\(r_1 \bowtie_\thetar_2 = \sigma_\theta(r_1 \times r_2)\)</span>, 即对笛卡尔积进行一个谓词<span class="math inline">\(\theta\)</span> 的选择,一般是用来筛除掉笛卡尔积中那些多余的元组; 对应<code>JOIN ON</code>.</li><li>集合运算: <span class="math inline">\(\cup, \cap, -\)</span> 等,对关系中的元组做这些集合运算; 对应<code>UNION</code>,<code>INTERSECT</code>, <code>EXCEPT</code></li><li>除此之外, 还有赋值/更名等, 不再赘述.</li></ul><h4 id="语义和实现的抽象屏障">语义和实现的抽象屏障</h4><p>在命令式语言的教学中通常缺乏对”语义”和”实现”这两种抽象层次的分离,例如: “引用占不占内存空间?<span class="math inline">\(^{[4]}\)</span>”这类问题就是在模糊语义和实现的边界. 而在声明式语言中,语义和实现往往有了不言自明的区分: 声明式语言只需要描写出”我想要什么”,实际实现并不是我详细描述出来的步骤. (具体来说, 就是查询优化器等存在)</p><p>&lt;TODO 在此处补充: <code>NETURAL JOIN</code>,<code>LFET JOIN</code>, <code>CROSS JOIN</code>, <code>JOIN ON</code>的区别; JOIN 和 嵌套查询的性能差异…&gt;</p><blockquote><p>$[4]: $ “References are not objects; they do not necessarily occupystorage, although the compiler may allocate storage if it is necessaryto implement the desired semantics (e.g. a non-static data member ofreference type usually increases the size of the class by the amountnecessary to store a memory address).”</p><p><ahref="https://en.cppreference.com/w/cpp/language/reference.html">Referencedeclaration - cppreference.com</a></p></blockquote><h4 id="进一步有用的-sql">进一步有用的 SQL</h4><p>&lt;TODO 在此处补充: 嵌套子查询; 窗口函数; 横向连接&gt;</p><h2 id="数据库本身的抽象层次">数据库本身的抽象层次</h2><ol type="1"><li>可持久化的数据库必然是在磁盘上的(这里不考虑特殊设备),所以需要<strong>磁盘管理器</strong> Disk Manager</li><li>反复磁盘 I/O 的速度太慢了,所以需要主存作为磁盘的缓存(主存的速度至少比磁盘快两个数量级倍以上),所以需要<strong>缓冲池管理器</strong> Buffer Pool Manager (BPM)</li><li>我们还需要在此之上实现查询/插入/删除等数据库的具体操作,所以还需要具体的执行引擎</li></ol><p>下一篇博客: <ahref="https://zheya.cc/2025/10/19/db-15445-2-storage/">数据库系统的数据存储方式| Amiriox’s Storage</a></p>]]></content>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;数据的可持久化需求的抽象层次矛盾&quot;&gt;数据的可持久化需求的抽象层次矛盾&lt;/h2&gt;
+&lt;p&gt;为什么需要数据库?&lt;/p&gt;
+&lt;p&gt;绝大多数学校的程序设计课节课时或开课期间的实验课都会有一个工程实践,
+一般是 XX 管理系统,
+向刚刚学习程序设计的学生浅显地介绍实际工程中的一些应用(输入输出交互/控制流/数据处理/可持久化),
+b 格高一点的如 &lt;code&gt;gitlet&lt;/code&gt;
+针对可持久化还会有对象的序列化/反序列化等介绍,
+建立起对于可持久化数据的基本认知.&lt;/p&gt;
+&lt;p&gt;一个运行中的程序的实例(进程以及其中可能存在的多个线程)
+实质上是一段内存中的数据(代码区/数据区, 堆/栈, 环境和参数),
+例如局部变量或者动态分配的内存,
+而这些都是&lt;strong&gt;不可持久化的数据&lt;/strong&gt;,
+在程序关闭后大部分数据会被操作系统清理.
+此时如果想可持久化某些数据使得下次程序启动仍然可以打开,
+就需要将数据可持久化到磁盘上(更现代来说是闪存). 例如, 在 XX
+管理系统中会通过语言标准库提供的文件输出接口把用户数据或日志逐行存在文件中,
+在 &lt;code&gt;gitlet&lt;/code&gt; 项目中会把 Commit 的对象等序列化后写入文件.&lt;/p&gt;
+&lt;p&gt;当然, 这些看似朴素的做法也并不是错误的,
+事实上早期的数据库就是这种数据的结构和存储方式耦合度较高的做法(直到关系型数据库的提出),
+而直到现在许多数据库(某些 NoSQL)也使用 JSON
+等文件格式来表达一个对象的方式来存储数据. 然而, 这样的方式存在许多问题.
+其中的主要矛盾是, 现实工程中的数据和数据间关系是复杂的,
+而计算机科学中处理复杂问题的最主要手段(可能是唯一的手段)就是&lt;strong&gt;抽象&lt;/strong&gt;.&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://amiriox.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="计算机科学" scheme="https://amiriox.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/"/>
+    
+    <category term="cmu15445" scheme="https://amiriox.github.io/tags/cmu15445/"/>
+    
+  </entry>
+  
+</feed>

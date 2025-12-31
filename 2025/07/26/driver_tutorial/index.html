@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="组件介绍  cpu 内存, 系统总线, pci总线 早期简单设备GPIO直接控制 PCI&#x2F;USB总线  I&#x2F;O 相关概念 I&#x2F;O传输方式:  PIO(PMIO&#x2F;MMIO轮询), Interrupt, DMA (中断不一定一定比PIO好, 比如网卡设备)  I&#x2F;O传输内容:  操作系统组件与驱动交互, 驱动与设备交互 驱动传递给设备命令和数据 文件&#x2F;流&#x2F;virtio-mmio的共享内存(1, 2略)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(草稿)从设备到操作系统: 如何编写驱动">
+<meta property="og:url" content="https://amiriox.github.io/2025/07/26/driver_tutorial/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="组件介绍  cpu 内存, 系统总线, pci总线 早期简单设备GPIO直接控制 PCI&#x2F;USB总线  I&#x2F;O 相关概念 I&#x2F;O传输方式:  PIO(PMIO&#x2F;MMIO轮询), Interrupt, DMA (中断不一定一定比PIO好, 比如网卡设备)  I&#x2F;O传输内容:  操作系统组件与驱动交互, 驱动与设备交互 驱动传递给设备命令和数据 文件&#x2F;流&#x2F;virtio-mmio的共享内存(1, 2略)">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-26T09:11:50.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.825Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="QEMU">
+<meta property="article:tag" content="草稿">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2025/07/26/driver_tutorial/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/07/26/driver_tutorial/","path":"2025/07/26/driver_tutorial/","title":"(草稿)从设备到操作系统: 如何编写驱动"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>(草稿)从设备到操作系统: 如何编写驱动 | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">组件介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#io-%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="nav-number">2.</span> <span class="nav-text">I&#x2F;O 相关概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#io%E4%BC%A0%E8%BE%93%E6%96%B9%E5%BC%8F"><span class="nav-number">2.1.</span> <span class="nav-text">I&#x2F;O传输方式:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#io%E4%BC%A0%E8%BE%93%E5%86%85%E5%AE%B9"><span class="nav-number">2.2.</span> <span class="nav-text">I&#x2F;O传输内容:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#io%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.3.</span> <span class="nav-text">I&#x2F;O模型:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1"><span class="nav-number">3.</span> <span class="nav-text">驱动程序设计:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E5%A4%87%E7%9A%84%E5%91%88%E7%8E%B0%E6%A8%A1%E5%BC%8F%E4%B8%8E-probe"><span class="nav-number">3.1.</span> <span class="nav-text">设备的呈现模式与 probe</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#plic"><span class="nav-number">3.2.</span> <span class="nav-text">PLIC:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#virtio%E8%AE%BE%E5%A4%87%E8%A7%84%E8%8C%83"><span class="nav-number">4.</span> <span class="nav-text">virtio设备规范:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%9F%A5%E9%97%A8%E9%93%83-doorbell"><span class="nav-number">4.1.</span> <span class="nav-text">通知(门铃 doorbell):</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E9%98%9F%E5%88%97-virtqueue"><span class="nav-number">4.2.</span> <span class="nav-text">虚拟队列 VirtQueue:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#virtioheader"><span class="nav-number">4.3.</span> <span class="nav-text">VirtIOHeader:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E8%AE%BE%E5%A4%87"><span class="nav-number">4.4.</span> <span class="nav-text">初始化设备:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#virtio-gpu"><span class="nav-number">4.5.</span> <span class="nav-text">Virtio-GPU:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BB%BB%E5%8A%A1"><span class="nav-number">4.6.</span> <span class="nav-text">操作系统的任务:</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/07/26/driver_tutorial/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="(草稿)从设备到操作系统: 如何编写驱动 | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          (草稿)从设备到操作系统: 如何编写驱动
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-07-26 17:11:50" itemprop="dateCreated datePublished" datetime="2025-07-26T17:11:50+08:00">2025-07-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="组件介绍">组件介绍</h2>
+<ul>
+<li>cpu 内存, 系统总线, pci总线</li>
+<li>早期简单设备GPIO直接控制</li>
+<li>PCI/USB总线</li>
+</ul>
+<h2 id="io-相关概念">I/O 相关概念</h2>
+<h3 id="io传输方式">I/O传输方式:</h3>
+<ul>
+<li>PIO(PMIO/MMIO轮询), Interrupt, DMA (中断不一定一定比PIO好,
+比如网卡设备)</li>
+</ul>
+<h3 id="io传输内容">I/O传输内容:</h3>
+<ul>
+<li>操作系统组件与驱动交互, 驱动与设备交互</li>
+<li>驱动传递给设备命令和数据</li>
+<li>文件/流/virtio-mmio的共享内存(1, 2略)</li>
+</ul>
+<span id="more"></span>
+<h3 id="io模型">I/O模型:</h3>
+<ul>
+<li>阻塞</li>
+<li>非阻塞</li>
+<li>多路复用</li>
+<li>信号驱动</li>
+<li>异步</li>
+</ul>
+<h2 id="驱动程序设计">驱动程序设计:</h2>
+<ol type="1">
+<li>数据结构初始化(VirtIoHeader, 其中包含VirtQueue,
+其中包含设备描述符/Avail/Used)</li>
+<li>初始化设备, 设定设备状态</li>
+<li>中断处理例程</li>
+<li>和操作系统组件交互</li>
+</ol>
+<h3 id="设备的呈现模式与-probe">设备的呈现模式与 probe</h3>
+<ol type="1">
+<li>x86_64, 个人计算机通常采用 PCI 总线的发现方式</li>
+<li>arm/riscv 因为设备多种多样, 采用 device tree,
+Bootloader(如SBI)负责将dtb放入寄存器交给操作系统</li>
+<li>设备树的 reg 是”总线地址”(对于在 PCI 总线上的设备) 或
+直接的物理地址(对于 virtio-mmio 设备), 前者需要 IOMMU 翻译</li>
+<li>解析设备树主要是根据不同设备类型分派到不同处理过程,
+主要是拿一下地址, 还有相关信息等</li>
+</ol>
+<h3 id="plic">PLIC:</h3>
+<ul>
+<li>平台级别中断控制器的意义</li>
+<li>传来中断时并不清楚是不是给自己的中断, 所以要检查一下www</li>
+</ul>
+<h2 id="virtio设备规范">virtio设备规范:</h2>
+<p>virtio 之设备描述: 设备特征位与地址空间 virtio 之状态表示: 设备状态域
+virtio 只交互机制: 通知+虚拟队列</p>
+<h3 id="通知门铃-doorbell">通知(门铃 doorbell):</h3>
+<h3 id="虚拟队列-virtqueue">虚拟队列 VirtQueue:</h3>
+<ul>
+<li>描述符表: 存放每个描述符的位置和 next 指针;
+很多驱动传达给设备的信息需要多个描述符组成一个链表(命令+数据+结果)</li>
+<li>可用环(Avail vring): 存放驱动程序放进去描述符链表的索引,
+表示传递的命令, 通过 kick 机制 (写入特定寄存器) 通知设备有新任务</li>
+<li>已用环(Used vring): 设备从可用环中取出描述符链表解析并处理,
+然后把填好后的描述符索引放入已用环, 中断一下让驱动程序拿结果</li>
+</ul>
+<p>在驱动程序操作描述符表, 可用环和通知设备时,
+需要设置内存屏障强制控制指令执行顺序,
+防止乱序执行导致设备看到错误的信息</p>
+<h3 id="virtioheader">VirtIOHeader:</h3>
+<p>各种寄存器区域, 除了status 和 features 相关的寄存器,
+还有存放虚拟队列索引的寄存器,
+以及存放描述符表/可用环/已用环的内存位置的寄存器(分为低32和高32位存,为了兼容性和内存对齐),
+以及中断相关的寄存器</p>
+<h3 id="初始化设备">初始化设备:</h3>
+<p>读取信息, 按照规范设定设备状态, 开辟所需数据结构的dma内存</p>
+<h3 id="virtio-gpu">Virtio-GPU:</h3>
+<ul>
+<li>header, rect, 实际的显示内存载荷, 总体命令的虚拟队列,
+光标命令的虚拟队列, 队列本身的内存载荷, 为了方便处理的 send/recv queue
+切片(注意生命周期标注, 必须至少和 VirIOGPU 活的一样长)</li>
+<li>new 里初始化设备, 分配各种dma内存, 读配置空间</li>
+<li>还需要按照规范把实际显存关联到 virtio-gpu 设备上; 主要是发送
+ResourceCreate2D 和 ResourceAttackBacking, 然后 SetScanout
+把显示资源链接到显示扫描输出上</li>
+</ul>
+<h3 id="操作系统的任务">操作系统的任务:</h3>
+<p>包装 VirtIOGPU 对象, 加引用计数和锁, 操作显存, flush,
+暴露系统调用给用户态程序</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/07/26/driver_tutorial/" title="(草稿)从设备到操作系统: 如何编写驱动">https://amiriox.github.io/2025/07/26/driver_tutorial/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/QEMU/" rel="tag"># QEMU</a>
+              <a href="/tags/%E8%8D%89%E7%A8%BF/" rel="tag"># 草稿</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/07/13/freshman2_oscamp_proj_daily/" rel="prev" title="oscamp 暑期 proj 周纪要">
+                  <i class="fa fa-angle-left"></i> oscamp 暑期 proj 周纪要
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/08/14/ostep/" rel="next" title="CPU/内存虚拟化, 调度和并发">
+                  CPU/内存虚拟化, 调度和并发 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

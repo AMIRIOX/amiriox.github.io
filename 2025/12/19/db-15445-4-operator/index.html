@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="上一篇博客: 数据库系统的访问方法 | Amiriox’s Storage 一觉醒来发现自己变成反面教材了, 我是不是不该退役啊? 查询计划 在关系型数据库中, 操作可以视为在可重集合上的关系代数运算的组合. 在第一篇文章中介绍了一些最常见的关系代数运算和对应的 SQL 语句. 关系代数的每个运算都根据其语义接受一个或多个关系, 并产出新的关系. 将每个运算视作一个算子, 接受一个或多个表, 产出">
+<meta property="og:type" content="article">
+<meta property="og:title" content="&lt;未完成&gt;数据库系统的算子执行">
+<meta property="og:url" content="https://amiriox.github.io/2025/12/19/db-15445-4-operator/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="上一篇博客: 数据库系统的访问方法 | Amiriox’s Storage 一觉醒来发现自己变成反面教材了, 我是不是不该退役啊? 查询计划 在关系型数据库中, 操作可以视为在可重集合上的关系代数运算的组合. 在第一篇文章中介绍了一些最常见的关系代数运算和对应的 SQL 语句. 关系代数的每个运算都根据其语义接受一个或多个关系, 并产出新的关系. 将每个运算视作一个算子, 接受一个或多个表, 产出">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-12-19T11:35:30.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.825Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="cmu15445">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2025/12/19/db-15445-4-operator/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/12/19/db-15445-4-operator/","path":"2025/12/19/db-15445-4-operator/","title":"\u003c未完成>数据库系统的算子执行"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title><未完成>数据库系统的算子执行 | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E8%AE%A1%E5%88%92"><span class="nav-number">1.</span> <span class="nav-text">查询计划</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E7%AE%97%E5%AD%90%E6%89%A7%E8%A1%8C%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">三种算子执行模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.1.</span> <span class="nav-text">迭代器模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%A9%E5%8C%96%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.2.</span> <span class="nav-text">物化模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%92%8C%E5%90%91%E9%87%8F%E6%89%B9%E5%A4%84%E7%90%86%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.3.</span> <span class="nav-text">和向量批处理模型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%90%91"><span class="nav-number">3.</span> <span class="nav-text">两种方向</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E7%9A%84%E7%AE%97%E5%AD%90%E6%89%A7%E8%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">具体的算子执行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E4%BE%9B%E6%95%B0%E6%8D%AE"><span class="nav-number">4.1.</span> <span class="nav-text">提供数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0"><span class="nav-number">4.2.</span> <span class="nav-text">更新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC%E5%92%8C-jit"><span class="nav-number">4.3.</span> <span class="nav-text">表达式求值和 JIT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sorting"><span class="nav-number">4.4.</span> <span class="nav-text">Sorting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#aggregation"><span class="nav-number">4.5.</span> <span class="nav-text">Aggregation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#join"><span class="nav-number">4.6.</span> <span class="nav-text">Join</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/12/19/db-15445-4-operator/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="<未完成>数据库系统的算子执行 | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          <未完成>数据库系统的算子执行
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-12-19 19:35:30" itemprop="dateCreated datePublished" datetime="2025-12-19T19:35:30+08:00">2025-12-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>上一篇博客: <a
+target="_blank" rel="noopener" href="https://zheya.cc/2025/12/16/db-15445-3-access/">数据库系统的访问方法
+| Amiriox’s Storage</a></p>
+<p>一觉醒来发现自己变成反面教材了, 我是不是不该退役啊?</p>
+<h2 id="查询计划">查询计划</h2>
+<p>在关系型数据库中, 操作可以视为在可重集合上的关系代数运算的组合.
+在第一篇文章中介绍了一些最常见的关系代数运算和对应的 SQL 语句.
+关系代数的每个运算都根据其语义接受一个或多个关系, 并产出新的关系.
+将每个运算视作一个算子, 接受一个或多个表, 产出新的表.
+这个由<strong>算子(operator)</strong>组成的有向无环图(DAG)就是<strong>查询计划(Query
+Plan)</strong>.</p>
+<p>例如, 对于 SQL 语句</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name</span><br><span class="line"><span class="keyword">FROM</span> R <span class="keyword">JOIN</span> S <span class="keyword">ON</span> R.id <span class="operator">=</span> S.id</span><br><span class="line"><span class="keyword">WHERE</span> S.age <span class="operator">&gt;</span> <span class="number">18</span></span><br></pre></td></tr></table></figure>
+<p>这其中包含 连接 <span class="math inline">\(\bowtie\)</span>、投影
+<span class="math inline">\(\pi\)</span>、选择 <span
+class="math inline">\(\sigma\)</span>. 从算子的角度来看, 首先是从关系
+<span class="math inline">\(R\)</span> 和 <span
+class="math inline">\(S\)</span> 中提取元组的 access method, 接着是对
+<span class="math inline">\(S\)</span> 中的元组进行选择的 operator:
+<span class="math inline">\(\sigma_{age&gt;18}(S)\)</span>,
+然后是将选择后的 <span class="math inline">\(S&#39;\)</span> 中的元组与
+<span class="math inline">\(R\)</span> 做连接的 operator: <span
+class="math inline">\(T = R \bowtie_{R.sid=S&#39;.sid} S&#39;\)</span>,
+最后对这个连接后的临时表的元组进行投影操作的 operator: <span
+class="math inline">\(\pi_{name}(T)\)</span>. (实际上不一定会成表,
+即不会在 Catalog 中有这个临时表的元数据, 不过无论是什么,
+在算子看来只是一堆元组而已)</p>
+<p>而上一篇博客介绍了从表中提取元组、执行查询(包括高效的单点查询和范围查询)的
+Access Method, 本文主要介绍一些常见算子的实现方式, 如 <code>JOIN</code>,
+<code>ORDER BY</code>, <code>GROUP BY</code>. &lt;TODO: 查证一下
+<code>SELECT</code>, <code>WHERE</code> 等算子实现&gt;</p>
+<p>总结来说: 数据在算子构成的逻辑管道中流通最终被塑造为查询结果.</p>
+<p>在查询计划的有向无环图中,
+一个让元组能够连续流动而无需间接存储的过程就是一个 pipeline, 而阻碍某个
+pipeline (导致元组被迫”停下”被存储等待) 的运算符就是 pipeline break,
+例如 <code>JOIN</code>, <code>ORDER BY</code>. 对于 Hash Join,
+需要对其中一个表建立哈希表(Pipeline #1), 而另一个表则可以作为另一条
+Pipeline #2 在 #1 结束后启动, 则对于另一个表来说这条数据流动没有阻塞;
+对于 Sort-Merge Join, 则需要三条 pipeline: 两个表分别 sort 都是 breaker,
+最后再在 <code>JOIN</code> 那个算子节点上继续流动; 对于
+<code>ORDER BY</code>, 必须间接存储, 等所有元组都获取到后才能排序.</p>
+<p>不过这是总体上的概念, 具体的实现上大致可分为三种模型,
+主要的区别在于获取元组的多少: 是”一次获取一个元组”(迭代器模型),
+还是”一次获取全部元组”(物化模型),
+还是”一次获取一部分元组”(向量批处理模型).</p>
+<h2 id="三种算子执行模型">三种算子执行模型</h2>
+<h3 id="迭代器模型">迭代器模型</h3>
+<p>就像迭代器一样, 每个算子有一个 <code>Next()</code> 函数,
+负责计算并返回下一个元组, 通常是更高层的算子调用 <code>Next()</code>
+并且进一步导致其子节点调用 <code>Next()</code>, 直到最底层的
+<code>FROM</code> 负责 <strong>emit</strong> 出表中的原始元组,
+整体就像从顶层往上拉数据一样, 所以称作 Top-to-Bottom Pull-based.</p>
+<p>利于, 对于一个最简单的 <code>FROM S</code>:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> S:</span><br><span class="line">    emit(t)</span><br></pre></td></tr></table></figure>
+<p>而选择则是:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> child.Next():</span><br><span class="line">    <span class="keyword">if</span> predicate(t): emit(t)</span><br></pre></td></tr></table></figure>
+<p>Hash Join:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> t1 <span class="keyword">in</span> left.Next():</span><br><span class="line">    buildHashTable(t1)</span><br><span class="line"><span class="keyword">for</span> t2 <span class="keyword">in</span> right.Next():</span><br><span class="line">    <span class="keyword">if</span> Some(t1) = probe(t2):</span><br><span class="line">        emit(t1 ⨝ t2)</span><br></pre></td></tr></table></figure>
+<h3 id="物化模型">物化模型</h3>
+<h3 id="和向量批处理模型">和向量批处理模型</h3>
+<h2 id="两种方向">两种方向</h2>
+<p>自底向上推, 自顶向下拉</p>
+<p>概念, 优势</p>
+<h2 id="具体的算子执行">具体的算子执行</h2>
+<h3 id="提供数据">提供数据</h3>
+<p>Sequential Scan 的优化</p>
+<h3 id="更新">更新</h3>
+<h3 id="表达式求值和-jit">表达式求值和 JIT</h3>
+<h3 id="sorting">Sorting</h3>
+<p>意义, 外部归并, Clustered B+ Tree 索引</p>
+<h3 id="aggregation">Aggregation</h3>
+<p>排序, 外部哈希</p>
+<h3 id="join">Join</h3>
+<p>意义, Sort-Merge Join 和 Hash Join</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/12/19/db-15445-4-operator/" title="&lt;未完成&gt;数据库系统的算子执行">https://amiriox.github.io/2025/12/19/db-15445-4-operator/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/cmu15445/" rel="tag"># cmu15445</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/12/16/db-15445-3-access/" rel="prev" title="<未完成>数据库系统的访问方法">
+                  <i class="fa fa-angle-left"></i> <未完成>数据库系统的访问方法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/12/31/2025_first_failed_resistance/" rel="next" title="占位 -- 2025 年终总结">
+                  占位 -- 2025 年终总结 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

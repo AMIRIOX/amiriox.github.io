@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="第六章 存储器层次结构(摘要与注解) 这一章也很好理解, 重点解释一些不太好理解或者书上介绍不是很清楚的地方, 然后列大纲用于以后复习看。 (UPD 做完 cache lab 后: 还是不太好理解的, cache lab 难度不小)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP3e第六章(存储器层次结构)">
+<meta property="og:url" content="https://amiriox.github.io/2025/02/19/CSAPP-2025-02-20/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="第六章 存储器层次结构(摘要与注解) 这一章也很好理解, 重点解释一些不太好理解或者书上介绍不是很清楚的地方, 然后列大纲用于以后复习看。 (UPD 做完 cache lab 后: 还是不太好理解的, cache lab 难度不小)">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://amiriox.github.io/images/image-20250221001408021.png">
+<meta property="og:image" content="https://amiriox.github.io/images/image-20250220232537093.png">
+<meta property="og:image" content="https://amiriox.github.io/images/image-20250220231904694.png">
+<meta property="article:published_time" content="2025-02-19T14:04:30.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.822Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="CSAPP&#x2F;cmu15213">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://amiriox.github.io/images/image-20250221001408021.png">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2025/02/19/CSAPP-2025-02-20/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/02/19/CSAPP-2025-02-20/","path":"2025/02/19/CSAPP-2025-02-20/","title":"CSAPP3e第六章(存储器层次结构)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CSAPP3e第六章(存储器层次结构) | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%85%AD%E7%AB%A0-%E5%AD%98%E5%82%A8%E5%99%A8%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84%E6%91%98%E8%A6%81%E4%B8%8E%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">第六章
+存储器层次结构(摘要与注解)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%99%A8%E5%88%86%E7%B1%BB"><span class="nav-number">1.1.</span> <span class="nav-text">存储器分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dram-%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E8%AE%BF%E9%97%AE"><span class="nav-number">1.2.</span> <span class="nav-text">DRAM 中的数据访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E7%A3%81%E7%9B%98"><span class="nav-number">1.3.</span> <span class="nav-text">旋转磁盘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98ssd"><span class="nav-number">1.4.</span> <span class="nav-text">固态硬盘(SSD)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%BD%93%E7%B3%BB%E4%B8%AD%E7%9A%84%E5%90%84%E9%83%A8%E5%88%86%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%B5%81"><span class="nav-number">1.5.</span> <span class="nav-text">计算机体系中的各部分数据交流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E5%AD%98%E5%88%B0cpu"><span class="nav-number">1.5.1.</span> <span class="nav-text">主存到CPU</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cpu-%E5%90%91%E6%97%8B%E8%BD%AC%E7%A3%81%E7%9B%98%E6%88%96%E5%85%B6%E4%BB%96io%E8%AE%BE%E5%A4%87%E5%8F%91%E9%80%81%E6%8C%87%E4%BB%A4"><span class="nav-number">1.5.2.</span> <span class="nav-text">CPU
+向旋转磁盘(或其他I&#x2F;O设备)发送指令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%99%A8%E4%BD%93%E7%B3%BB%E8%A7%A3%E6%9E%84%E7%9A%84%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5"><span class="nav-number">1.6.</span> <span class="nav-text">存储器体系解构的设计理念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%B1%80%E9%83%A8%E6%80%A7%E5%8E%9F%E7%90%86"><span class="nav-number">1.6.1.</span> <span class="nav-text">程序的局部性原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98"><span class="nav-number">1.6.2.</span> <span class="nav-text">缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%B2%E7%AA%81%E4%B8%8D%E5%91%BD%E4%B8%AD%E6%97%B6%E7%9A%84%E6%9B%BF%E6%8D%A2%E7%AD%96%E7%95%A5"><span class="nav-number">1.6.2.1.</span> <span class="nav-text">冲突不命中时的替换策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%99%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="nav-number">1.6.2.2.</span> <span class="nav-text">写入数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%99%E4%B8%8D%E5%91%BD%E4%B8%AD"><span class="nav-number">1.6.2.3.</span> <span class="nav-text">写不命中</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">1.6.2.4.</span> <span class="nav-text">其他</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%99%A8%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84"><span class="nav-number">1.6.3.</span> <span class="nav-text">存储器层次结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%99%A8%E5%B1%B1"><span class="nav-number">1.6.4.</span> <span class="nav-text">存储器山</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/02/19/CSAPP-2025-02-20/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CSAPP3e第六章(存储器层次结构) | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSAPP3e第六章(存储器层次结构)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-02-19 22:04:30" itemprop="dateCreated datePublished" datetime="2025-02-19T22:04:30+08:00">2025-02-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第六章-存储器层次结构摘要与注解">第六章
+存储器层次结构(摘要与注解)</h1>
+<p>这一章也很好理解, 重点解释一些不太好理解或者书上介绍不是很清楚的地方,
+然后列大纲用于以后复习看。</p>
+<p>(UPD 做完 cache lab 后: 还是不太好理解的, cache lab 难度不小)</p>
+<span id="more"></span>
+<h2 id="存储器分类">存储器分类</h2>
+<p>当前存储技术主要可以做以下分类:</p>
+<ol type="1">
+<li>RAM 随机访问储存器, 断电后数据会消失
+<ol type="1">
+<li>SRAM, 静态随机范围储存器, 例如 CPU 的 <code>L1/L2/L3</code> 缓存,
+每个单元是六晶体管电路</li>
+<li>DRAM, 动态随机范围存储器,
+每个单元是一晶体管电路。我们常用的主存一般是双倍数据速率同步的 DRAM
+(Double Data-Rate DRAM), 这是 DDR 内存的实际传输情况一般要频率乘 2
+(有的会用 MT/s 作单位, 除以 2 就是频率)</li>
+</ol></li>
+<li>ROM, 名字不重要, 一般可以读也可以写, 非易失性的
+<ol type="1">
+<li>PROM, 可编程 ROM, 只能被编程一次</li>
+<li>EPROM, 可擦写可编程 ROM</li>
+<li>EEPROM, 电子可擦写可编程 ROM, 一般每个单元会在编程 <span
+class="math inline">\(10^5\)</span> 次后失效</li>
+<li>闪存, 基于 EEPROM, 我们用的固态硬盘中的颗粒就是这个</li>
+</ol></li>
+<li>旋转磁盘</li>
+</ol>
+<h2 id="dram-中的数据访问">DRAM 中的数据访问</h2>
+<p>一个传统 DRAM 芯片中分为 <span class="math inline">\(d=r \times
+c\)</span> 个<strong>超单元</strong>, 每个超单元由 <span
+class="math inline">\(w\)</span> 个 DRAM 单元组成(即 <span
+class="math inline">\(w\)</span> 位信息)</p>
+<p>每个 DRAM 芯片都连接到内存控制器芯片, 读 <span
+class="math inline">\((r, c)\)</span> 时会把第 <span
+class="math inline">\(r\)</span> 行全部放入内部行缓冲区,
+然后取这一行的第 <span class="math inline">\(c\)</span> 列。</p>
+<p>多个 DRAM 芯片封装到<strong>内存模块</strong>中。一个 <span
+class="math inline">\(64\)</span> 位字被分割为几个部分存储到不同 DRAM
+芯片中, 要读取某个地址的主存内容,
+内存控制器会先将这个地址转换为超单元地址 <span class="math inline">\((r,
+c)\)</span> 然后广播到所有 DRAM 芯片最终合成为一个整体。</p>
+<h2 id="旋转磁盘">旋转磁盘</h2>
+<ul>
+<li>盘面-&gt;磁道-&gt;扇区的概念</li>
+<li>柱面的概念</li>
+<li>为了各个磁道扇区数相对相同, 因此有了记录区的概念</li>
+<li>逻辑块(可能是硬件或固件)和磁盘控制器的概念</li>
+<li>旋转磁盘的读取时间分为三部分
+<ol type="1">
+<li>寻道时间</li>
+<li>旋转时间(近似等于寻道时间)</li>
+<li>传送时间(和前两者相比可忽略)</li>
+</ol></li>
+</ul>
+<h2 id="固态硬盘ssd">固态硬盘(SSD)</h2>
+<p>由闪存芯片(主控芯片)、闪存翻译层(类似磁盘控制器)和闪存颗粒构成,
+闪存颗粒包含多个块, 每个块包含多个页</p>
+<p>数据是以页单位读写的, 另外 SSD 读比写快。</p>
+<p>基于闪存, 闪存基于 EEPROM, 所以这玩意每个块也是 <span
+class="math inline">\(10^5\)</span>
+次擦写后失效。但是现代很多平均磨损处理逻辑处理得很好,
+用户不太需要担心这个问题。</p>
+<h2 id="计算机体系中的各部分数据交流">计算机体系中的各部分数据交流</h2>
+<p>各部分之间通信一般是通过<strong>总线(bus)
+</strong>中传递数据流。我们常说的 PCI, PCIe 就是总线标准, USB 是
+通用串行总线的缩写。</p>
+<h3 id="主存到cpu">主存到CPU</h3>
+<p>CPU 有总线接口,
+通过<strong>系统总线</strong>连接到<strong>I/O桥</strong>(很多修笔记本的弹幕里常常说的先干南桥的南桥就是I/O桥),
+I/O桥通过<strong>内存总线</strong>连接到主存。</p>
+<p><em>寄存器的数据传递到主存(store)和主存的数据传递到寄存器(load)
+都需要两次总线事务+一次额外操作, 可以回想一下。</em></p>
+<h3 id="cpu-向旋转磁盘或其他io设备发送指令">CPU
+向旋转磁盘(或其他I/O设备)发送指令</h3>
+<p>磁盘通过总线适配器(SCSI/SATA/NVMe)连接到<strong>I/O总线</strong>,
+I/O总线连接到I/O桥, 剩下就还是I/O桥通过系统总线与 CPU 链接。</p>
+<p>CPU 通过<strong>内存映射I/O(Memory Mapped I/O)</strong> 向 I/O
+设备发送指令。地址空间内有一块地址(称为 I/O Port,
+个人觉得这个叫法很蠢)专门为与 I/O 设备通信保留的(一个设备可能映射到多个
+I/O Port)。</p>
+<p>CPU 通过总线向磁盘控制器发送 <span class="math inline">\((指令, src:
+逻辑块, dest: 主存某地址)\)</span>, 然后 CPU 不会等待 I/O (因为很慢,
+这个间隔有约 <span class="math inline">\(16ms/clock\)</span>
+次时钟周期), 由磁盘控制器读完数据后直接通过总线传送给主存(这个过程称作
+<strong>Direct Memory Access, DMA</strong>),
+然后传送完成时磁盘控制器通过 <strong>中断(Interrupt)</strong> 提示并打断
+CPU 通知其数据已到达。</p>
+<blockquote>
+<p>之前看到过一个视频说某个网吧有个 DMA 包间, 我第一反应就是这个
+DMA<br />
+结果还真是这个 DMA, 通过 DMA 技术读主存,
+在另一台设备上进行游戏作弊<br />
+只能说真想不到技术还能这么用</p>
+<p>学操作系统或者组成原理继续往后学(异常控制流那里)还会介绍 Interrupt
+和另一种控制流 Trap 的机制, 个人觉得这里挺好玩的。</p>
+</blockquote>
+<h2 id="存储器体系解构的设计理念">存储器体系解构的设计理念</h2>
+<h3 id="程序的局部性原理">程序的局部性原理</h3>
+<ul>
+<li>时间局部性: 一个位置的数据在一个时间范围内被多次访问</li>
+<li>空间局部性: 一个时间范围内访问相邻的多个位置的数据</li>
+</ul>
+<p>书中以不同步长的循环对比, 分析了不命中率 并比较其效率</p>
+<p>简单来说,
+如果对某个位置的访问的最近上一层循环的下标和这个位置的访问下标一致,
+那么显而易见这部分肯定是步长为 1 的循环, 步长为 <span
+class="math inline">\(k\)</span>, 高速缓存块大小为 <span
+class="math inline">\(B\)</span> 字节, 不命中率为 <span
+class="math inline">\(min(1, wordsize \times k / B)\)</span>,
+模拟以下就懂了, 实际上就是缓存只有 <span
+class="math inline">\(B\)</span>
+字节不够用了导致的<strong>容量不命中</strong>(这里我为了连续性调整了原书介绍的顺序,
+缓存命中的概念在下面说)</p>
+<p>编写缓存友好的代码需要我们:</p>
+<ul>
+<li>对局部变量的反复引用(编译器可以缓存到寄存器)</li>
+<li>多重视循环的局部性(其实时间复杂度也是主要看循环(或递归))</li>
+<li>步长为 <span class="math inline">\(1\)</span> 的引用模式是好的</li>
+</ul>
+<h3 id="缓存">缓存</h3>
+<p>基于局部性原理,
+很自然地就有缓存的概念了。既然我们知道某个数据可能被多次引用/某一个部分的数据可能连续引用,
+那么我们只要把大块存储中的这一小块常常被引用的部分放到较快(也较贵较小)的存储器中就能以低成本很大程度上提升存取效率,
+这就是缓存的概念。</p>
+<p>下面我们来看计算机中真实的缓存是如何实现的。</p>
+<p>我们在<a
+href="%5BCSAPP-2025-01-19%20%7C%20Amiriox&#39;s%20Storage%5D(https://amiriox.github.io/2025/01/19/CSAPP-2025-01-19/#more)">第二章的博客</a>中用设计师的视角,
+以目的论为工具自然地理解了补码的意义和原理,
+这里我们同样用设计师的视角来看:</p>
+<p>首先, 缓存肯定是把地址空间内某个地址的数据缓存到 cache 里的某个位置,
+那么我们首先要面对的问题就是: 放到哪个位置?<br />
+由于我们只是把一部分的数据拿出来缓存起来(其实虚拟内存是全相联缓存,
+博客写到第九章时会说), 所以读一个数据时肯定可能出现读不到的情况,
+称为”缓存不命中”, 我们把可能出现的三种不命中类型分别命名为:</p>
+<ol type="1">
+<li>强制不命中/冷不命中: 缓存是空的, 自然读不到数据</li>
+<li>冲突不命中: 这个位置上有其他的数据了, 不是我要的数据,
+自然不能读</li>
+<li>容量不命中: 缓存太小, 当前工作集太大</li>
+</ol>
+<p>从上面的三种情况, 我们意识到一些事:</p>
+<ul>
+<li>由于缓存一定是小于等于其缓存的内容的存储器大小(也就是下面存储器层次结构中较下层的存储器)的,
+而原则上我们又要让”任何一个地址的数据都可以进缓存(毕竟你不能预测哪些地址具有优秀的性质)“,
+所以我们需要给某一段地址分为一组,
+这些地址都缓存到同一个位置然后给每个位置编上<strong>索引(Index)</strong>,
+所以出现了冲突不命中</li>
+<li>由于会冲突不命中,
+为了辨别这个缓存位置当前存的是这个分组内的哪个地址,
+我们需要还需要根据这组地址的唯一特征作一个<strong>标记(Tag)</strong>,
+然后根据缓存中这个组中某一行当前的标记来看这一行存的是哪个地址</li>
+<li>当然, 缓存本身也需要空间,
+我们通过缓存的另一个唯一特征(并且是要求连续的特征)作为偏移量,
+来区分同一行内的数据块的多个字节中哪一个是地址的缓存</li>
+</ul>
+<p>还是第二章说过的那句话, 由于我们实际上不是设计师,
+所以在经过一些思考后可以直接看答案。</p>
+<p>首先是地址分组的索引和唯一标记<span
+class="math inline">\(^{[*]}\)</span>, 以 <code>0x12345678</code> 为例,
+这个地址的二进制值是<code>00010010001101000101011001111000</code>:</p>
+<table>
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 35%" />
+<col style="width: 35%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: center;">标记(前 <span class="math inline">\(t =
+11\)</span> 位)</th>
+<th style="text-align: center;">组索引(中间 <span
+class="math inline">\(s = 11\)</span> 位)</th>
+<th style="text-align: center;">块偏移(结尾 <span
+class="math inline">\(b = 10\)</span> 位)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><code>00010010001</code></td>
+<td style="text-align: center;"><code>10100010101</code></td>
+<td style="text-align: center;"><code>1001111000</code></td>
+</tr>
+</tbody>
+</table>
+<p>对于这个 <span class="math inline">\(n = 32\)</span> 位地址来说,
+地址空间大小为 <span class="math inline">\(N = 2^n = 2 ^ {32} =
+4294967296\)</span> 个字节</p>
+<p>这样 <code>0x12345678</code> 就是索引为
+<code>10100010101 = 1301</code> 的组, 带有
+<code>10010001</code>标记的那一行, 偏移为 <code>1001111000 = 632</code>
+同时我们也意识到, 标记为 <span class="math inline">\(t\)</span> 位,
+索引为 <span class="math inline">\(s\)</span> 位, 块偏移 <span
+class="math inline">\(b\)</span> 位的 <span class="math inline">\(t + s
++ b\)</span> 位地址需要 <span class="math inline">\(S = 2^s\)</span> 组,
+每组(理想上)需要 <span class="math inline">\(E = 2^t\)</span> 行, 能够存
+<span class="math inline">\(B = 2^b\)</span> 个地址的缓存, 一共能存储 $
+C = S E B$ 个地址, 这里缓存总容量 <span class="math inline">\(C = 2^{32}
+= 2^{t+s+b}\)</span>, 恰好容纳了所有 <span
+class="math inline">\(N\)</span> 个字节的的地址.</p>
+<p>当然这是一个理论情况, 一般缓存容量都不足以不冲突地容纳所有 <span
+class="math inline">\(N\)</span> 个地址,
+这主要表现在大部分缓存大小不会是 <span class="math inline">\(C =
+2^n\)</span>。事实上很少有和被缓存的数据块总和等大的缓存,
+那样直接用缓存作为主存就可以了。<br />
+我们以每组的行数 <span class="math inline">\(E\)</span>
+作为因素分类:</p>
+<ul>
+<li>直接映射高速缓存, <span class="math inline">\(E = 1\)</span>,
+一组只有一行, 狠狠冲突, 但是很简单</li>
+<li>组相联高速缓存, <span class="math inline">\(1 &lt; E &lt; C/B, S =
+\frac{C}{E \times B}\)</span> , 上面的例子就是组相联</li>
+<li>全相联高速缓存, <span class="math inline">\(E = C/B, S = 1\)</span>
+(只有一组不需要组索引, 但查找时需要搜标记,
+可能需要按内容寻址的存储器)</li>
+</ul>
+<p>注意,
+全相联高速缓存不一定就不会冲突了(比如第九章博客里要说到的主存作为虚拟地址空间的缓存,
+也会出现缺页牺牲的情况), 不冲突的缓存只有缓存容量 <span
+class="math inline">\(C = N\)</span> 的一种情况(正如前面所说很稀少),
+如果满足 <span class="math inline">\(S = 1, E = C / B\)</span>,
+那就是一个全相联缓存(有些资料会描述为”所有地址可以存入缓存的任意一行”,
+因为这里只有一个组, 不受限制), 但是如果缓存容量 <span
+class="math inline">\(C &lt; N\)</span> ,
+在一些替换策略下还是会发生冲突.</p>
+<p>这样我们通过对地址的分类也得出了组织高速缓存本身的方法:</p>
+<figure>
+<img src="/images/image-20250221001408021.png"
+alt="CSAPP3e 图 6-25-a)" />
+<figcaption aria-hidden="true">CSAPP3e 图 6-25-a)</figcaption>
+</figure>
+<p>在查找一个地址的缓存时, 通过中间 <span
+class="math inline">\(s\)</span> 位组索引找到属于哪个组, 再通过中间
+<span class="math inline">\(t\)</span>
+位标记找到属于哪个行(如果没有就是冲突不命中了),
+然后根据块偏移找到具体是块内哪个字节(缓存行和块的大小是一致的,
+这是一一对应的概念)</p>
+<blockquote>
+<p><span class="math inline">\(^{[*]}\)</span>:
+这里块偏移是要求连续所以是最后几位很好理解, 但为什么组索引不设置为头部的
+<span class="math inline">\(s\)</span> 位而是分配在中间呢?
+这是因为如果是分配在头部,
+连续的几个地址就回分配在同一组(比如设置为前两位的话,
+<code>0x1000</code>, <code>0x1001</code>, <code>0x1010</code>,
+<code>0x1011</code>这连续四个就分配在同一组了),
+而缓存每次不命中都会加载一整块相邻的地址,
+我们希望相邻的地址分散到不同的组,
+来让缓存加载整个地址空间上尽可能多的地址, 可以增加缓存效率</p>
+</blockquote>
+<h4 id="冲突不命中时的替换策略">冲突不命中时的替换策略</h4>
+<ul>
+<li>直接映射高速缓存没有所谓的替换”策略”, 因为有特定的位置放置规则,
+所以直接替换对应位置即可.</li>
+<li>组相联高速缓存和全相联高速缓存有多种替换策略, 如
+<ul>
+<li><code>LRU</code>(Least Recently Used),
+替换一段时间内最后一次访问时间最久远的那一行</li>
+<li><code>LFU</code> (Least Frequently Used),
+替换一段时间内最不常访问的一行</li>
+</ul></li>
+<li>这里书中提了下全相联高速缓存会用在虚拟内存映射系统的 TLB,
+算是提前剧透一下后面的内容</li>
+</ul>
+<h4 id="写入数据">写入数据</h4>
+<p>以上重点讲了读某个地址时找其对应缓存的策略,
+但其实写入数据也不(不一定)是直接写入主存(除非是下面要说的非写分配),
+而也是先进入缓存的.<br />
+常见的策略有:</p>
+<ul>
+<li>Write-through 直写, 直接把写入缓存的内容同步更新写入主存,
+缺陷是每次直写都会引起总线流量</li>
+<li>Write-back 写回, 由于我们读地址的数据是先找缓存,
+所以其实没什么必要保持主存一直是最新的数据,
+但当一个缓存行被替换掉时就必须得更新主存了,
+因为此时缓存里被替换掉的数据已经不存在了。这种被替换时才写回主存的叫这个名儿。</li>
+</ul>
+<h4 id="写不命中">写不命中</h4>
+<p>写入数据先进缓存, 但缓存里没缓存到这个数据怎么办?</p>
+<ul>
+<li>Write-allocate: 加载我们要写的数据所在的这一整块进高速缓存,
+然后根据上面的策略更新缓存, 试图利用局部性原理, 但缺陷和直写一样</li>
+<li>No-Write-allocate: 不管缓存, 直接写入主存</li>
+</ul>
+<h4 id="其他">其他</h4>
+<p>L1 缓存由于有着接近寄存器文件的速度, 所以不仅有储存数据的
+<code>d-cache</code>, 还有储存指令的 <code>i-cache</code> (d = data, i =
+instruction), 这个 i-cache 的事之前在 rCore Camp 的秋令营接触过一点</p>
+<p>这些已经在保持正确性和完整性的情况下基本概括并且有逻辑地解释了原书这部分的内容了,
+除了有关 6.4.7 高速缓存参数 的性能影响这一节,
+因为太好理解了就不作解释了</p>
+<p>另外就是你看你学了这么多, 其实按原书的话说只学了缓存的皮毛,
+<del>绝望吗</del><br />
+其实组成原理这一整门课都是在学皮毛(), 毕竟这门课叫 <code>ICS</code>
+(Introduction of Computer Science),<br />
+btw, 北大的那门 <code>ICS</code> 也是买的这门课(还是这本书来着)的版权,
+Lab 也是 15213 的 Lab 改的<br />
+笔者在写这篇文章的时候记得几个月前北大的 <code>ICS</code>
+课期末考试因为计算上无用地复杂在知乎上起节奏了 (<br />
+<del>我就是因为这个所以没去北大(大雾</del></p>
+<h3 id="存储器层次结构">存储器层次结构</h3>
+<p>观察各种存储器的发展速度,
+我们发现一定程度上存储器的速度可能会制约到芯片的效率,
+成为计算机运算能力的瓶颈。加上较快的存储设备也一般比较昂贵,
+所以我们发展了存储层次结构的概念:</p>
+<figure>
+<img src="/images/image-20250220232537093.png" alt="CSAPP3e 图 6-21" />
+<figcaption aria-hidden="true">CSAPP3e 图 6-21</figcaption>
+</figure>
+<p>其实我们在下一章学到地址空间与虚拟内存就会发现,
+其实这里每一层都是对其下一层的缓存。</p>
+<p>通过局部性原理和这样的一层缓存一层的层次结构,
+我们有效提升了存储器对解决实际问题的效率,
+使其不再成为制约芯片算力的瓶颈。</p>
+<p>至于瓶颈这个事可以类比现在的显示芯片和屏幕, 现在
+<code>2K/2.5K/4K/8K</code> 的屏幕迅猛发展,
+但是现在顶级的显示处理器也无法带动 4K 下较为流畅的游戏运行,
+一定程度上制约了屏幕的发展。<del>然后 NVIDIA 和游戏厂商还在 DLSS
+这种邪路上越走越远</del></p>
+<h3 id="存储器山">存储器山</h3>
+<p>本书封面图, 用以直观展现高速缓存对程序性能的影响。</p>
+<ul>
+<li>随着步长增大, 程序的空间局部性越来越差,
+整体展现为一个平滑的斜坡。</li>
+<li>随着数据大小的增大, 较小的(也是较高速的)缓存不能再容下整个数据块,
+程序的时间局部性变差,
+到一定大小后会缓存到存储层次结构中较低层(较慢)的缓存,
+数据所以显示为一个平台一个平台往下掉</li>
+<li>还有更多有趣的细节在书中有提</li>
+</ul>
+<p>个人对这种数据可视化的浪漫其实无感, 但这张图例外, 确实很漂亮,
+也很清晰。</p>
+<figure>
+<img src="/images/image-20250220231904694.png"
+alt="CSAPP3e 图 6-41 兼封面" />
+<figcaption aria-hidden="true">CSAPP3e 图 6-41 兼封面</figcaption>
+</figure>
+<p>这篇文章从 <code>‏‎22:04:30</code> 写到了 <code>0:45:07</code>,
+虽然写的时候还没放赞助二维码,
+但是如果你读到这的时候发现已经放了二维码能不能扫一杯咖啡钱(,
+现在<del>大一</del>(好了现在是大二了)急需零花钱捏QAQ(但还是急需)</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/02/19/CSAPP-2025-02-20/" title="CSAPP3e第六章(存储器层次结构)">https://amiriox.github.io/2025/02/19/CSAPP-2025-02-20/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/CSAPP-cmu15213/" rel="tag"># CSAPP/cmu15213</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/02/19/CSAPP-2025-02-19/" rel="prev" title="CSAPP3e第七章(链接)">
+                  <i class="fa fa-angle-left"></i> CSAPP3e第七章(链接)
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/02/23/CSAPP-2025-02-23/" rel="next" title="CSAPP3e第五章(优化程序性能)">
+                  CSAPP3e第五章(优化程序性能) <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

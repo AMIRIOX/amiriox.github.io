@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="此文章的 撰写时间 可能有误  CSAPP Today 2021-01-18 一 左移和右移 对于x&lt;&lt;k称为将 \(x\) 左移 \(k\) 位。 对于一个位向量表示为 \([x_{w-1}, x_{w-2}, ..., x_0]\) 的操作数 \(x\), x&lt;&lt;k的结果是$ [x_{w-k-1}, x_{w-k-2}, …, x_0, 0, …, 0] $ 也就是向">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP 2021-01-18">
+<meta property="og:url" content="https://amiriox.github.io/2021/01/18/CSAPP-2021-01-28/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="此文章的 撰写时间 可能有误  CSAPP Today 2021-01-18 一 左移和右移 对于x&lt;&lt;k称为将 \(x\) 左移 \(k\) 位。 对于一个位向量表示为 \([x_{w-1}, x_{w-2}, ..., x_0]\) 的操作数 \(x\), x&lt;&lt;k的结果是$ [x_{w-k-1}, x_{w-k-2}, …, x_0, 0, …, 0] $ 也就是向">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.821Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="迁移">
+<meta property="article:tag" content="计算机科学">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2021/01/18/CSAPP-2021-01-28/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2021/01/18/CSAPP-2021-01-28/","path":"2021/01/18/CSAPP-2021-01-28/","title":"CSAPP 2021-01-18"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CSAPP 2021-01-18 | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#csapp-today-2021-01-18"><span class="nav-number">1.</span> <span class="nav-text">CSAPP Today 2021-01-18</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E5%B7%A6%E7%A7%BB%E5%92%8C%E5%8F%B3%E7%A7%BB"><span class="nav-number">1.1.</span> <span class="nav-text">一 左移和右移</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E5%8F%B3%E7%A7%BB"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 逻辑右移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%9C%AF%E5%8F%B3%E7%A7%BB"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 算术右移</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.2.</span> <span class="nav-text">二 类型转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%95%B0-b2u"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 无符号数 （B2U）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A5%E7%A0%81%E8%A1%A8%E7%A4%BA-b2t"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 补码表示 （B2T）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E8%A1%A8%E7%A4%BA"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 其他表示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%85%E6%9B%B4%E8%BF%98%E6%9C%89%E8%A1%A5%E7%A0%81%E7%9B%B8%E5%85%B3%E5%86%85%E5%AE%B9"><span class="nav-number">1.2.4.</span> <span class="nav-text">待更，还有补码相关内容</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2021/01/18/CSAPP-2021-01-28/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CSAPP 2021-01-18 | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSAPP 2021-01-18
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-18 00:00:00" itemprop="dateCreated datePublished" datetime="2021-01-18T00:00:00+08:00">2021-01-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>此文章的 <em>撰写时间</em> 可能有误</p>
+</blockquote>
+<h1 id="csapp-today-2021-01-18">CSAPP Today 2021-01-18</h1>
+<h2 id="一-左移和右移">一 左移和右移</h2>
+<p>对于<code>x&lt;&lt;k</code>称为将 <span
+class="math inline">\(x\)</span> 左移 <span
+class="math inline">\(k\)</span> 位。 对于一个位向量表示为 <span
+class="math inline">\([x_{w-1}, x_{w-2}, ..., x_0]\)</span> 的操作数
+<span class="math inline">\(x\)</span>, <code>x&lt;&lt;k</code>的结果是$
+[x_{w-k-1}, x_{w-k-2}, …, x_0, 0, …, 0] $ 也就是向左移动 <span
+class="math inline">\(k\)</span> 位, 右侧空缺用0补齐。
+在C中，左移运算符从左至右结合。即<code>x&lt;&lt;i&lt;&lt;j</code>相当于<code>(x&lt;&lt;j)&lt;&lt;k</code></p>
+<p>对于<code>x&gt;&gt;k</code>成为将 <span
+class="math inline">\(x\)</span> 右移 <span
+class="math inline">\(k\)</span> 位。
+不同的是，<strong>右移有两种形势，算术右移和逻辑右移</strong>。</p>
+<h3 id="逻辑右移">1.1 逻辑右移</h3>
+<p>逻辑右移与左移相对，即对于一个位向量表示为 <span
+class="math inline">\([x_{w-1}, x_{w-2}, ..., x_0]\)</span> 的操作数
+<span class="math inline">\(x\)</span>, <code>x&lt;&lt;k</code>的结果是
+<span class="math inline">\([0, ..., 0, x_{w-1}, x_{w-2}, ...,
+x_{k}]\)</span> 也就是说，向右移动 <span
+class="math inline">\(k\)</span> 位，抛弃最右侧的k位，在左端补0</p>
+<h3 id="算术右移">1.2 算术右移</h3>
+<p>与逻辑右移不同的是，同样是抛弃最右侧k位，但<strong>在左端补原数的最高有效位</strong>，
+即对于一个位向量表示为 <span class="math inline">\([x_{w-1}, x_{w-2},
+..., x_0]\)</span> 的操作数 <span class="math inline">\(x\)</span>,
+<code>x&lt;&lt;k</code>（算术右移）的结果是 <span
+class="math inline">\([x_{w-1}, x_{w-1}, ..., x_{w-1}, x_{w-2}, ...,
+x_{k}]\)</span></p>
+<p>大多数C编译器使用算术右移。但对于无符号数除外，因为无符号数只能逻辑右移。
+Java标准明确规定执行逻辑右移。</p>
+<blockquote>
+<p>Tips:</p>
+<p>UB (Undefined Behavior) 是指C或C++标准并未定义的语法，
+这通常意味着编译器可以在遇到ub时做任何事，比如打开一个游戏
+<del>我在某个群听到说古老版本的g++碰到ub就是打开一个游戏</del></p>
+<p>那么为什么要有ub呢？是因为制定标准的人没想到吗？为什么java没有ub呢？</p>
+<p>大家知道C和C++是偏向底层的语言，追求速度（即便C++有OOP
+模板元等特性，但也追求零开销抽象）
+而对于不同情况，留下一些“漏洞”让编译器自行决定在某些特定场合
+<del>比如造火箭</del> 可以追求到极致速度
+而Java则没有这样的问题，毕竟JVM上的东西
+就算没有GC也不可能满足某些场景下的苛刻条件的，那些场景比卡常还难</p>
+</blockquote>
+<p>左右移运算符优先级低。使用时请注意括号。</p>
+<h2 id="二-类型转换">二 类型转换</h2>
+<p>定义补码为表示 <span class="math inline">\(T\)</span>, 无符号数表示为
+<span class="math inline">\(U\)</span>, 二进制数为 <span
+class="math inline">\(B\)</span>, 而<code>2</code>则代表<code>to</code>
+定义函数 <span class="math inline">\(U2B_w\)</span>
+为无符号数到二进制数转换函数，两者都是 <span
+class="math inline">\(w\)</span> 位表示的， 其他 <span
+class="math inline">\(U2T_w\)</span> <span
+class="math inline">\(T2B_w\)</span> 以此类推</p>
+<blockquote>
+<p>关于这个的理解：
+虽然说叫<code>转换</code>，但实际上可以理解为<code>把...当成...看 计算出的结果</code>
+比如<code>B2T</code>就是<code>把二进制看成补码，得出的结果的十进制表示</code>
+这里的B代表的二进制是最基础的01位向量</p>
+</blockquote>
+<h3 id="无符号数-b2u">2.1 无符号数 （B2U）</h3>
+<p>对于向量 $ x=[x_{w-1}, x_{w-2}, …, x_0]$ ：</p>
+<p><span
+class="math display">\[B2U_w(x)=\sum_{i=0}^{w-1}x_i2^i\]</span></p>
+<p>这个和 OI
+一些比赛初赛的二进制相关是一样的，可以手动模拟一下，没学过求和符号的可以看这个</p>
+<p><span class="math display">\[U2B_4([1011])=1 \times 2^3+0 \times2^2 +
+1 \times 2^1 + 1 \times 2^0=11\]</span></p>
+<p>考虑 <span class="math inline">\(w\)</span>
+位二进制表示的最大值和最小值。最小值当然就是0（负数的表示以后会说）
+最大值即为<span class="math inline">\(\sum_{i=0}^{w-1}2^i\)</span>，
+即向量每一位都是1。 根据等比数列公式易得<span
+class="math inline">\(\sum_{i=0}^{w-1}2^i=2^w-1\)</span></p>
+<p>函数 <span class="math inline">\(B2U_w\)</span>
+是一个双射，即任意一个 <span class="math inline">\([0,2^w-1]\)</span>
+的无符号数都有唯一的二进制表示， 同时每个 <span
+class="math inline">\(w\)</span> 二进制表示都对应唯一一个 <span
+class="math inline">\([0,2^w-1]\)</span> 的无符号数</p>
+<h3 id="补码表示-b2t">2.2 补码表示 （B2T）</h3>
+<p>根据补码的定义，易得以下公式（其实手动带个数进去就好了）</p>
+<p><span
+class="math display">\[B2T_w(x)=-x_{w-1}2^{w-1}+\sum_{i=0}^{w-2}x_{i}2^{i}\]</span></p>
+<p>最高为 <span class="math inline">\(x_{w-1}\)</span>
+称为符号位。如果是 <span class="math inline">\(0\)</span> 则 <span
+class="math inline">\(-0=0\)</span> 所以不计（正数），如果是 <span
+class="math inline">\(1\)</span> 则 <span
+class="math inline">\(-1=1\)</span> 乘上 <span
+class="math inline">\(2^{w-1}\)</span> 即表示负数
+如果不知道这种方式为什么能表达补码 那么请看下面</p>
+<p>首先我们知道补码的定义是反码加一，反码也就是最高位符号位
+剩下的位都取反。 所以</p>
+<p><span class="math display">\[[1011]_{2\text{补码}} =
+[1010]_{2\text{反码}} = -[101]_{2} = -(1\times 2^{2}+0+1\times
+2^0=-(4+1)=-5)\]</span></p>
+<p>而根据上面公式</p>
+<p><span class="math display">\[B2T_4([1011])=-1\times
+2^{3}+\sum_{i=0}^{2}x_{i}2^{i}=-8+1\times 2^0+1\times
+2^{1}+0=-8+1+2=-5\]</span></p>
+<p>看明白逻辑了吗？<span class="math inline">\(B2T\)</span>
+的公式实际上就是以负的为基准然后加上正的（相当于取反再取反）
+而常规（按照定义算）是直接取反后加好正的然后取相反数
+<del>有些大佬也可以证明一下这两个公式等价</del></p>
+<p>和上面一样的推理，<span
+class="math inline">\(TMax_w=2^{w-1}-1\)</span>， 而 <span
+class="math inline">\(TMin_w=-2^{w-1}\)</span> 有没有感觉熟悉？ <span
+class="math inline">\([-2147483648, 2147483647]\)</span> （即 <span
+class="math inline">\(-2^{31}\)</span> 和 <span
+class="math inline">\(2^{31}-1\)</span></p>
+<p>同样，<span class="math inline">\(B2T\)</span> 也是一个双射。</p>
+<blockquote>
+<p>C标准并没有说有符号整数一定要用补码表示，即使大多数实现都是这样做。
+Java要求采用补码表示。同时单字节数据是<code>byte</code>而不是<code>char</code>。</p>
+</blockquote>
+<h3 id="其他表示">2.3 其他表示</h3>
+<p>我们知道除了补码 还有原码和反码。</p>
+<p>反码与补码唯一的差别就是一个 <span
+class="math inline">\(1\)</span>。所以只要把 <span
+class="math inline">\(B2T\)</span> 公式的最高符号位改为 <span
+class="math inline">\(-x_{w-1}(2^{w-1}-1)\)</span> 用 <span
+class="math inline">\(O\)</span> 表示反码 (<strong>O</strong>nes’
+Complement)，则</p>
+<p><span
+class="math display">\[B2O_w(x)=-x_{w-1}(2^{w-1}-1)+\sum_{i=0}^{w-2}x_{i}2^{i}\]</span></p>
+<p>原码的公式也可以很简单地推导出来，这里不再赘述。</p>
+<p>这两种表示方法的缺点是 <span class="math inline">\(0\)</span>
+可以有两种表示。而且不具备补码在计算上的优势。</p>
+<hr />
+<h3 id="待更还有补码相关内容">待更，还有补码相关内容</h3>
+<p>写在后面的话：</p>
+<p>从发暂退役帖以来已经很久了 感谢大家的关心
+说真的没想到有那么多人评论</p>
+<p>我发现我不知道我学习OI的目标是什么，即使我在写题学算法的过程中感受到了快乐</p>
+<p>但每次做不出题都会有极大挫败感
+然后心里那种别扭的劲就总想让逼我更加油一点</p>
+<p>而这样慢慢就变成「自己给自己下任务」了，那份纯粹的快乐也没有了</p>
+<p>然后越来越焦虑，总觉得自己努力还不够 结果陷入恶性循环</p>
+<hr />
+<p>Manjaro KDE是真的离谱，设置上外观全没，动不动显卡驱动挂了</p>
+<p>有时候调整音量那个显示在屏幕中间的音量大小图标（仿macOS的主题）
+就会直接截取那个位置上显示的东西 然后还自己消失不掉
+而且这个状态下放任何东西都没声，b站还是别的视频都打不开</p>
+<p>点任务栏浏览器也没反应，我</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/y9oUaR"><img
+src="https://s3.ax1x.com/2021/01/28/y9oUaR.png"
+alt="y9oUaR.png" /></a></p>
+<p>嗯， 然后过了好久才反映，这反射弧是NM离谱</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2021/01/18/CSAPP-2021-01-28/" title="CSAPP 2021-01-18">https://amiriox.github.io/2021/01/18/CSAPP-2021-01-28/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%BF%81%E7%A7%BB/" rel="tag"># 迁移</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/12/25/2020_curtain_falls/" rel="prev" title="辉煌落幕 -- 2020 年终总结">
+                  <i class="fa fa-angle-left"></i> 辉煌落幕 -- 2020 年终总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/01/31/move_to_opensuse/" rel="next" title="换了个 OpenSUSE 玩玩">
+                  换了个 OpenSUSE 玩玩 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

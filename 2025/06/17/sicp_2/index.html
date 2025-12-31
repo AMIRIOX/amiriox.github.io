@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="复合数据 在实际的程序设计中(模拟数学或现实系统), 操作(过程)要应用到的数据往往不是一个单独的基本类型数据, 而是多个基本类型数据复合起来的: 例如分数是由分子和分母确定起来的, 单一的分子和分母都不能称为分数. 而将分子和分母以某种方式复合起来比单独管理分子和分母具有更强的可读性, 减少了编码中的精力消耗; 同时加强分子和分母之间的关系(分子和分母的关系应当强于这两个符号之于别的数据的关系)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SICP 第二章(构造数据抽象)">
+<meta property="og:url" content="https://amiriox.github.io/2025/06/17/sicp_2/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="复合数据 在实际的程序设计中(模拟数学或现实系统), 操作(过程)要应用到的数据往往不是一个单独的基本类型数据, 而是多个基本类型数据复合起来的: 例如分数是由分子和分母确定起来的, 单一的分子和分母都不能称为分数. 而将分子和分母以某种方式复合起来比单独管理分子和分母具有更强的可读性, 减少了编码中的精力消耗; 同时加强分子和分母之间的关系(分子和分母的关系应当强于这两个符号之于别的数据的关系)">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-06-17T08:24:39.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.826Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="SICP">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2025/06/17/sicp_2/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/06/17/sicp_2/","path":"2025/06/17/sicp_2/","title":"SICP 第二章(构造数据抽象)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SICP 第二章(构造数据抽象) | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E5%90%88%E6%95%B0%E6%8D%AE"><span class="nav-number">1.</span> <span class="nav-text">复合数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1%E5%B1%8F%E9%9A%9C%E8%BE%B9%E7%95%8C"><span class="nav-number">2.</span> <span class="nav-text">抽象屏障&#x2F;边界</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%82%E6%AC%A1%E6%95%B0%E6%8D%AE%E5%92%8C%E6%95%B0%E6%8D%AE%E7%9A%84%E5%B0%81%E9%97%AD%E6%80%A7%E8%B4%A8"><span class="nav-number">3.</span> <span class="nav-text">层次数据和数据的封闭性质</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E5%BA%8F%E5%88%97%E4%BD%9C%E4%B8%BA%E4%B8%80%E7%A7%8D%E7%BA%A6%E5%AE%9A%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="nav-number">4.</span> <span class="nav-text">通用的数据处理流程(序列作为一种约定的接口)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%A6%E5%8F%B7%E6%95%B0%E6%8D%AE"><span class="nav-number">5.</span> <span class="nav-text">符号数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1%E6%95%B0%E6%8D%AE%E7%9A%84%E5%A4%9A%E9%87%8D%E8%A1%A8%E7%A4%BA"><span class="nav-number">6.</span> <span class="nav-text">抽象数据的多重表示</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%88%9D%E6%AD%A5%E6%A6%82%E5%BF%B5"><span class="nav-number">6.1.</span> <span class="nav-text">数据类型的初步概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%90%91%E4%BF%A1%E6%81%AF%E4%BC%A0%E9%80%92"><span class="nav-number">6.2.</span> <span class="nav-text">数据导向&#x2F;信息传递</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E7%9A%84%E7%BB%84%E5%90%88"><span class="nav-number">6.3.</span> <span class="nav-text">不同类型数据的组合</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/06/17/sicp_2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SICP 第二章(构造数据抽象) | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SICP 第二章(构造数据抽象)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-06-17 16:24:39" itemprop="dateCreated datePublished" datetime="2025-06-17T16:24:39+08:00">2025-06-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">编程语言理论</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="复合数据">复合数据</h2>
+<p>在实际的程序设计中(模拟数学或现实系统),
+操作(过程)要应用到的数据往往不是一个单独的基本类型数据,
+而是多个基本类型数据复合起来的: 例如分数是由分子和分母确定起来的,
+单一的分子和分母都不能称为分数.
+而将分子和分母以某种方式复合起来比单独管理分子和分母具有更强的可读性,
+减少了编码中的精力消耗;
+同时加强分子和分母之间的关系(分子和分母的关系应当强于这两个符号之于别的数据的关系)也符合某种(<del>哲学上的</del>)道理.</p>
+<p>为此, 我们需要构造一种抽象使得这两个数据被复合起来:</p>
+<ul>
+<li>首先要有构造函数, 将这分子和分母复合为另一个新的数据</li>
+<li>然后还要有选择函数,
+因为在实际操作中我们需要操作分子和分母本身(来模拟分数的运算)而不是分数本身</li>
+<li>最后,
+分子和分母及其操作应当符合某些规则(即数学上分数运算上的规则)</li>
+</ul>
+<p>这就是复合数据的需求: 将数据定义为一组适当的选择函数和构造函数,
+以及为了使得这些过程成为一套合法表示, 它们就必须满足一组特定的条件.</p>
+<span id="more"></span>
+<blockquote>
+<p>关于复合数据抽象的形式化定义有两种:</p>
+<p>抽象模型方法: 基于某种已有的模型(如数学上的分数运算模型),
+形式化定义一套新的”过程+条件”的数据定义</p>
+<p>代数规范: 将数据的过程作为抽象代数系统中的元素,
+利用抽象代数检查过程正确性</p>
+</blockquote>
+<p>…在 Scheme 中, 可以用 <code>cons</code> 将两个符号组合为一个序对:
+<code>(define foo (cons a b))</code>, 并且用 <code>(car foo)</code> 取出
+<code>a</code>, 用 <code>(cdr foo)</code> 取出 <code>b</code>.
+细心一点可以发现, 序对这种数据本身也满足上述复合数据的原则: 内置过程
+<code>cons</code> 是构造函数, <code>car</code> 和 <code>cdr</code>
+是选择函数, 而这些过程都满足条件: 经由 <code>cons</code> 构造出的
+<code>a</code> 与 <code>b</code> 的复合数据 <code>foo</code> 应当能通过
+<code>car</code> 过程取出 <code>a</code> 而能通过 <code>cdr</code>
+过程取出 <code>b</code>.</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name"><span class="built_in">cons</span></span> a b)</span><br><span class="line">  (<span class="name"><span class="built_in">lambda</span></span> (m) (<span class="name">m</span> a b)))</span><br><span class="line"></span><br><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name"><span class="built_in">car</span></span> z)</span><br><span class="line">  (<span class="name">z</span> (<span class="name"><span class="built_in">lambda</span></span> (x y) x))) <span class="comment">;; cdr 改为 y </span></span><br></pre></td></tr></table></figure>
+<p>这一例子体现了两点:</p>
+<ul>
+<li>将复合数据作为一个过程(代码中用 lambda 实现)</li>
+<li>这个过程本身也作为高阶函数接收另一个”选择函数”(<code>lambda (x y) x</code>)来实现选择函数</li>
+</ul>
+<p>另: 注意 <code>cdr</code> 严格来说并不是”取出序对中的第二个元素”,
+在以后涉及到列表时, <code>(cdr z)</code> 实际上是<strong>“z
+中除了第一个元素以外的其他元素”</strong></p>
+<h2 id="抽象屏障边界">抽象屏障/边界</h2>
+<p>靠着这样的构造函数和选择函数,
+我们最终构造了一层”屏障”隔离了<em>使用分数的程序(如具体运算过程加减乘除)</em>和<em>分数本身的实现</em>:
+实现 <code>add-rational</code> 的人没有必要知道分数 <code>z</code>
+底下是怎样实现的, 只要知道可以用 <code>make-rational</code>(其中可以用
+<code>cons</code>实现, 也可以用其他方式实现) 构造, 用
+<code>number</code> 和 <code>denom</code> (其中可以用 <code>car</code>
+<code>cdr</code> 实现也可以用其他方式实现) 取分子分母即可.
+这样就形成了一层抽象屏障(abstraction barrier).</p>
+<p>我们应当如何对待抽象屏障? ——不要打破抽象屏障.
+在哪一个抽象层工作就思考哪个层次的问题, 不考虑下一个层次的细节.</p>
+<blockquote>
+<p>区间问题的依赖性(来自 2.1.4 节扩展练习)</p>
+<p>计算并联电阻的公式为 <span class="math inline">\(R =
+\frac{R_1R_2}{R_1+R_2}\)</span> (鸡在河上飞)<br />
+分子分母同除以 <span class="math inline">\(R_1 R_2\)</span> 得 <span
+class="math inline">\(R = \frac{1}{1/{R_1}+1/{R_2}}\)</span></p>
+<p>这显然是等价的代数表达式, 但是在区间算术中可能会导致一些问题.</p>
+<p>区间算数指的是这样的一种算数:
+操作数并不是固定数值而是介于一个区间内存在, 可能为区间内任意取值<br />
+对于计算电阻的例子来说, <span class="math inline">\(R_1\)</span> 和
+<span class="math inline">\(R_2\)</span> 可能分别取不同的区间.</p>
+<p>对于原式, 不够健壮的程序可能会先计算 <span class="math inline">\(R_1
+\cdot R_2\)</span> 的值(也是一个区间), 再计算 <span
+class="math inline">\(R_1+R_2\)</span> 的值(也是一个区间),
+然后再对这两个区间进行除法 —— 但这可能是错的, 因为 <span
+class="math inline">\(R_1 \cdot R_2\)</span> 和 <span
+class="math inline">\(R_1 +R_2\)</span> 同时依赖 <span
+class="math inline">\(R_1\)</span> 和 <span
+class="math inline">\(R_2\)</span> 的区间,
+很可能两者的某些值不能同时取到, 而第二个式子没有这个问题.</p>
+</blockquote>
+<h2 id="层次数据和数据的封闭性质">层次数据和数据的封闭性质</h2>
+<p><em>为了防止混淆, 这里 closure 还是写为封闭性</em></p>
+<blockquote>
+<p>SICP 一些个人觉得翻译不太合理的地方</p>
+<ol type="1">
+<li>interface: inter 表示在…之间, face 为面, 实际为”在两个面之间”,
+因此常被翻译为介面或界面,
+这里的两个面可以指高抽象层次面和抽象屏障之下的低抽象层次面,
+在其他语境下的 interface 也有其他的”面”的定义;
+但是已经有”接口”这样较为更贴近实际含义的词语</li>
+<li>frame: SICP 翻译为框架, 感觉翻译为帧更合适. 栈帧(stack
+frame)的概念和<em>环境</em>中 frame 的概念是相似的,
+一些编程语言的局部环境就是靠栈帧实现的. frame
+通常在应用程序开发框架中被译为框架, 在图形学或游戏开发中会翻译为帧</li>
+<li>closure: 这个词有过计算机基础的确实是一眼闭包,
+但是我觉得在这里翻译为闭包不太合适. SICP 作为 PLT 的某种入门书籍,
+在抽象代数和 PLT 中都有(甚至离散数学里也有,
+并且三者差距还是有一些的)的闭包概念与此处的概念并不相同(这里是说数据可以以同样的规则构造出自身同类的数据,
+或者说数据可以包含自身同类的数据,
+更类似代数中”基于S的运算最终产生的结果也是在S中”的闭包概念,
+所以我认为这两个都应该被译为<em>封闭性</em>).</li>
+</ol>
+</blockquote>
+<p><code>cons</code> 可以 <code>cons</code> 一个 <code>cons</code>,
+而非空列表可以多次地 <code>cons</code> 其他 <code>cons</code> 表达,
+例如列表 <code>1 1 4 5 1 4</code>, 相当于<br />
+<code>(cons 1 (cons 1 (cons 4 (cons 5 (cons 1 cons (4))))))</code>,
+由于这样写虽然很接近本质<del>但是实在太蠢了</del>所以 Scheme
+有列表的语法糖 <code>list</code>, 非空列表相当于多层 cons, 例如上述例子
+<code>(list 1 1 4 5 1 4)</code>.</p>
+<p>这涉及到一个重要的性质, 即 cons 可以 cons 自己,
+数据可以包含与自己同类的数据,
+或者说数据可以以同样的规则构造出自身同类的数据,
+称之为数据的封闭性(或者闭包性质), 这一性质看似直观其实是很重要的, 例如拿
+Scheme 和 C 构造某些数据结构做对比:</p>
+<p>我觉得很多人初学数据结构时(甚至初学指针时)可能会想指针的作用在哪,
+例如对于:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">treeNode</span> &#123;</span></span><br><span class="line">    <span class="type">int</span> val;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">treeNode</span>* <span class="title">left</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">treeNode</span>* <span class="title">right</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>为什么不干脆写 <code>struct treeNode left</code> 呢? 这是因为 C
+的结构体要求类型必须是可计算大小的, 而这种递归的数据类型无法确认其大小:
+对于一个 <code>struct treeNode</code>, 编译时无法得知其
+<code>right</code> 和 <code>left</code> field
+究竟是叶子节点还是空的还是一棵子树. 学习过 Rust 的人会很熟悉这个场景,
+因为这就是 TRPL 在讲智能指针 <code>Box&lt;T&gt;</code> 作用时的例子,
+因为指针本身的大小(在特定实现下)是固定的, 其指向堆内存上的数据.
+<strong>这说明 C 无法完全满足数据的闭包性质.</strong> 深入其原因的话, C
+更接近”操作本身应当是什么样的”, 抽象层次比较低.</p>
+<p>而 Scheme 就没有什么负担了, 直接 cons 起来左右子树就好(或者 list),
+用的时候查一下是不是 <code>'()'</code> 空表就行了</p>
+<p>具有闭包性质的数据可以用递归很方便地处理: 每次处理当前的
+<code>car</code>, 然后递归处理 <code>cdr</code> (还记得之前的介绍吗?
+<code>cdr</code> 并不是取出第二个, 而是取出除了 <code>car</code>
+外<strong>剩下</strong>的). 这一性质的最典型应用就是树结构,
+天然的递归友好结构.</p>
+<h2
+id="通用的数据处理流程序列作为一种约定的接口">通用的数据处理流程(序列作为一种约定的接口)</h2>
+<p>考察这样两个过程:</p>
+<ol type="1">
+<li>找出一棵树所有的奇数叶子节点, 对这些奇数求平方和</li>
+<li>找出前 <span class="math inline">\(n\)</span>
+个斐波那契数中偶数形成一个表</li>
+</ol>
+<p>看上去这两个操作差异较大, 但其实在某种程度上非常相似:<br />
+对现有的一些数据, 对其中每个数据进行某些转换, 根据某个条件进行筛选,
+累积</p>
+<p>对于 1 就是:</p>
+<ol type="1">
+<li>对现有的一些数据(一棵树的叶子)</li>
+<li>根据某个条件进行筛选(奇数)</li>
+<li>对其中每个数据进行转换(求平方)</li>
+<li>积累(求和)</li>
+</ol>
+<p>对于 2 就是:</p>
+<ol type="1">
+<li>对现有的一些数据( <span class="math inline">\([0, n)\)</span>
+的整数)</li>
+<li>对其中每个数据 <span class="math inline">\(i\)</span> 找出对应的
+<span class="math inline">\(\text{Fib}(i)\)</span></li>
+<li>根据每个条件进行筛选(偶数)</li>
+<li>积累(形成表)</li>
+</ol>
+<p>在每个单独的过程中, 数据像信号一样从上一个过程输入到这个过程中,
+经过这个过程的处理又像信号一样传递到下个过程中,
+而在这之中序列就成为了约定的接口(所有传递的数据都是数据的序列)</p>
+<p>上述过程分别是:</p>
+<ol type="1">
+<li>对现有的一些数据(枚举, enumerate)</li>
+<li>根据某个条件进行筛选(过滤器, filter)</li>
+<li>对其中每个数据进行转换(映射, map)</li>
+<li>积累, accumulate</li>
+<li>除此之外, 还有 for_each:
+对每个数据进行操作但并不是映射到另一个数据</li>
+</ol>
+<p>仔细考察这样的过程组合, 我们能发现一些特点:</p>
+<ol type="1">
+<li><p>这些函数接受一些其他函数, 本身是高阶函数:</p>
+<p><code>map</code> 接收一个转换函数; <code>filter</code>
+接收一个谓词;</p></li>
+<li><p>这些函数的组合(或在一些语言中可以写为链式调用)只说明”要做什么(what)“而不说明”怎么做(how)”</p>
+<p>这是一种声明式编程</p></li>
+<li><p>数据不可变性:</p>
+<p>每个过程传递给下一个过程的数据本质上都是一份新产生的副本(当然这是逻辑上的,
+在 scheme 的具体实现上会采用结构共享减少开销)</p>
+<p>如果有过并发编程的背景,
+可以发现的是数据不可变性天然对并发程序友好</p></li>
+</ol>
+<p>这些完美符合<strong>函数式编程</strong>的特点.</p>
+<blockquote>
+<p><strong>编程范式</strong>(或编程范型),
+描述的是程序设计中的一种方法论, 主要分为 <strong>命令式编程</strong> 和
+<strong>声明式编程</strong>.</p>
+<p>命令式编程(或指令式编程)是大部分学校或课程面向初学者讲授编程所采用的范式,
+因为其特点就是”利用可变状态一条条描述出要怎么做”,
+并且也符合计算机的实际执行流程(见 CSAPP 第三章). 命令式编程主要分为
+<strong>面向过程编程</strong> 和 <strong>面向对象编程</strong>,
+这里不赘述 PP 和 OOP 的区别.</p>
+<p>声明式编程是描述”我要达成什么样的局面/逻辑”, 直接描述逻辑或现象本身.
+如<strong>逻辑式编程</strong>(如Prolog),
+<strong>函数式编程</strong>(如Haskell)和<strong>数据库查询语言</strong>.</p>
+</blockquote>
+<p>映射(map)过程也可以嵌套, 对某个序列进行映射, 映射规则是对其中元素
+<span class="math inline">\(i\)</span> 进一步拆分这个 <span
+class="math inline">\(i\)</span> 为一个序列进行其他规则的映射.</p>
+<p>同时,
+这种通过某些基本过程的组合构造出复杂算法的方式增强了代码的复用性,
+很多过程只要写一遍; 例如上述几个过程也能组合出新的功能不同的算法,
+或者形式化某些数据的处理.</p>
+<p>SICP 给了八皇后和一个图形绘画语言的例子.</p>
+<p>一般学习回溯算法时一定会有一个八皇后的例子, 这里来看 SICP
+是如何展现函数式的八皇后回溯写法的</p>
+<p>整个算法可以描述为: 已经存在<strong>多个、不冲突的</strong>前 <span
+class="math inline">\(i\)</span> 个皇后在棋盘上的<em>局面</em>,
+<strong>对于每个局面</strong>, 尝试枚举列号并在第 <span
+class="math inline">\(i\)</span> 行<span
+class="math inline">\(^{[1]}\)</span>放下第 <span
+class="math inline">\(i+1\)</span> 个皇后然后检查新皇后是否冲突,
+然后将这些结果中符合条件(不冲突)的”总结”出来作为下一次放置的”前 <span
+class="math inline">\(i+1\)</span> 个皇后”</p>
+<p><span class="math inline">\([1]:\)</span> 原书是按列放置,
+枚举行编号的, 这里个人不太习惯就换了一下, 是一样的.</p>
+<blockquote>
+<p>事实上回溯法的关键是保证每次枚举叉出的状态独立方便回溯降低时间复杂度,
+这里从开头几乎一直在讲递归操作(因为没有可变状态所以不用循环迭代,
+见第一章), 所以天然具有这样的能力; 这里对八皇后算法本身不再赘述.</p>
+</blockquote>
+<p>我们逐步考虑. 首先把防止前 <span class="math inline">\(k\)</span>
+行的功能实现为一个局部的 <code>place-first-k-rows</code> 函数,<br />
+那么首先考虑特殊情况特判</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name">place-first-k-rows</span> k)</span><br><span class="line">  (<span class="name"><span class="built_in">if</span></span> (<span class="name"><span class="built_in">=</span></span> k <span class="number">0</span>)</span><br><span class="line">      (<span class="name"><span class="built_in">list</span></span> empty-board)</span><br><span class="line">      <span class="comment">;; <span class="doctag">TODO:</span> k \neq 0</span></span><br><span class="line">      )</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<p>看算法描述: <em>“已经存在前 <span class="math inline">\(i\)</span>
+个皇后在棋盘上的局面”</em>, 则涉及到递归:
+<code>(place-first-k-rows (- k 1))</code></p>
+<p><em>“对于每个局面”</em> 看上去像 map / foreach, 但其实 map
+后还要把所有处理好后的局面”总结”为一个序列返回, 所以引入
+<code>flatmap</code>, <code>flatmap</code> 是先对序列中每个元素
+<code>map</code> 再 <code>accumulate</code> 为 list
+(这也是基本过程的组合, 较为常见的逻辑就单独抽象出来)</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name">place-first-k-rows</span> k)</span><br><span class="line">  (<span class="name"><span class="built_in">if</span></span> (<span class="name"><span class="built_in">=</span></span> k <span class="number">0</span>)</span><br><span class="line">      (<span class="name"><span class="built_in">list</span></span> empty-board)</span><br><span class="line">      <span class="comment">;; k \neq 0</span></span><br><span class="line">      </span><br><span class="line">      (<span class="name">flatmap</span> </span><br><span class="line">       (<span class="name"><span class="built_in">lambda</span></span> </span><br><span class="line">         (rest-of-queens) </span><br><span class="line">         <span class="comment">;; <span class="doctag">TODO:</span> for each placement... </span></span><br><span class="line">         )</span><br><span class="line">       (<span class="name">place-first-k-rows</span> (<span class="name"><span class="built_in">-</span></span> k <span class="number">1</span>)))</span><br><span class="line">      </span><br><span class="line">      )</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<p>然后关注得到前 <span class="math inline">\(k - 1\)</span>
+行之后如何放置第 <span class="math inline">\(k\)</span> 行即可.
+<em>尝试枚举列号并在第 <span class="math inline">\(i\)</span> 行 放下第
+<span class="math inline">\(i+1\)</span> 个皇后</em> (这是一个 map 过程:
+把每个被枚举到的行号映射为在当前):</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name">place-first-k-rows</span> k)</span><br><span class="line">  (<span class="name"><span class="built_in">if</span></span> (<span class="name"><span class="built_in">=</span></span> k <span class="number">0</span>)</span><br><span class="line">      (<span class="name"><span class="built_in">list</span></span> empty-board)</span><br><span class="line">      <span class="comment">;; k \neq 0</span></span><br><span class="line">      (<span class="name">flatmap</span> </span><br><span class="line">       (<span class="name"><span class="built_in">lambda</span></span> </span><br><span class="line">         (rest-of-queens)</span><br><span class="line">         </span><br><span class="line">         <span class="comment">;; for each placement... </span></span><br><span class="line">         (<span class="name"><span class="built_in">map</span></span> </span><br><span class="line">          (<span class="name"><span class="built_in">lambda</span></span> </span><br><span class="line">            (new-col) </span><br><span class="line">            (<span class="name">apply-cols</span> rest-of-queens k new-col)) </span><br><span class="line">          (<span class="name">enumerate-interval</span> <span class="number">1</span> board-size))	</span><br><span class="line">         </span><br><span class="line">         )</span><br><span class="line">       (<span class="name">place-first-k-rows</span> (<span class="name"><span class="built_in">-</span></span> k <span class="number">1</span>)))</span><br><span class="line">      )</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<p>最后<em>“检查新皇后是否冲突,
+然后将这些结果中符合条件(不冲突)的”总结”出来作为下一次放置的”前 <span
+class="math inline">\(i+1\)</span> 个皇后”“</em></p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name">queen</span> board-size)</span><br><span class="line">  (<span class="name"><span class="built_in">define</span></span> (<span class="name">place-first-k-rows</span> k)</span><br><span class="line">    (<span class="name"><span class="built_in">if</span></span> (<span class="name"><span class="built_in">=</span></span> k <span class="number">0</span>)</span><br><span class="line">        (<span class="name"><span class="built_in">list</span></span> empty-board)</span><br><span class="line">        <span class="comment">;; k \neq 0</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">;; check validity</span></span><br><span class="line">        (<span class="name">filter</span></span><br><span class="line">         (<span class="name"><span class="built_in">lambda</span></span> (placements) (<span class="name">safe?</span> placements))</span><br><span class="line">         (<span class="name">flatmap</span></span><br><span class="line">          (<span class="name"><span class="built_in">lambda</span></span> (rest-of-queens)</span><br><span class="line">            </span><br><span class="line">            <span class="comment">;; for each placement... </span></span><br><span class="line">            (<span class="name"><span class="built_in">map</span></span> </span><br><span class="line">             (<span class="name"><span class="built_in">lambda</span></span> (new-col)</span><br><span class="line">               (<span class="name">apply-cols</span> rest-of-queens k new-col))</span><br><span class="line">             (<span class="name">enumerate-interval</span> <span class="number">1</span> board-size)))</span><br><span class="line">          (<span class="name">place-first-k-rows</span> (<span class="name"><span class="built_in">-</span></span> k <span class="number">1</span>))))))</span><br><span class="line">  </span><br><span class="line">  (<span class="name">place-first-k-rows</span> board-size))</span><br></pre></td></tr></table></figure>
+<p>(写到这里我还是不太适应 Lisp 这种括号和缩进, 给写眼花了说是)</p>
+<p>具体的摆放方式可以直接用 list 存每一行的皇后列号, <code>safe?</code>
+就是对新皇后(假设为在第 <span class="math inline">\(r\)</span> 行 <span
+class="math inline">\(c\)</span> 列)向上每一行做检查,
+检查新皇后所在行向上 <span class="math inline">\(p\)</span> 行的 <span
+class="math inline">\((c - p, r - p)\)</span> 和 <span
+class="math inline">\((c + p, r - p)\)</span>
+位置是否被占据(具体可以画一下)</p>
+<p>这就是把看似复杂的过程统一抽象为几个基本过程的方式,
+增强复用性减少思考代价.</p>
+<p>// TODO 图形那个例子考虑下要不要写</p>
+<h2 id="符号数据">符号数据</h2>
+<p>以上我们讨论的数据几乎都建立在”值”(或数值)上. 数值是连续的,
+可解释性较差的(光看数值难以理解<strong>含义</strong>)</p>
+<p>数值反映了物理世界的客观属性(如年龄, 时间, 长度, 内存大小, 行列编号),
+而符号则反映了人类的高级认知</p>
+<p>符号是离散的不连续的, 可解释性较强(如看到 <code>'apple</code>
+就知道这是一个苹果的符号), 但<strong>依赖上下文确定含义</strong>(伏笔,
+如<code>'apple</code> 可以代表食物也可以代表 Apple Inc.)</p>
+<blockquote>
+<p>数学柏拉图主义与维特根斯坦语言游戏</p>
+<p>Mathematical Platonism 来自柏拉图的理念论, 强调数学对象的实在性,
+如数、集合等是客观存在独立于人的心智的,
+人类只是”发现”而非”发明”了这些概念,
+甚至于是用自己的生理特质去理解这些概念并用自己的形式(语言)结构化描述出来.</p>
+<p>Language Game Theory 强调语言是人类活动的一部分,
+语言中的符号必须依赖语境上下文,
+解决特定问题(表达思想或情感)才有实际价值, 也应当是这样(实践优先!)
+<del>经常对线的应该对抢夺定义权深有体会</del></p>
+<p>前者展现了我们目前为止提及的以数值为核心复合组合构造起数据的某种原则,
+这些数值是客观存在的, 人采用自己的方式描述和模拟出这些概念;
+而接下来要说的符号数据是后者想要表达的思想:
+靠一种”语境”(数据类型标记)构造一套符号语言系统来进行(模拟)人类活动</p>
+</blockquote>
+<p>在 Scheme 中, 采用 <code>'</code> 号来标记一个符号数据, 解释器会认定
+<code>'</code> 后的一个符号是符号而不是数值,
+也可用于符合对象:<code>'(a b c)</code>. 实际上 <code>'</code> 是
+<code>quote</code> 的语法糖, <code>quote</code> 是一种特殊形式,
+<code>'(a b c)</code> 就等价于 <code>list (quote (a b c))</code>, 而
+<code>'()</code> 就是空表, 可以代替 <code>nil</code></p>
+<p>符号语言破坏了”对等的东西可以代换”的原则, 例如 <span
+class="math inline">\(3 = 1 + 2\)</span>, 但符号 <code>"3"</code>
+却不能等于 <span class="math inline">\(1+2\)</span>. 符号重要的是其身份,
+在上下文环境下所代表的实际意义. 从另一个角度看这个问题,
+在引入符号概念后, 语言开始有更丰富的抽象层次(这也符合真实世界的复杂性),
+这就导致了类型系统的改变: 引入以前的类型系统较为同质单一(数值和布尔值),
+引入后强迫我们分辨不同的类型: <code>number?</code> <code>symbol?</code>,
+这也为我们后续真正开始为数据的复合过程中加入类型标记打下基础.</p>
+<p>总结来说, 引入符号为程序提供了这样的能力: 模拟真实世界的复杂性,
+提供更丰富的抽象层次, 构造更复杂的数据结构</p>
+<p>以简化的符号求导系统为例. 求 <span
+class="math inline">\(3x^{3}+5x^{2}+e^{x}\)</span> 对 <span
+class="math inline">\(x\)</span> 的导数, 我们意识到 <span
+class="math inline">\(3, 5, e, x, 2\)</span> 虽然都是数字,
+但明显是不同的, 其中系数指数和底数 <span class="math inline">\(3, 5, e,
+2\)</span> 是数值, 而 <span class="math inline">\(x\)</span> 是符号,
+因此需要区分类型, 甚至于说, 我们还需要区分和式,
+乘式类型以及其构造函数和选择函数(为了套求导的规则)</p>
+<hr />
+<h2 id="抽象数据的多重表示">抽象数据的多重表示</h2>
+<p>除了最基本的数值,
+我们目前所有的数据类型几乎都是通过组合基本数值(设计构造函数与选择函数)以构造出的数据抽象;
+但往往有些事物的构造方法不唯一, 例如复数可以通过直角坐标系坐标表示
+(<span class="math inline">\(a+b \cdot \text{i}\)</span> 表示为 <span
+class="math inline">\((啊, 不)\)</span>) 也可以通过极坐标来表示.</p>
+<p>假设有两个复数传递给 <code>add-complex</code>: 如果选择直角坐标, 那么
+<code>add-complex</code> 所需的 <code>real-part</code>
+就应该将复数中的两个数视为直角坐标系下的实部虚部, 直接返回前者即可;
+如果选择极坐标则是通过模和辅角计算实部(<span
+class="math inline">\(r\cos\theta)\)</span>).
+良好的数据抽象和抽象边界的构造使得使用者只需要调用
+<code>add-complex</code> 并传入复数就行了, 不需要查阅文档观察
+<code>real-part</code> 将其视为什么,
+<del>但是开发者要考虑的可就多了</del> 但是这样的方法有一些问题:</p>
+<ol type="1">
+<li>实际上同时也只能选择一种表示方法, 因为无论如何构造函数还是不同的,
+而且也不允许一个函数的多种语义</li>
+<li>过早许诺了表示方法.
+“最小许诺原则”指的是在信息不完整或不确定性较高的时候应该避免太早绑定具体方案,
+而是保留多种可能性, 推迟决定的时间点. 举个<em>有违公序良俗的</em>例子:
+一个人有很多暧昧对象,
+如果选择其中一个作为配偶之后就丧失了其他人的可能性,
+相反如果一直保持暧昧关系就能保留多种可能性, 推迟决定的时间点.</li>
+</ol>
+<blockquote>
+<p>这只是举例用, 即使是在现在这样的社会, 也极不推荐这样的行为!</p>
+</blockquote>
+<p>为了解决上述问题, 引入更大的灵活性, 需要给数据一个”标记”,
+称作”类型”</p>
+<h3 id="数据类型的初步概念">数据类型的初步概念</h3>
+<p>为了构造抽象数据的多重表示</p>
+<p>考虑我们为什么需要一个”类型”?</p>
+<ul>
+<li>在一些底层场景中, 选取较小的数据类型(在取值允许,
+不会溢出的情况下)可以节省内存空间</li>
+<li>防止一些潜在的运算错误,
+对两个本不应该运算的数据进行了错误的运算时(即两个数据类型不具有该运算),
+编译器可以及时发现错误</li>
+<li>一些过程对于不同的类型参数会有不同的反应 (多态类型)</li>
+<li>可以通过继承类型增强代码复用性, 如 Dog 和 Bird 都继承自
+<code>Animal</code> 父类 (<code>D</code> 和 <code>B</code>
+是子类型)</li>
+<li>可以通过组合特性增强代码复用性, 如 Dog 和 Bird 都实现了
+<code>Animal</code> trait (<code>D</code> 和 <code>B</code>
+都满足类型约束 <code>Animal</code>)</li>
+<li>逻辑更清晰</li>
+<li>….</li>
+</ul>
+<p>总结来说,
+就是说我们需要模拟或认定”一个数据不同于其他数据”或”这个数据与其他数据存在一定程度上的相似性”时,
+就需要为数据指定一个<strong>类型</strong></p>
+<p>最直观的想法就是我们上面说的”打一个标记”:</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name">attach-tag</span> type-tag contents) </span><br><span class="line">  (<span class="name"><span class="built_in">cons</span></span> type-tag contents))</span><br></pre></td></tr></table></figure>
+<p>再定义 <code>car x</code> 为 <code>(type-tag x)</code>,
+<code>cdr x</code> 为 <code>(contents x)</code>, 设计一些谓词判断
+<code>x</code> 的类型是否为某一类型即可. (实际上这还是构造数据抽象:
+选择函数和构造函数)</p>
+<p>而对于通用操作 <code>real-part</code>, 只需要检查 <code>x</code>
+的类型是 `<code>rect</code> 还是 <code>polar</code> 就可以了(当然,
+这是某种意义上的硬编码). 甚至不需要修改 <code>add-complex</code> 的代码,
+因为 <code>real-part</code> 已经进化为通用操作了
+(还是良好的数据抽象)</p>
+<p>但是如果我们想要动态添加一些数据类型呢?</p>
+<h3 id="数据导向信息传递">数据导向/信息传递</h3>
+<p>首先较为直观的想法是维护一个表格(或者别的你想的什么数据结构),
+通过<code>(put &lt;op&gt; &lt;type&gt; &lt;item&gt;)</code> 把
+<code>item</code> 放在 <code>&lt;type&gt;</code> 行的
+<code>&lt;op&gt;</code> 列, 表明对于数据类型 <code>&lt;type&gt;</code>,
+其 <code>&lt;op&gt;</code> 操作的具体指派是 <code>&lt;item&gt;</code>,
+调用时通过 <code>(get &lt;op&gt; &lt;type&gt;)</code>
+查表得到对应过程来应用.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">op/type</th>
+<th style="text-align: center;">Polar</th>
+<th style="text-align: center;">Rectangular</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><code>real-part</code></td>
+<td style="text-align: center;"><code>real-part-polar</code></td>
+<td style="text-align: center;"><code>real-part-rect</code></td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>imag-part</code></td>
+<td style="text-align: center;"><code>imag-part-polar</code></td>
+<td style="text-align: center;"><code>imag-part-rect</code></td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>magnitude</code></td>
+<td style="text-align: center;"><code>magnitude-polar</code></td>
+<td style="text-align: center;"><code>magnitude-rect</code></td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>angle</code></td>
+<td style="text-align: center;"><code>angle-polar</code></td>
+<td style="text-align: center;"><code>angle-rect</code></td>
+</tr>
+</tbody>
+</table>
+<p>调用时直接 <code>((get 'real-part 'polar) x)</code> 即可.
+这种实现方式就是”数据导向”的程序设计, 采用”智能操作”通用地处理数据.</p>
+<p>还有一种想法是采用”智能数据对象”而不是”智能操作”, 如下:</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name">make-from-real-imag</span>) x y)</span><br><span class="line">	(<span class="name"><span class="built_in">define</span></span> (<span class="name">dispatch</span> op)</span><br><span class="line">      (<span class="name"><span class="built_in">cond</span></span> (<span class="name"><span class="built_in">eq?</span></span> op <span class="symbol">&#x27;real-part</span>) x)</span><br><span class="line">      		(<span class="name"><span class="built_in">eq?</span></span> op <span class="symbol">&#x27;imag-part</span>) y)</span><br><span class="line">    		(<span class="name"><span class="built_in">eq?</span></span> op <span class="symbol">&#x27;magnitude</span>) (<span class="name"><span class="built_in">sqrt</span></span> ... 我忘了怎么算了))</span><br><span class="line">      		...</span><br><span class="line">            (<span class="name"><span class="built_in">else</span></span> </span><br><span class="line">             (<span class="name">error</span> <span class="string">&quot;Unknown operation.&quot;</span>))))</span><br><span class="line">dispatch)</span><br></pre></td></tr></table></figure>
+<p><code>make-from-real-imag</code>
+返回的不再是一个表示复数的数据而是一个过程,
+通过闭包(内部过程也是闭包)绑定 <code>make-from-real-imag</code>
+的参数并返回这个闭包以延长其生命周期.</p>
+<p>使用时 <code>(x 'real-part)</code> 或者封装一下均可.
+这种风格叫做”消息传递”, 将”我要调用<strong>你的</strong>
+<code>real-part</code>
+“这条消息传递给智能数据对象(虽然语法上是一个闭包),
+由智能数据自己灵活处理</p>
+<blockquote>
+<p>在一个较为复杂的系统中可能有多种类型层次,
+每层与下一层之间的连接都借助一些通用型操作. 当一个数据被”向下”传输时,
+用于引导它进入适当处理过程的最外层标志被剥除(通过使用
+<code>contents</code> ), 下一层的标志(如果有的话)变成可见的,
+并将被用于下一次分派.</p>
+</blockquote>
+<h3 id="不同类型数据的组合">不同类型数据的组合</h3>
+<p>前面提到:</p>
+<blockquote>
+<p>(类型可以)防止一些潜在的运算错误,
+对两个本不应该运算的数据进行了错误的运算时(即两个数据类型不具有该运算),
+编译器可以及时发现错误</p>
+</blockquote>
+<p>例如:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> temperature = <span class="number">30</span>;</span><br><span class="line"><span class="type">int</span> distance = <span class="number">100</span>;</span><br><span class="line"><span class="type">int</span> nonsense = temperature + distance; <span class="comment">// WA :(</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">enum class</span> <span class="title class_">Temperature</span> &#123; Celsius &#125;;</span><br><span class="line"><span class="keyword">enum class</span> <span class="title class_">Distance</span> &#123; Meters &#125;;</span><br><span class="line"></span><br><span class="line">Temperature temp&#123;<span class="number">30</span>&#125;;</span><br><span class="line">Distance dist&#123;<span class="number">100</span>&#125;;</span><br><span class="line"><span class="keyword">auto</span> bad = temp + dist;  <span class="comment">// CE!</span></span><br></pre></td></tr></table></figure>
+<p><del>当然, 对于 C 来说还有很多选项不开全时编译器发现不了的问题,
+比如:</del></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;114&quot;</span>+<span class="number">514</span>; <span class="comment">// 未定义行为</span></span><br></pre></td></tr></table></figure>
+<p><code>"114"</code> 字符串字面量在 C 中是 <code>char[N]</code>
+的字符数组, 在这里退化成 <code>const char *</code> 参与与整型的运算,
+相当于字符串首字母的地址 <code>+ 514 * sizeof(char)</code>,
+然而整个字符串只有 3 个 char 和一个 <code>'\0'</code> 这么长,
+会发生越界导致 UB.</p>
+<p>当然, 也不全是所有的不同类型间操作都要禁止,
+有些类型之间的操作是我们需要支持的.</p>
+<p>下面是一些合法且(不严格来说)比较正常的例子</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> nine = <span class="number">9</span>;</span><br><span class="line">nine + <span class="string">&#x27;0&#x27;</span>; <span class="comment">// 合法, &#x27;0&#x27; 整型提升为 48, 结果为 48+9=57, int 类型</span></span><br><span class="line"><span class="type">char</span> digit = nine + <span class="string">&#x27;0&#x27;</span>; <span class="comment">// 合法, int 隐式转换为 char, 当然要注意范围</span></span><br><span class="line">(digit - <span class="string">&#x27;0&#x27;</span>) * <span class="number">10</span>;  <span class="comment">// 合法, 两个 char 整型提升后进行整型运算, * 10 还是整型</span></span><br></pre></td></tr></table></figure>
+<p>你可能会说: 为什么要设计各种隐式转换/整型提升, 而不是直接”规定” char
+和 <code>int</code> 之间的运算呢?</p>
+<p>比如说写一些自定义的类型, 可能也会有涉及到两个不同类型之间的运算,
+你可能就直接 <code>operator+</code> 或者 <code>impl Add for</code>
+糊上去了, 但是如果类型多起来, 如果你的系统每两个类型之间都需要运算, 那么
+<span class="math inline">\(n\)</span> 个类型之间需要 $ n + $
+(自加和不同类型相加), 相当于随着类型的增多, 需要手动定义的运算呈 <span
+class="math inline">\(n^2\)</span> 平方级别增长.
+<del>那我写模板让编译器自己生成不就行了?</del></p>
+<p>然而实际情况下, 很多所谓的”不同类型”之间是有相互关系的, 例如 常规数值
+与 复数 相加, 可以把常规数值转换为虚部为 <span
+class="math inline">\(0\)</span> 的复数(只需要 <code>put</code>
+一个类型转换的过程进去,
+在运算时若不能直接运算则查表看能否转换到同一类型).
+还记得我们上面随口提一嘴的”子类型”吗? 这里整数就可以看作复数的子类型.
+更一般地说, 有这样的关系: 复数&lt;-实数&lt;-有理数&lt;-整数,
+后者均为前者的子类型, 这就是一种<strong>塔形类型结构</strong>.</p>
+<p>与之相应的还有<strong>树形类型结构</strong>, 例如各种凸多边形的分类,
+看起来就像某些设计臃肿的类的继承图一样, 四边形包含了梯形, 筝形,
+则后两者是前者的子类型; 甚至包括了令人发指的钻石型继承:
+平行四边形包含了矩形和菱形, 但是正方形同时是矩形和菱形.
+树形类型结构在转换时就需要更复杂的搜索.
+当然这里的”臃肿”和”令人发指”的批判并非空穴来风, 毕竟:</p>
+<blockquote>
+<p>“在设计大型系统时, 处理好一大批相互有关的类型而同时又能保持模块性,
+这是一个非常困难的问题, 也是当前正在研究的一个领域.” (注:
+这句话在书上写了 20 年, 依然适用)</p>
+</blockquote>
+<hr />
+<p>说点题外话, 目前我接触过最大规模的工程代码还是 ArceOS,
+当然也在其中遇到了很多类型相关的问题.
+上面一块的内容一直在叙述类型之间的继承(子类型的存在)这件事,
+而我们经常能听到一句”组合优于继承”, 那么组合是什么呢? 类似 Rust 的 trait
+一样, 对不同类型之间做约束, 并提供约束检查等.
+在现代语言中很少有需要手写一个 item-op 的表来实现类型系统的,
+一般都是基本类型内置, 自定义类型的话大概分为静态分发(模板,
+编译期静态生成代码)和动态分发(运行期间决定类型, 如 C++ 的虚函数和 Rust
+的 trait 对象, 有趣的是前者的虚函数表常常被人诟病很慢,
+但其实后者也要查虚表的<span class="math inline">\(^{[*]}\)</span>)</p>
+<p>$[*]: $ 虚函数表和虚表的性能开销来源是类似的:
+一是需要通过一个<em>指针</em>找到虚函数表在通过表中偏移量找到需要调用的函数,
+多了一些寻址操作; 二是可能妨碍到编译器优化(这部分具体就不太懂了). C++
+的指向虚函数表的指针在对象内部的 <code>vptr</code> 中, Rust
+是一个底子很好的指针一部分指向数据对象一部分指向虚函数表,
+理论上应该都有开销的, 总之不太清楚风评是怎么回事.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/06/17/sicp_2/" title="SICP 第二章(构造数据抽象)">https://amiriox.github.io/2025/06/17/sicp_2/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/SICP/" rel="tag"># SICP</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/05/30/sicp_1/" rel="prev" title="SICP 第一章(构造过程抽象)">
+                  <i class="fa fa-angle-left"></i> SICP 第一章(构造过程抽象)
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/06/21/25sp%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E8%AE%AD%E7%BB%83%E8%90%A5%E5%9B%9B%E9%98%B6%E6%AE%B5%E6%8A%A5%E5%91%8A/" rel="next" title="25sp操作系统训练营四阶段技术总结报告">
+                  25sp操作系统训练营四阶段技术总结报告 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

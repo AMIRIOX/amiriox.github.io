@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="第五章 优化程序性能(摘要与注解) 我错了,我明天一定把这一篇补完 我对了,我今天把这一篇补完了 感觉是本书最难理解和应用的一章, 所以得多花点功夫尽可能深入理解了然后写的好一点">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP3e第五章(优化程序性能)">
+<meta property="og:url" content="https://amiriox.github.io/2025/02/23/CSAPP-2025-02-23/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="第五章 优化程序性能(摘要与注解) 我错了,我明天一定把这一篇补完 我对了,我今天把这一篇补完了 感觉是本书最难理解和应用的一章, 所以得多花点功夫尽可能深入理解了然后写的好一点">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://amiriox.github.io/images/image-20250314024937749.png">
+<meta property="og:image" content="https://amiriox.github.io/images/image-20250314025039720.png">
+<meta property="og:image" content="https://amiriox.github.io/images/image-20250314033010501.png">
+<meta property="og:image" content="https://amiriox.github.io/images/image-20250314034047655.png">
+<meta property="article:published_time" content="2025-02-23T05:35:32.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.822Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="CSAPP&#x2F;cmu15213">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://amiriox.github.io/images/image-20250314024937749.png">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2025/02/23/CSAPP-2025-02-23/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/02/23/CSAPP-2025-02-23/","path":"2025/02/23/CSAPP-2025-02-23/","title":"CSAPP3e第五章(优化程序性能)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CSAPP3e第五章(优化程序性能) | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0-%E4%BC%98%E5%8C%96%E7%A8%8B%E5%BA%8F%E6%80%A7%E8%83%BD%E6%91%98%E8%A6%81%E4%B8%8E%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">第五章
+优化程序性能(摘要与注解)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%B1%E5%93%8D%E4%BC%98%E5%8C%96%E7%9A%84%E7%BB%86%E8%8A%82"><span class="nav-number">1.1.</span> <span class="nav-text">影响优化的细节</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8%E7%A4%BA%E7%A8%8B%E5%BA%8F%E6%80%A7%E8%83%BD"><span class="nav-number">1.2.</span> <span class="nav-text">表示程序性能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text">常见优化方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%B0%E4%BB%A3%E5%A4%84%E7%90%86%E5%99%A8"><span class="nav-number">1.4.</span> <span class="nav-text">现代处理器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#concurrency-%E4%B8%8E-parallelism"><span class="nav-number">1.4.1.</span> <span class="nav-text">Concurrency 与 Parallelism</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%85%E6%A0%87%E9%87%8F%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%80%BB%E4%BD%93%E8%BF%87%E7%A8%8B-icu-eu-%E9%80%80%E5%BD%B9%E5%8D%95%E5%85%83"><span class="nav-number">1.4.2.</span> <span class="nav-text">超标量实现的总体过程: ICU,
+EU, 退役单元</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%9F%E8%83%BD%E5%8D%95%E5%85%83%E7%9A%84%E6%80%A7%E8%83%BD"><span class="nav-number">1.4.3.</span> <span class="nav-text">功能单元的性能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E5%8A%A0%E5%BA%95%E5%B1%82%E7%9A%84%E7%A8%8B%E5%BA%8F%E4%BC%98%E5%8C%96"><span class="nav-number">1.5.</span> <span class="nav-text">更加底层的程序优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%84%E7%A7%8D%E6%8E%A5%E8%BF%91%E5%BA%95%E5%B1%82%E7%9A%84%E4%BC%98%E5%8C%96"><span class="nav-number">1.5.1.</span> <span class="nav-text">各种接近底层的优化:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%90%E5%88%B6%E5%9B%A0%E7%B4%A0"><span class="nav-number">1.5.2.</span> <span class="nav-text">限制因素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%93%8D%E4%BD%9C%E6%80%A7%E8%83%BD"><span class="nav-number">1.5.3.</span> <span class="nav-text">内存操作性能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%BE%88%E5%8E%89%E5%AE%B3%E4%BD%86%E6%98%AF%E8%87%AA%E5%B7%B1%E5%AE%8C%E5%85%A8%E5%81%9A%E4%B8%8D%E5%88%B0%E7%9A%84%E5%AE%9E%E4%BE%8B"><span class="nav-number">1.6.</span> <span class="nav-text">一个很厉害但是自己完全做不到的实例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E5%89%96%E6%9E%90profiling"><span class="nav-number">1.6.1.</span> <span class="nav-text">程序剖析(profiling)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#amdahls-law"><span class="nav-number">1.6.2.</span> <span class="nav-text">Amdahl’s Law</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/02/23/CSAPP-2025-02-23/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CSAPP3e第五章(优化程序性能) | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSAPP3e第五章(优化程序性能)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-02-23 13:35:32" itemprop="dateCreated datePublished" datetime="2025-02-23T13:35:32+08:00">2025-02-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第五章-优化程序性能摘要与注解">第五章
+优化程序性能(摘要与注解)</h1>
+<p><del>我错了,我明天一定把这一篇补完</del></p>
+<p>我对了,我今天把这一篇补完了</p>
+<p>感觉是本书最难理解和应用的一章,
+所以得多花点功夫尽可能深入理解了然后写的好一点</p>
+<span id="more"></span>
+<h2 id="影响优化的细节">影响优化的细节</h2>
+<p>有些问题导致编译器不敢放开手脚优化,
+所以一味依赖编译器优化是不可行的<br />
+常见的影响优化的问题(可能在极端情况下,
+优化后的程序与优化前的执行结果不同):</p>
+<ol type="1">
+<li>内存别名使用(两个指针实际指向同一地址,
+看似相同的操作也会产生差异)</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">add1</span><span class="params">(<span class="type">long</span> *xp, <span class="type">long</span> *yp)</span> </span>&#123;</span><br><span class="line">    *xp += *yp;</span><br><span class="line">    *xp += *yp;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">add2</span><span class="params">(<span class="type">long</span> *xp, <span class="type">long</span> *yp)</span> </span>&#123;</span><br><span class="line">    *xp += <span class="number">2</span> * *yp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数<code>add1</code>需要 2 次读 <code>yp</code>, 两次读
+<code>xp</code>, 两次写 <code>xp</code>, 函数<code>add2</code>
+需要一次读 <code>yp</code>, 一次读 <code>xp</code>, 一次写
+<code>xp</code>,明显后者更优<br />
+那么函数<code>add1</code>可能被优化为<code>add2</code>吗? 答案是否定的,
+如果 <code>xp</code> 和 <code>yp</code> 指向相同的内存地址,
+这两者的行为会不同</p>
+<ol start="2" type="1">
+<li>函数调用的副作用(导致编译器不能按照表达式求值相等而优化,
+副总用必须被考虑)</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">long</span> <span class="title">f</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="type">long</span> <span class="title">foo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">f</span>() + <span class="built_in">f</span>() + <span class="built_in">f</span>() + <span class="built_in">f</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">long</span> <span class="title">bar</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">4</span> * <span class="built_in">f</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>foo</code> 有四次函数调用(压栈保存上下文出栈返回),
+显然我们觉得<code>bar</code>的效率更优, 但这里同样也是不能优化的,
+因为函数的返回值除了被用来 eval expression, 同时也可能有副作用, 比如
+<code>f()</code> 里会修改一个全局变量, 成为一个有状态的函数,
+这里的行为就不同了。</p>
+<blockquote>
+<p>附加阅读:</p>
+<ul>
+<li>纯函数（Pure Function）：函数式编程的核心,
+具有引用透明性并且无副作用. 引用透明性是指相同输入一定有相同输出,
+无副作用是指不修改外部状态(全局变量, I/O 操作等)</li>
+<li>副作用（Side Effect）：修改全局变量、进行 I/O
+操作、抛出异常、写日志、改变参数本身等等。</li>
+<li>优化:
+由于纯函数的输出仅依赖于输入且无副作用，编译器可以安全地进行优化。比如
+Haskell 和 Lisp
+这种位于鄙视链顶端的顶级函数式语言对纯函数有很严格的要求使得编译器易于优化</li>
+</ul>
+</blockquote>
+<h2 id="表示程序性能">表示程序性能</h2>
+<p>最先想到的肯定是<del>时间复杂度</del>用具体的时间单位(<code>s</code>,
+<code>ms</code>, <code>ns</code>, <code>ps</code>),
+但是不同机器上无法控制变量(比如拿 ENIAC 跑出来的时间和现在 9800x3d
+跑出来的结果肯定是不同的, 不然 AMD 不是白设计了吗),
+所以考虑掉抽象掉一部分不重要的内容, 于是便有了 CPE 和
+时间复杂度两个概念, 后者抽象的程度比前者更深</p>
+<p>首先要考虑除以每个时钟周期的时间, 得到时钟周期数,
+这样就是机器无关的了, 但是这样的时钟周期数太笼统,
+不方便我们具体分析最耗时的瓶颈, 所以引入 CPE 的概念:</p>
+<p>CPE (clocks per element, 处理每个元素的时钟周期数),
+乘以时钟周期的纳秒数就是每个元素实际处理的时间</p>
+<p>与时间复杂度比较 (<span class="math inline">\(T(6n^3+3n^2\log{n}) =
+O(n^3), \text{CPE} = 6\)</span>), 时间复杂度要抽象掉的东西更多</p>
+<p>读完这一章可以发现这种视角的优化程序是在 <span
+class="math inline">\(n\)</span>
+不变时通过对程序(或者说超标量的现代CPU)运行的理解来优化程序,
+而算法和数据结构是制止 <span class="math inline">\(n\)</span>
+增大时程序运算次数的暴力上涨趋势</p>
+<p>实际上由于 CPU 的执行方式(乱序处理投机执行)很难完全用人脑分析, 所以
+CPE 大部分时候是测出来然后去想为什么会这样反推原因, 下面会说 CPU
+的指令执行方式和具体剖析优化程序的实例.</p>
+<h2 id="常见优化方法">常见优化方法</h2>
+<ol type="1">
+<li>代码移动, 如果有要执行多次但不会改变计算结果的计算, 可以摘出循环,
+经典例子如 <code>strlen(s)</code> 是 <span
+class="math inline">\(O(n)\)</span> 的而不是 <span
+class="math inline">\(O(1)\)</span> 的, 写在循环的判断条件里就变成 <span
+class="math inline">\(O(n^2)\)</span> 了,
+而且这种地方是现代编译器不敢去优化的地方</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; <span class="built_in">strlen</span>(str); i++) &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 优化为</span></span><br><span class="line"><span class="type">size_t</span> len = <span class="built_in">strlen</span>(str);</span><br><span class="line"><span class="keyword">for</span>(<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; len; i++) &#123;</span><br><span class="line">	...   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译器不优化是它不知道你会不会在循环里修改某些状态导致
+<code>strlen(str)</code> 的返回值出现变化。<br />
+代码移动的一个重要应用场景就是<strong>减少过程调用</strong>(第三章很简单所以我没写,
+根据第三章, 函数调用要压栈保存上下文压返回地址然后跳转到新栈帧,
+返回后还得恢复上下文, 还有调用约定, caller-saved callee-saved等等,
+所以比较费时间),
+把循环中反复出现的返回值固定的无副作用函数调用从放到循环外面。</p>
+<ol start="2" type="1">
+<li><p>消除不必要的内存引用, 栈内存相比寄存器的速度是很慢的,
+下一章的博客(其实我第五章是第六章之后写的)有提到就是 DRAM 和 SRAM
+的速度差距, 经典例子是 <code>*dest = *dest + data[i] for i;</code> 改为
+<code>acc += data[i] for i; *dest = acc;</code>, <code>acc</code>
+可以优化到寄存器 (<code>SRAM</code>) 中,
+显然比每次都访存要快很多。不过这个其实在某些情况下是改变了原意的, 比如
+dest 和 data 指向相同位置(还记得吗? 内存别名使用)<br />
+<code>-O2</code> 的实现方式很巧妙而且不会改变原语义:</p>
+<p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.L22</span><br><span class="line">	vmulsd	(%rdx), %xmm0, %xmm0  ; xmm0 *= *rdx</span><br><span class="line">	addq	$8, %rdx    			 ; rdx += 8</span><br><span class="line">	cmpq	%rax, %rdx				 ; 循环比较</span><br><span class="line">	vmovsd	%xmm0, (%rbx)		 ; *rbx = xmm0</span><br><span class="line">	jne		.L22					 ; 循环跳转</span><br></pre></td></tr></table></figure></p>
+<p>其实就是把 xmm0 当作一个前缀积的变量, 每个位置乘一次赋值一次</p></li>
+</ol>
+<h2 id="现代处理器">现代处理器</h2>
+<h3 id="concurrency-与-parallelism">Concurrency 与 Parallelism</h3>
+<p>并行(Parallel): 同一时间内同时执行多条指令,
+是物理意义上确实在同时执行的, 常见的例子:</p>
+<ul>
+<li>流水线一个周期内同时处理多个指令的不同阶段, <a
+href="https://amiriox.github.io/2025/03/13/CSAPP-2025-03-13/#more">第四章博客</a>已经详细分析过其机制了</li>
+<li>多执行单元乱序执行(超标量)</li>
+<li>现代多核心 CPU</li>
+</ul>
+<p>并发(Concurrency): 通过快速切换任务使得看起来”在同时运行多个任务”,
+核心是调度</p>
+<ul>
+<li>单核 CPU 上的的多线程(多线程也可能并行实现, 但是单核心 CPU
+上就必然是并发的了)</li>
+<li>操作系统进程并发(上下文切换)</li>
+<li>操作系统中断处理</li>
+<li>I/O 多路复用以及异步 I/O</li>
+</ul>
+<h3 id="超标量实现的总体过程-icu-eu-退役单元">超标量实现的总体过程: ICU,
+EU, 退役单元</h3>
+<ul>
+<li><p>指令控制单元的 [<code>fetch</code>, 从 I-Cache 种取指令] 和
+[<code>decode</code>, 分解为更细化的指令],
+如有分支则通过投机执行进行分支预测(也可能有条件传送),
+这两个阶段都比第四章设计的 PIPE 处理器的阶段要复杂一些(前者从缓存取指,
+后者有指令分解)</p></li>
+<li><p>执行单元有多个单元进行实际的指令(例如一个 load
+单元会有一个加法器进行地址计算), 这些单元会和 D-Cache 取指令</p></li>
+<li><p>指令控制单元中有退役单元,
+一些涉及分支预测/条件传送的代码会很早就被计算出结果(影响),
+只有这条指令计算完成并且引起这条指令的分支点也被确认为预测正确,
+才会同步到架构寄存器(退役), 否则会被清空并且丢弃;</p></li>
+<li><p>通过<strong>寄存器重命名</strong>暂时存储一些中间值,
+使得多级分支预测或者更复杂的控制流可以高效执行<br />
+退役单元负责把功能单元计算出的还未确认能够被执行的影响作为一个标记 <span
+class="math inline">\((\text{condition, reg, value})\)</span>,
+如果有某个指令是需求这个 <span
+class="math inline">\(\text{condition}\)</span> 下的寄存器 <span
+class="math inline">\(\text{reg}\)</span> 值, 就直接用这个标记包含的值
+<span class="math inline">\(\text{value}\)</span>,
+而不用真的等前面的分支指令都退役了才继续向下(由此看出超前执行了非常多的指令)</p></li>
+<li><p>这种结构称之为<strong>乱序处理</strong>, 与流水线一样是现代 CPU
+高速处理的必杀武器</p></li>
+</ul>
+<h3 id="功能单元的性能">功能单元的性能</h3>
+<p>延迟是这条指令需要执行的周期数, 发射时间 <span
+class="math inline">\(I\text{ (clock cycles)}\)</span>
+是依赖流水线时最多两条相同指令的间隔(还记得我们第四章说的暂停插入气泡和转发吗?),
+容量 <span class="math inline">\(C\text{ (clock cycles)}\)</span>
+是能够执行这一指令的功能单元数量</p>
+<p>发射时间为 <span class="math inline">\(1\)</span>
+是<strong>完全流水线化</strong>的,
+最大吞吐量定义为发射时间的倒数用于评估指令在流水线中的性能,
+处理器的总吞吐量就是 <span class="math inline">\(C \times 1/I\)</span>
+(容量乘以指令最大吞吐量)</p>
+<h2 id="更加底层的程序优化">更加底层的程序优化</h2>
+<p>程序的数据流图: (非正式地) 用以表示程序<strong>在具体 decode
+后的指令级别</strong>执行的顺序和依赖关系, 可以归纳出关键路径从而得出
+CPE 瓶颈</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Accumulate result in local variable */</span> </span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">combine4</span><span class="params">(vec_ptr v, <span class="type">data_t</span> *dest)</span> </span>&#123;</span><br><span class="line">	<span class="type">long</span> i; </span><br><span class="line">    <span class="type">long</span> length = <span class="built_in">vec_length</span>(v); </span><br><span class="line">    <span class="type">data_t</span> *data = <span class="built_in">get_vec_start</span>(v); </span><br><span class="line">    <span class="type">data_t</span> acc = IDENT;</span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++) &#123;</span><br><span class="line">		acc = acc OP data[i];</span><br><span class="line">    &#125;</span><br><span class="line">	*dest = acc; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.L25:</span><br><span class="line">	vmulsd	(%rdx), %xmmO, %xmmO</span><br><span class="line">	addq 	$8, %rdx</span><br><span class="line">	cmpq 	%rax, %rdx</span><br><span class="line">	jne 	.L25</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">; decode 扩展后的指令</span><br><span class="line">.L25:</span><br><span class="line">    ; vmulsd	(%rdx), %xmmO, %xmmO</span><br><span class="line">    movsd (%rdx), %xmm1            # load &lt;- %rdx</span><br><span class="line">    mulsd %xmm1, %xmmO             # %xmm0 &lt;- mul &lt;- (xmm0, load)</span><br><span class="line">    </span><br><span class="line">    addq $8, %rdx                  # %rdx &lt;- add &lt;- %rdx</span><br><span class="line"></span><br><span class="line">    cmpq %rax, %rdx                # cmp &lt;- (%rax, %rdx), 其中 %rax 是 add 后的</span><br><span class="line"></span><br><span class="line">    jne .L25                       # jne &lt;- cmp</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>例如对这个代码, 用到了 <code>%rax</code>, <code>%rdx</code>,
+<code>%xmm0</code> 三个寄存器, 分别存储 <code>length</code>,
+<code>data[i]</code> 和 <code>acc</code></p>
+<p>写出汇编并且解码为细化操作后就很容易得出数据流图:</p>
+<ul>
+<li><code>%rax</code> -&gt; <code>cmpq</code> -&gt;
+<code>jne</code></li>
+<li><code>%rdx</code>(1) -&gt; <code>load</code> -&gt;
+<code>mul</code></li>
+<li><code>%rdx</code>(2) -&gt; <code>add</code> -&gt; <code>cmpq</code>
+-&gt; <code>%rdx</code></li>
+<li><code>%xmm0</code> -&gt; <code>mul</code> -&gt;
+<code>%xmm0</code></li>
+</ul>
+<figure>
+<img src="/images/image-20250314024937749.png"
+alt="CSAPP3e 图 5-14 a)" />
+<figcaption aria-hidden="true">CSAPP3e 图 5-14 a)</figcaption>
+</figure>
+<p>这是单次循环的, 把多次循环的数据流图合并起来:</p>
+<figure>
+<img src="/images/image-20250314025039720.png" alt="CSAPP3e 图 5-15" />
+<figcaption aria-hidden="true">CSAPP3e 图 5-15</figcaption>
+</figure>
+<p>发现 <code>%rdx</code> (2) 就是<strong>关键路径</strong>
+(因为浮点乘法延迟 5 周期, 整数加法延迟 1 周期)</p>
+<h3 id="各种接近底层的优化">各种接近底层的优化:</h3>
+<ol type="1">
+<li>减少关键路径 CPE</li>
+</ol>
+<p>以 CSAPP 的习题举例子, 计算多项式 <span class="math inline">\(a_0 +
+a_1x + a_2x^2 + ... + a_nx^n\)</span> 的两个代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正常计算</span></span><br><span class="line"><span class="function"><span class="type">double</span> <span class="title">poly</span><span class="params">(<span class="type">double</span> a[], <span class="type">double</span> x, <span class="type">long</span> degree)</span> </span>&#123;</span><br><span class="line">	<span class="type">long</span> i; </span><br><span class="line">    <span class="type">double</span> result = a[<span class="number">0</span>]; </span><br><span class="line">    <span class="type">double</span> xpwr = x;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= degree; i++) &#123;</span><br><span class="line">        result += a[i] * xpwr; </span><br><span class="line">        xpwr = x * xpwr;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>秦九韶算法: <span class="math inline">\(a_0 + a_1x + a_2x^2 + ... +
+a_nx^n = a_0 + x(a_1 + x(a_2 + ... + x(a_{n-1} + xa_n)...))\)</span></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 秦九韶算法 https://en.wikipedia.org/wiki/Horner%27s_method</span></span><br><span class="line"><span class="function"><span class="type">double</span> <span class="title">polyh</span><span class="params">(<span class="type">double</span> a[], <span class="type">double</span> x, <span class="type">long</span> degree)</span> </span>&#123;</span><br><span class="line">	<span class="type">long</span> i; </span><br><span class="line">    <span class="type">double</span> result = a[degree]; </span><br><span class="line">    <span class="keyword">for</span> (i = degree - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">		result = a[i] + x * result;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>后者的数据依赖太强(必须 <code>x * result</code> 计算完成并且
+<code>a[i]</code> 加载完成后才能累加到 <code>result</code>),
+关键路径太长: 一个迭代内一个浮点乘法和一个浮点加法是 <span
+class="math inline">\(\text{CPE} = 5 + 3 = 8\)</span></p>
+<p>前者的 <code>result</code> 只需要等 <code>a[i]</code>
+加载完就可以累加, 而 <code>xpwr</code> 的累乘在另一条路径上,
+所以关键路径就单纯是一条浮点乘法 <span class="math inline">\(\text{CPE}
+= 5\)</span></p>
+<ol start="2" type="1">
+<li>循环展开</li>
+</ol>
+<p>一下是一个循环展开的例子:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">    acc += data[i];</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 2 x 1 循环展开</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i += <span class="number">2</span>) &#123;</span><br><span class="line">    acc += data[i];</span><br><span class="line">    acc += data[i + <span class="number">1</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>循环展开最直观的优化就是减少了循环判断和跳转的操作数量,
+通过合适的优化我们也可以减少关键路径上的操作数量。<br />
+当然如果你画一下上面这个循环展开的数据流图,
+会发现这是不会缩短关键路径的, 要想显著缩短循环路径,
+还需要进一步减少数据依赖 <strong>提高指令并行性</strong></p>
+<ol start="3" type="1">
+<li><p>提高指令并行性(多个累计变量, 重新结合变换)</p>
+<ul>
+<li><p>多个累计变量</p>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 2 x 2 循环展开</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i += <span class="number">2</span>) &#123;</span><br><span class="line">    acc0 += data[i];</span><br><span class="line">    acc1 += data[i + <span class="number">1</span>];</span><br><span class="line">&#125;</span><br><span class="line">acc = acc0 + acc1;</span><br></pre></td></tr></table></figure></p>
+<p>刚刚 $ 2 $ 的循环展开没能缩短关键路径的原因是 <code>acc</code>
+造成了数据依赖, 必须一个 <code>data[i]</code> 累加完后才能累加下一个
+<code>data[i + 1]</code>, 这里我们用两个累计变量,
+形成两条并行的关键路径, 每条关键路径上就有 <span class="math inline">\(n
+/ 2\)</span> 个操作</p></li>
+<li><p>重新结合变换</p>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 2 x 1 循环展开</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i += <span class="number">2</span>) &#123;</span><br><span class="line">    acc += (acc OP data[i]) OP data[i + <span class="number">1</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2 x 1a 循环展开</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i += <span class="number">2</span>) &#123;</span><br><span class="line">    acc += acc <span class="built_in">OP</span> (data[i] OP data[i + <span class="number">1</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>乍一看十分令人迷惑, 怎么换个括号的结合就能变快呢?</p>
+<p>原理同样是减少数据依赖. $ 2 $ 循环展开中是必须累乘完
+<code>data[i]</code> 才能累乘 <code>data[i + 1]</code>, <code>acc</code>
+造成了数据依赖, 而 $ 2 1a $ 循环展开中, <code>data</code> 的累乘和
+<code>acc</code> 的累加是两条并行的路径, 每条关键路径上有 <span
+class="math inline">\(n / 2\)</span> 个操作</p></li>
+</ul></li>
+</ol>
+<p>来一个小练习, 计算不同结合下的浮点乘法 CPE 下界:</p>
+<figure>
+<img src="/images/image-20250314033010501.png"
+alt="计算不同结合下的浮点乘法 CPE 下界" />
+<figcaption aria-hidden="true">计算不同结合下的浮点乘法 CPE
+下界</figcaption>
+</figure>
+<p>重新结合的优化是有前提的: 补码任意可结合,
+但浮点数可交换不可结合。不过但有些情况特殊,
+权衡性能与出错的数据概率。</p>
+<p>总结一下各种优化的原理:</p>
+<ul>
+<li>循环展开: 减少计算无关指令数量, 减少关键路径操作</li>
+<li>多个累计变量: 减少指令间相互的数据依赖</li>
+<li>重新结合同样是减少指令间的依赖,
+并且最大程度利用处理器的多个同一操作的功能单元</li>
+</ul>
+<h3 id="限制因素">限制因素</h3>
+<ul>
+<li><p>过度循环展开会导致寄存器溢出, 在栈上处理数据反而变慢</p></li>
+<li><p>分支预测错误惩罚, 其实没事,
+但要注意一些原则(通过特殊编码风格充分利用条件传送)</p>
+<figure>
+<img src="/images/image-20250314034047655.png"
+alt="一个利用条件传送的例子(字太乱见谅)" />
+<figcaption
+aria-hidden="true">一个利用条件传送的例子(字太乱见谅)</figcaption>
+</figure></li>
+</ul>
+<h3 id="内存操作性能">内存操作性能</h3>
+<ul>
+<li>加载延迟(在 CSAPP 参考机上)是 <span class="math inline">\(4\)</span>
+周期, 但发射 <span class="math inline">\(1\)</span> 周期,
+应当减少数据依赖使得其能够达到完全流水线化</li>
+<li>存储同理, 而且存储必须在下一次加载之前, 依赖条件很多,
+可以看一下下一章的<a
+href="https://amiriox.github.io/2025/02/19/CSAPP-2025-02-20/#more">存储器缓存和空间局部性博客</a></li>
+</ul>
+<h2
+id="一个很厉害但是自己完全做不到的实例">一个很厉害但是自己完全做不到的实例</h2>
+<h3 id="程序剖析profiling">程序剖析(profiling)</h3>
+<p>利用 Unix <code>gprof</code>, 配合 gcc 的 <code>-pg</code>
+(<del>鼙鼓</del>)
+选项获得每个函数的时间和被调用次数(注意这个是靠时钟中断实现的)</p>
+<p>想了下这部分书上讲的比较详细了, 我也没什么新的感想, 没有必要复述一遍,
+感兴趣的可以回去看书, 其给出的例子从 <span
+class="math inline">\(3.5\text{ min}\)</span> 到 <span
+class="math inline">\(0.2\text{ s}\)</span> 的优化例子</p>
+<p><code>gprof</code> 是较为简单入门的工具,
+能够编写较为成熟的程序的人应该能够掌握 <code>perf</code>,
+<code>valgrind</code> 等常见性能分析工具.
+<del>但显然我目前还不是能写出较为成熟的程序的人</del>,
+以后这里应该会补充使用这些工具 profiling 的实例</p>
+<h3 id="amdahls-law">Amdahl’s Law</h3>
+<p>可以复习一下之前博客说过的 <span
+class="math inline">\(\text{Amdahl}\)</span> 定律
+(距离写那篇文章已经四年多过去了, 白驹过隙啊): 我回去看了眼写得还行,
+就直接贴过来了:</p>
+<p>设一个操作原来需要 <span class="math inline">\(T_{old}\)</span>
+的时间执行, 现在我们对其 <span class="math inline">\(a\)</span>
+的部分(即 <span
+class="math inline">\(\text{总部分}\times\text{a}\)</span>
+这部分进行<span class="math inline">\(1/k\)</span>的优化(原来这部分
+<span class="math inline">\(T\)</span> 时间可以执行完, 现在加速到了
+<span class="math inline">\(T/k\)</span> ), 则</p>
+<ul>
+<li>没有加速的部分所需时间: <span class="math inline">\((1-a)\times
+T_{old}\)</span></li>
+<li>加速的部分所需时间: <span class="math inline">\((a\times
+T_{old})/k\)</span></li>
+</ul>
+<p>所以总体加速后的时间为</p>
+<p><span class="math display">\[
+T_{new}=(1-a)\times T_{old} + (a\times T_{old})/k
+\]</span></p>
+<p>所以加速比 <span class="math inline">\(S=T_{old}/T_{new}\)</span>
+就是</p>
+<p><span class="math display">\[
+\begin{aligned}
+S &amp;= \frac{T_{old}}{T_{new}} \\
+  &amp;= \frac{T_{old}}{(1-a)\times T_{old} + (a\times T_{old})/k} \\
+  &amp;= \frac{1}{(1-a)+a/k}
+\end{aligned}
+\]</span></p>
+<p>常见的表示方法是用算出的加速比后加上一个”<span
+class="math inline">\(\times\)</span>“,我们对 <span
+class="math inline">\(60\%\)</span> 的部分进行优化,
+这部分执行时间到了原来的 <span class="math inline">\(1/3\)</span> , 则
+<span class="math inline">\(a=0.6, k=3\)</span> ,带入公式得出 <span
+class="math inline">\(S=1.67\)</span> , 则加速比就是 <span
+class="math inline">\(1.67 \times\)</span>, 读做”1.67倍”.</p>
+<ul>
+<li>当 <span class="math inline">\(k\)</span> 趋向于 <span
+class="math inline">\(\infty\)</span> 时, 这部分时间可以忽略不计,
+于是就有 <span
+class="math display">\[S_{\infty}=\frac{1}{(1-a)}\]</span> 即使 <span
+class="math inline">\(60\%\)</span> 的系统可以加速到可以忽略时间的程度,
+总体加速比也只有 <span class="math inline">\(2.5 \times\)</span>,
+这体现了 <span class="math inline">\(\text{Amdahl}\)</span>
+定律的一个重要思想:</li>
+</ul>
+<blockquote>
+<p>只有提升了系统的大部分, 才能更好的提升整个系统</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/02/23/CSAPP-2025-02-23/" title="CSAPP3e第五章(优化程序性能)">https://amiriox.github.io/2025/02/23/CSAPP-2025-02-23/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/CSAPP-cmu15213/" rel="tag"># CSAPP/cmu15213</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/02/19/CSAPP-2025-02-20/" rel="prev" title="CSAPP3e第六章(存储器层次结构)">
+                  <i class="fa fa-angle-left"></i> CSAPP3e第六章(存储器层次结构)
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/02/26/Dairy_250226/" rel="next" title="一个倒霉蛋,两个倒霉蛋,还有一个倒霉蛋">
+                  一个倒霉蛋,两个倒霉蛋,还有一个倒霉蛋 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

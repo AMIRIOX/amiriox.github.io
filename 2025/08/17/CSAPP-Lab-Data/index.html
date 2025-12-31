@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="禁用大量常见运算符, 强制规定特定位运算运算符和运算符数量限制实现特定运算 所谓 Hacker’s Delight 在写 CSAPP Lab 之前一定要仔细阅读文档, 一行要求都不能落下, 比如这个 lab 就有一些无聊的要求:  要求变量声明必须在开头(这 C89 古董规则太搞了) 不允许使用大字面量(超过 0xFF 的)  为了您的阅读方便, 本文对于特定位&#x2F;位模式采用行内引用 (0 或 1,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP Data Lab 笔记">
+<meta property="og:url" content="https://amiriox.github.io/2025/08/17/CSAPP-Lab-Data/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="禁用大量常见运算符, 强制规定特定位运算运算符和运算符数量限制实现特定运算 所谓 Hacker’s Delight 在写 CSAPP Lab 之前一定要仔细阅读文档, 一行要求都不能落下, 比如这个 lab 就有一些无聊的要求:  要求变量声明必须在开头(这 C89 古董规则太搞了) 不允许使用大字面量(超过 0xFF 的)  为了您的阅读方便, 本文对于特定位&#x2F;位模式采用行内引用 (0 或 1,">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-17T12:57:00.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.823Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="CSAPP&#x2F;cmu15213">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2025/08/17/CSAPP-Lab-Data/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/08/17/CSAPP-Lab-Data/","path":"2025/08/17/CSAPP-Lab-Data/","title":"CSAPP Data Lab 笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CSAPP Data Lab 笔记 | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#x1-bitxor"><span class="nav-number">1.</span> <span class="nav-text">0x1 bitXor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#x2-tmin"><span class="nav-number">2.</span> <span class="nav-text">0x2 tmin</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#x3-istmax"><span class="nav-number">3.</span> <span class="nav-text">0x3 isTmax</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#x4-alloddbits"><span class="nav-number">4.</span> <span class="nav-text">0x4 allOddBits</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#x5-negate"><span class="nav-number">5.</span> <span class="nav-text">0x5 negate</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#x6-isasciidigit"><span class="nav-number">6.</span> <span class="nav-text">0x6 isAsciiDigit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#x7-conditional"><span class="nav-number">7.</span> <span class="nav-text">0x7 conditional</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#x8-islessorequal"><span class="nav-number">8.</span> <span class="nav-text">0x8 isLessOrEqual</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#x9-logicalneg"><span class="nav-number">9.</span> <span class="nav-text">0x9 logicalNeg</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xa-howmanybits"><span class="nav-number">10.</span> <span class="nav-text">0xA howManyBits</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xb-floatscale2"><span class="nav-number">11.</span> <span class="nav-text">0xB floatScale2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xc-floatfloat2int"><span class="nav-number">12.</span> <span class="nav-text">0xC floatFloat2Int</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xd-floatpower2"><span class="nav-number">13.</span> <span class="nav-text">0xD floatPower2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#summary"><span class="nav-number">14.</span> <span class="nav-text">Summary</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/08/17/CSAPP-Lab-Data/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CSAPP Data Lab 笔记 | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSAPP Data Lab 笔记
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-08-17 20:57:00" itemprop="dateCreated datePublished" datetime="2025-08-17T20:57:00+08:00">2025-08-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>禁用大量常见运算符,
+强制规定特定位运算运算符和运算符数量限制实现特定运算</p>
+<p>所谓 Hacker’s Delight</p>
+<p>在写 CSAPP Lab 之前一定要仔细阅读文档, 一行要求都不能落下, 比如这个
+lab 就有一些无聊的要求:</p>
+<ol type="1">
+<li>要求变量声明必须在开头(这 C89 古董规则太搞了)</li>
+<li>不允许使用大字面量(超过 <code>0xFF</code> 的)</li>
+</ol>
+<p>为了您的阅读方便, 本文对于特定位/位模式采用行内引用 (<code>0</code>
+或 <code>1</code>, <code>1000</code>, <code>1101</code>),
+对于数字的十进制值, 位的编号等采用 <span
+class="math inline">\(\LaTeX\)</span> 的数字字体 (<span
+class="math inline">\(3, 4, 5, 6\)</span>)</p>
+<span id="more"></span>
+<h2 id="x1-bitxor">0x1 bitXor</h2>
+<p>实现位运算的异或</p>
+<p>众所周知 <span class="math inline">\(x \oplus y = (x \wedge \lnot y)
+\vee (\lnot x \wedge y)\)</span></p>
+<p>取两次反, 德摩根定律化简 <span class="math inline">\(\lnot (\lnot (x
+\oplus y)) =  \lnot (\lnot(x \wedge \lnot y) \wedge \lnot (\lnot x
+\wedge y))\)</span></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">bitXor</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span> &#123; <span class="keyword">return</span> ~(~(~x &amp; y) &amp; ~(x &amp; ~y)); &#125;</span><br></pre></td></tr></table></figure>
+<p>收获: <del>没有</del> 德摩根定律其实是能化简一些逻辑表达式的,
+但是在这个例子中完全体现不出来. <del>所以还是没有</del></p>
+<h2 id="x2-tmin">0x2 tmin</h2>
+<p>返回 <span class="math inline">\(32\)</span> 位补码能表示的最小值.
+补码的最高位是负权重, 其他位都是正权重, 所以就是最高位为
+<code>1</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">tmin</span><span class="params">(<span class="type">void</span>)</span> &#123; <span class="keyword">return</span> <span class="number">1</span> &lt;&lt; <span class="number">31</span>; &#125;</span><br></pre></td></tr></table></figure>
+<p>如果对左移的位数有点反应不过来, 可以这样想: <span
+class="math inline">\(32\)</span> 位补码的 <span
+class="math inline">\(32\)</span> 位从低到高编号 <span
+class="math inline">\(0 \sim 31\)</span>, 对于 <code>1 &lt;&lt; n</code>
+就是向左移动 <span class="math inline">\(n\)</span> 位从最低位 <span
+class="math inline">\(0\)</span> 位移动到编号为 <span
+class="math inline">\(n\)</span> 的那一位上.</p>
+<p>收获: <del>没有.</del> 没有。</p>
+<h2 id="x3-istmax">0x3 isTmax</h2>
+<p>判断 <code>x</code> 是否是 <span class="math inline">\(32\)</span>
+位补码能表示的最大值. <span class="math inline">\(32\)</span>
+位补码能表示的最大值是最高位为 <code>0</code>, 其他位为 <code>1</code>
+的 <code>01111...</code>, <strong>纯按照位模式</strong> <span
+class="math inline">\(+ 1\)</span> 后即为 <code>10000...</code>
+(补码最小值), 但是注意这在标准 C 中是未定义行为,
+我想了很久也查阅了很多做法都没有得到可以不依赖 UB 的解决方案,
+这某种程度上算这个 lab 的败笔.</p>
+<p>回到正题, 注意到 <span class="math inline">\(\text{Tmax} + 1\)</span>
+正好是 <span class="math inline">\(\text{Tmin}\)</span>, 而 <span
+class="math inline">\(\text{Tmax}\)</span> 和 <span
+class="math inline">\(\text{Tmin}\)</span> 的位模式恰好全部相反,
+直接比较 <code>~(x + 1)</code> 是否等于 <code>x</code> 即可,
+但注意除了后面几个浮点数的题目, 所有题目都是禁用比较运算符的,
+所以只能用异或再取反实现.</p>
+<p><del>然后我跑了一下发现没过。</del> 除了这个, 全 <span
+class="math inline">\(1\)</span> 的位模式 <code>11111...</code> 在 <span
+class="math inline">\(+1\)</span> 后是 <code>00000...</code>,
+同样完全相反, 所以要特判一下 <span class="math inline">\(x\)</span> 不是
+<code>~0</code> (<code>11111...</code>)</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">isTmax</span><span class="params">(<span class="type">int</span> x)</span> &#123; <span class="keyword">return</span> !(~(x + <span class="number">1</span>) ^ x) &amp; !!(x ^ ~<span class="number">0</span>); &#125;</span><br></pre></td></tr></table></figure>
+<p>收获:</p>
+<ol type="1">
+<li>用 <code>!(x ^ y)</code> 判断 <code>x == y</code>, 相对地, 用
+<code>!!(x ^ y)</code> 判断 <code>x != y</code></li>
+<li>判断某些特殊值可以考虑通过特殊值进行某些运算(<span
+class="math inline">\(+1\)</span>, <span
+class="math inline">\(-1\)</span> 等)后的特殊性,
+但是要注意满足这个特殊性的不一定就是这个特殊值</li>
+<li><code>~0</code> 表示全 <code>1</code> 的位模式, 记住这个
+<code>~0</code>, 后面还会用到的</li>
+</ol>
+<h2 id="x4-alloddbits">0x4 allOddBits</h2>
+<p>如果 <span class="math inline">\(x\)</span> 的全部编号为奇数的位都是
+<code>1</code>, 返回 <span class="math inline">\(1\)</span>, 否则返回
+<span class="math inline">\(0\)</span></p>
+<p>这个通过上一题的特殊运算很难<strong>大规模改变很多位以形成特殊值</strong>,</p>
+<p>但是要求本身具有特定的模式<code>1*1*1*1*1*1*1*</code>,
+所以是掩码发挥长处的地方</p>
+<p>构造一个掩码
+<code>mask = 1010 1010 1010 1010 1010 1010 1010 1010</code>
+来表示要判断的模式</p>
+<p>但这里其实还剩一个点: 偶数位是不做要求的, <code>&amp;</code> 与
+<code>1</code> 运算不改变但是与 <code>0</code> 运算改变原值, 所以应该用
+<code>|</code>, 与 <code>0</code> 运算不改变原值但是与 <code>1</code>
+运算改变原值 (不进位加法). 所以如果 <code>x</code> 的奇数位上都是
+<code>1</code>, <code>(x | mask)</code> 将不会改变任何位,
+根据上一题的收获 <code>!(x ^ y)</code> 判断是否相等,
+就得到了解决方案</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">allOddBits</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">    <span class="type">int</span> mask = <span class="number">0xAA</span>;</span><br><span class="line">    <span class="comment">// 1010 1010</span></span><br><span class="line">    mask |= (mask &lt;&lt; <span class="number">8</span>);</span><br><span class="line">    <span class="comment">// 1010 1010 1010 1010</span></span><br><span class="line">    mask |= (mask &lt;&lt; <span class="number">16</span>);</span><br><span class="line">    <span class="keyword">return</span> !((x | mask) ^ x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>收获:</p>
+<ol type="1">
+<li>根据运算符的特性, 使用特定运算符</li>
+<li>掩码的构造与应用 但是对字面量的 &lt; 256
+限制又导致掩码在后面的题没什么优势区间了 <del>所以这个 lab
+经常左右脑互搏, 感觉是助教出的</del></li>
+</ol>
+<h2 id="x5-negate">0x5 negate</h2>
+<p>取负数, 最简单的一个
+<del>让我想起了我还是选手时写快读的快速(乐)时光</del></p>
+<p>可以写 <code>~x + 1</code> (补码等于反码加一) 也可以写
+<code>~(x - 1)</code>, 我当时的快读板子都是后者</p>
+<p>简单证明: 令 <code>y = x + 1</code>,
+<code>~(x - 1) + 1= ~y + 1 = -y = -(x - 1) = -x + 1</code></p>
+<p>不过我觉得对于极端值可能会有溢出的问题, 还是随手写前者了</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">negate</span><span class="params">(<span class="type">int</span> x)</span> &#123; <span class="keyword">return</span> ~x + <span class="number">1</span>; &#125;</span><br></pre></td></tr></table></figure>
+<p>收获: <del>没有</del>
+<del>一个很绝妙而且这里空白很大写的下的证明</del>
+<code>-x = ~x + 1</code>, 这个后面很有用</p>
+<h2 id="x6-isasciidigit">0x6 isAsciiDigit</h2>
+<p>判断是否为 ASCII 数字 <span class="math inline">\(0 \sim 9\)</span>,
+也就是 <code>0x30</code> 到 <code>0x39</code></p>
+<p>写出对应二进制, 发现高两位都是 <code>1</code>, 初步判断
+<code>x &gt;&gt; 4</code> 是否等于 <span class="math inline">\((11)_2 =
+3_{10}\)</span></p>
+<p>剩下四位是 <code>0000</code>, <code>0001</code>, ..,
+<code>0111</code> 或 <code>1000</code>, <code>1001</code>.</p>
+<p>首先 <code>!((x &gt;&gt; 3) &amp; 1)</code>
+通过右移提取第三位并判断是否为 <code>0</code>, 这样 <code>0000</code>,
+.., <code>0111</code> 都匹配上了</p>
+<p>然后对于 <code>1</code> 为最高位的后四位, 也就有 <code>1000</code> 和
+<code>1001</code>, 只需要判断中间两位全为 0 即可, 也就是中间两位不全为
+<code>1</code>, <code>(x &amp; 0b0110)</code> 意味着中间两位全为
+<code>1</code>, <code>not</code> 一下就是不全为 <code>1</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">isAsciiDigit</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">    <span class="type">int</span> zero = <span class="number">0x30</span>; <span class="comment">// 0b 110000</span></span><br><span class="line">    <span class="type">int</span> nine = <span class="number">0x39</span>; <span class="comment">// 0b 111001</span></span><br><span class="line">                     <span class="comment">// 0b 11****</span></span><br><span class="line">                     <span class="comment">//      0110</span></span><br><span class="line">    <span class="keyword">return</span> (!((x &gt;&gt; <span class="number">4</span>) ^ <span class="number">3</span>)) &amp; (!((x &gt;&gt; <span class="number">3</span>) &amp; <span class="number">1</span>) | !(x &amp; <span class="number">6</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>收获:</p>
+<ol type="1">
+<li>右移 <span class="math inline">\(n\)</span> 位并与 <span
+class="math inline">\(1\)</span> (<code>...0001</code>) 运算提取并判断第
+<span class="math inline">\(n\)</span> 位</li>
+<li>遇到判断范围的, 观察位模式进行匹配就行了, 难度不大</li>
+</ol>
+<h2 id="x7-conditional">0x7 conditional</h2>
+<p>用位运算实现条件判断, 根据 <span class="math inline">\(x\)</span>
+的真假条件返回 <span class="math inline">\(y\)</span> 或 <span
+class="math inline">\(z\)</span></p>
+<p>根据 “非 <span class="math inline">\(0\)</span> 为真” 的原则, 为
+<span class="math inline">\(1, 2, 3, 4, ...\)</span> 等任意非 <span
+class="math inline">\(0\)</span> 的数都应该算作真, 我们先
+<code>!!x</code>, 把不规则的真值统一为全一的位模式 (当然如果
+<code>x == 0</code> 那就不会变)</p>
+<p>然后就是经典的
+<code>(cond &amp; if_statement) | (~cond &amp; else_statement)</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">conditional</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y, <span class="type">int</span> z)</span> &#123;</span><br><span class="line">    <span class="type">int</span> xp = ~(!!x + ~<span class="number">0</span>); <span class="comment">// =0000 if x=0000; =1111 if x has 1;</span></span><br><span class="line">                          <span class="comment">// replace `-1` with `+ ~0`</span></span><br><span class="line">    <span class="keyword">return</span> (y &amp; xp) | (z &amp; ~xp);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>收获: 这两个无论是 lab 里还是实际应用中都挺重要的。</p>
+<ol type="1">
+<li>两次 <code>!</code> 统一不规则值</li>
+<li><code>(cond &amp; if_statement) | (~cond &amp; else_statement)</code></li>
+</ol>
+<h2 id="x8-islessorequal">0x8 isLessOrEqual</h2>
+<p>从这里开始整数部分的运算就开始逐渐有一些坑了, 9 和 10
+更是开始上难度</p>
+<p>首先抛开特殊情况之外考虑还是很简单的, 用 <code>x + ~y + 1</code> 表示
+<code>x - y</code>, 判断这个值小于等于 <span
+class="math inline">\(0\)</span> 即可, 也就是要么是 <span
+class="math inline">\(0\)</span> 要么符号位为 <code>1</code></p>
+<p>然后跑了一遍没过, 试了几个值才想起来 <span class="math inline">\(x,
+y\)</span> 符号位可能相反导致计算溢出,
+这个时候直接提取符号位然后用上面的位级条件语句特判一下就行了</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">isLessOrEqual</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span> &#123;</span><br><span class="line">    <span class="type">int</span> signx = !!(x &amp; (<span class="number">1</span> &lt;&lt; <span class="number">31</span>));</span><br><span class="line">    <span class="type">int</span> signy = !!(y &amp; (<span class="number">1</span> &lt;&lt; <span class="number">31</span>));</span><br><span class="line">    <span class="type">int</span> diff = (signx ^ signy);</span><br><span class="line">    <span class="type">int</span> d = x + ~y + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> (diff &amp; (signx &amp; !signy)) | (~diff &amp; (!!(d &amp; (<span class="number">1</span> &lt;&lt; <span class="number">31</span>)) | !d));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>收获:</p>
+<ol type="1">
+<li>要考虑多种情况, 尤其是可能导致溢出的情况</li>
+<li>草</li>
+</ol>
+<h2 id="x9-logicalneg">0x9 logicalNeg</h2>
+<p>实现逻辑 NOT, 当然出题人没那么好忽悠, 这题特殊把 <code>!</code>
+禁用了</p>
+<p>NOT 也是一个把不规则值统一的运算, 我选择的是先 <code>lowbit</code>
+操作获取最低位 (<code>lowbit</code> 是一个比较常见的操作,
+我第一次接触是在学树状数组的时候), 此时如果原值是 <span
+class="math inline">\(0\)</span> 那么 <code>lowbit</code> 就是 <span
+class="math inline">\(0\)</span>, 否则就是 <code>...0001000...</code>,
+(特别地, 对于 <span class="math inline">\(\text{Tmin}\)</span>,
+<code>lowbit</code> 为 <code>10000...</code>, 对于 <span
+class="math inline">\(1\)</span>, <code>lowbit</code> 为
+<code>...00001</code>).</p>
+<p>但这样还不够统一, 我们最后要统一归类到 <span
+class="math inline">\(0\)</span> 和 <span
+class="math inline">\(1\)</span> (NOT 只会返回 <span
+class="math inline">\(0\)</span> 或 <span
+class="math inline">\(1\)</span>). 注意到非 <span
+class="math inline">\(0\)</span> 值的 <code>lowbit</code> 除了 <span
+class="math inline">\(\text{Tmin}\)</span> 以外都是$ $ 的正数, 考虑
+<span class="math inline">\(-1\)</span> 运算, 使得正数
+<code>lowbit</code> 变为 $ $ 的非负整数, 特殊值 <span
+class="math inline">\(\text{Tmin}\)</span> 在大多数环境下也会环绕到正数
+<span class="math inline">\(\text{Tmax}\)</span> (注意这里还是一个 UB!),
+但若 <code>lowbit</code> 为 <span class="math inline">\(0\)</span>,
+<span class="math inline">\(-1\)</span> 后就会变成负数,
+此时检查符号位再转换一下即可.</p>
+<p>不过想到这还有一个问题, 就是这个右移是分算术右移和逻辑右移的,
+逻辑右移不考虑计算, 高位直接补 <code>0</code>,
+而算术右移是对于正数高位补 <code>0</code>, 对于负数高位补
+<code>1</code>. (由于 C 规定 <code>&gt;&gt;</code> 是算术右移) 所以
+<code>((lowbit + ~0) &gt;&gt; 31)</code> 的可能值为 <span
+class="math inline">\(0\)</span> 或 <span
+class="math inline">\(-1\)</span>, 后面的你就应该能够看得懂了.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">logicalNeg</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">    <span class="type">int</span> lowbit = x &amp; (~x + <span class="number">1</span>); <span class="comment">// 0 if x = 0; 001000 if x = 001***</span></span><br><span class="line">    <span class="type">int</span> xp = ((lowbit + ~<span class="number">0</span>) &gt;&gt; <span class="number">31</span>) + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> ~xp + <span class="number">1</span> + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol type="1">
+<li><span class="math inline">\(\text{lowbit}(x)\)</span> 的应用</li>
+<li>一些统一不规则数的技巧 (感觉也可以算把相对连续的东西离散化)</li>
+<li>看到右移一定要反应过来算术右移是高位补 <code>1</code> 的</li>
+</ol>
+<h2 id="xa-howmanybits">0xA howManyBits</h2>
+<p>个人认为是最难的一个, 比后面浮点数什么的难多了</p>
+<p>判断 <span class="math inline">\(x\)</span>
+在用补码表示的情况下最少需要几位</p>
+<p>根据补码的规则不难看出答案是 <span
+class="math inline">\((\log_2(\text{highbit}(x)) + 1) + 1,\)</span>
+特别地, 对于 <span class="math inline">\(x = 0\)</span> 或 $ x = -1$,
+答案是 <span class="math inline">\(1\)</span>.</p>
+<p>其中 <span class="math inline">\(\text{highbit}(x)\)</span> 是与
+<span class="math inline">\(\text{lowbit}(x)\)</span> 相对的最高位的
+<code>1</code> 所表示的数值, <span
+class="math inline">\(\log_2(\text{highbit}(x) + 1)\)</span> 则是这个为
+<code>1</code> 的位加上后面的 <code>0</code> 总共的位数(编号 <span
+class="math inline">\(+ 1\)</span>), 而再 <span
+class="math inline">\(+1\)</span> 是符号位.</p>
+<ul>
+<li>对于 <span class="math inline">\(x = 0\)</span> 不成立是因为 <span
+class="math inline">\(x = 0\)</span> 不需要符号位, 还记得吗, 补码的
+<span class="math inline">\(0\)</span> 是唯一的, 只有全 <code>0</code>
+为 <span class="math inline">\(0\)</span></li>
+<li>对于 <span class="math inline">\(x = -1\)</span> 不成立是因为单一个
+<code>1</code> 会被认为是符号位, 计算为 <span
+class="math inline">\(-1\)</span>. 因此与之对应地, 比较难绷的是, <span
+class="math inline">\(1\)</span> 却需要至少两位补码才能表示 (符合公式,
+故不特殊列出)</li>
+</ul>
+<p>那么难点主要有两个:</p>
+<ol type="1">
+<li>如何计算 <span class="math inline">\(\text{highbit}(x)\)</span>?
+(事实上, 我认为 <span class="math inline">\(\text{lowbit}(x)\)</span> 的
+<code>x &amp; -x</code> 也很传奇了)</li>
+<li>如何计算 <span class="math inline">\(log_2(x)\)</span>?
+当然这里说的是只用位运算</li>
+</ol>
+<p><span class="math inline">\(\text{hightbit}(x)\)</span>
+也算一个不规则数统一的操作, 规整化后就可以通过 <span
+class="math inline">\(+1\)</span> 来消除连续的 <code>1</code> 了,
+那么就要考虑如何把最高位的 <code>1</code> 后面全填为 <code>1</code>,
+我一开始的做法里, 对 <span
+class="math inline">\(\text{highbit}(x)\)</span> 采用了一个小巧思,
+通过每次 <code>OR</code> 上一个 <span class="math inline">\(2\)</span>
+的幂次个 <code>1</code>, 把最高位 <code>1</code> 以后的位都填为
+<code>1</code>, 前面的位还是 <code>0</code> 不变, 现在就是
+<code>...0000111111..</code> 了, 再 <span
+class="math inline">\(+1\)</span> 并右移一位就是 <span
+class="math inline">\(\text{hightbit}(x)\)</span> 也就是 <span
+class="math inline">\(...000010000...\)</span> 了, 代码如下:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">x |= x &gt;&gt; <span class="number">1</span>;</span><br><span class="line">x |= x &gt;&gt; <span class="number">2</span>;</span><br><span class="line">x |= x &gt;&gt; <span class="number">4</span>;</span><br><span class="line">x |= x &gt;&gt; <span class="number">8</span>;</span><br><span class="line">x |= x &gt;&gt; <span class="number">16</span>;</span><br><span class="line">x = (x + <span class="number">1</span>) &gt;&gt; <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>算 <span class="math inline">\(log_2(x)\)</span> 我则采用直接构建.
+注意到我们已有的是一个只有一位为 <code>1</code> 的二进制数,
+而我们要得到一这个 <code>1</code>
+所在位的编号——一个应该理解为十进制的数,
+通过位运算我们只能通过二进制来构造这个十进制数.</p>
+<p>于是依次构建每一位, 先从最后一位开始考虑: 如果最后这一位是
+<code>1</code>, 那么编号一定是奇数, 于是突然想起之前那个
+<code>allOddBits</code> 的题, 用掩码做,
+此时我内心的感觉就像突然和出题人心意相通,
+于是很快通过找规律得到每一位对应的掩码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">r |= !!(x &amp; <span class="number">0xAAAAAAAA</span>) &lt;&lt; <span class="number">0</span>; <span class="comment">// r odd; 1010</span></span><br><span class="line">r |= !!(x &amp; <span class="number">0xCCCCCCCC</span>) &lt;&lt; <span class="number">1</span>; <span class="comment">// r = 2/3, 6/7, 10/11; 1100</span></span><br><span class="line">r |= !!(x &amp; <span class="number">0xF0F0F0F0</span>) &lt;&lt; <span class="number">2</span>; <span class="comment">// r = 4/5/6/7; 1111_0000</span></span><br><span class="line">r |= !!(x &amp; <span class="number">0xFF00FF00</span>) &lt;&lt; <span class="number">3</span>; <span class="comment">// r = 8~15; 1111_1111_0000_0000</span></span><br><span class="line">r |= !!(x &amp; <span class="number">0xFFFF0000</span>) &lt;&lt; <span class="number">4</span>; <span class="comment">// pattern</span></span><br></pre></td></tr></table></figure>
+<p><span class="math inline">\(r + 1\)</span> 则为最终的结果. 不过 当
+<span class="math inline">\(x = -1\)</span> 或 <span
+class="math inline">\(x = 0\)</span> 时是不能 <span
+class="math inline">\(+1\)</span> 的, 顺手的事:
+<code>return r + (!!(x ^ 0) &amp; !!(x ^ ~0));</code></p>
+<p>结果 <code>./driver.pl</code> 后我以为整数部分就结束了, 结果发现没过,
+这时才想起来禁用大常量, <code>0xFFFF0000</code> 这些肯定是超过
+<code>0xFF</code> 了
+(写到这突然觉得这个掩码或许可以通过一个小一点的常量移位构造出来, 因为
+<code>AllOddBits</code> 实际上也是通过移位构造的掩码,
+但之前做的时候并没有想到)</p>
+<p>于是我便只好考虑其他方案.</p>
+<p><del>我甚至考虑了写 32 行语句挨个判断每一位, 从高到低找第一个
+<code>1</code></del>, 显然这样是不行的, 没那么多运算符给我用.</p>
+<p>从高到低的思路应该是没问题的, 那么想要减少查找的数量,
+就想到了二分查找. 虽然不能使用循环, 但是对于 <span
+class="math inline">\(32\)</span> 位 (<span
+class="math inline">\(32\)</span> 个元素) 的二分查找其实只有 <span
+class="math inline">\(\log_2(32) = 5\)</span> 次 (左右),
+完全可以手写出来. <del>这何尝不是一种循环展开</del></p>
+<p>确定好二分查找, 简单梳理一下查找逻辑:</p>
+<ol type="1">
+<li>从高到低, 高 <span class="math inline">\(16\)</span> 位有
+<code>1</code> 吗?</li>
+<li>如果有就继续检查这高 <span class="math inline">\(16\)</span> 位的高
+<span class="math inline">\(8\)</span> 位, 同时结果加上 <span
+class="math inline">\(16\)</span>, 因为编号必然大于 <span
+class="math inline">\(16\)</span> 了 (低 <span
+class="math inline">\(16\)</span> 位编号是 <span
+class="math inline">\(15  \sim 0\)</span>), 然后继续在这高 <span
+class="math inline">\(16\)</span> 位里面继续找
+(注意我们要找的是且仅是最高位 <code>1</code>)</li>
+<li>否则就找这 <span class="math inline">\(16\)</span> 位之后的 <span
+class="math inline">\(8\)</span> 位有没有 <span
+class="math inline">\(1\)</span></li>
+<li>就这样不停迭代下去</li>
+</ol>
+<p>判断是高 <span class="math inline">\(p\)</span> 位是否有
+<code>1</code>: <code>!!(y &gt;&gt; p)</code>, 这里使用到了之前的两次
+NOT 转换成纯粹 <span class="math inline">\(0/1\)</span> 的技巧</p>
+<p>为了保持运算的统一性(减少运算符数量防止撞上限制), 使用
+<code>!!(y &gt;&gt; p) &gt;&gt; 4</code> 表示是否乘上 <span
+class="math inline">\(16\)</span> (如果高 <span
+class="math inline">\(16\)</span> 位没有 <code>1</code> 则乘上 <span
+class="math inline">\(0 \times 2^4 = 0\)</span>)</p>
+<p>同时 “然后继续在这高 <span class="math inline">\(16\)</span>
+位里面继续找” 和”找这 <span class="math inline">\(16\)</span> 位之后的
+<span class="math inline">\(8\)</span> 位有没有 <span
+class="math inline">\(1\)</span>” 在我们的情况下也不便条件判断,
+也是采用移动的方式, 如果高 <span class="math inline">\(16\)</span> 位有
+<code>1</code> 就右移丢弃低 <span class="math inline">\(16\)</span> 位,
+没有的话就不右移</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">r += !!(y &gt;&gt; <span class="number">16</span>) &lt;&lt; <span class="number">4</span>;</span><br><span class="line">y &gt;&gt;= r;</span><br><span class="line"></span><br><span class="line">shift8 = !!(y &gt;&gt; <span class="number">8</span>) &lt;&lt; <span class="number">3</span>;</span><br><span class="line">r += shift8;</span><br><span class="line">y &gt;&gt;= shift8;</span><br><span class="line"></span><br><span class="line">shift4 = !!(y &gt;&gt; <span class="number">4</span>) &lt;&lt; <span class="number">2</span>;</span><br><span class="line">r += shift4;</span><br><span class="line">y &gt;&gt;= shift4;</span><br><span class="line"></span><br><span class="line">shift2 = !!(y &gt;&gt; <span class="number">2</span>) &lt;&lt; <span class="number">1</span>;</span><br><span class="line">r += shift2;</span><br><span class="line">y &gt;&gt;= shift2;</span><br><span class="line"></span><br><span class="line">r += (y &gt;&gt; <span class="number">1</span>) + <span class="number">1</span>;	<span class="comment">// 到这里时只剩下最后两位, 即 0/1/2/3</span></span><br></pre></td></tr></table></figure>
+<p>这段代码实际上是计算 <span
+class="math inline">\((\log_2(\text{highbit}(x)) + 1)\)</span>,
+把两个活一起干了, 后面的逻辑是相同的.</p>
+<p>帅吗? <del>还是没过.</del></p>
+<p><span class="math inline">\(x\)</span> 可能是负数,
+对于负数要找绝对值所对应的正数, 对于正数则不变,
+写一个比较帅的无分支:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> sign = x &gt;&gt; <span class="number">31</span>;</span><br><span class="line"><span class="type">int</span> y = x ^ sign;</span><br></pre></td></tr></table></figure>
+<p>反正不限制局部变量数量 <del>cache lab 就开始限制局部变量数量了,
+满足你</del></p>
+<p>这里统一处理逻辑的话其实有点麻烦, 我直接近似 <code>~x</code>
+了(<code>x ^ sign</code>), <strong>这是错的</strong>,
+但是这个神人评测没查出来, 我就懒得改了 (写
+<code>(x ^ sign) + !!sign</code> 结果会错,
+因为补码的正负值域不对称性导致对 <span
+class="math inline">\(\text{Tmin}\)</span> 取绝对值会溢出, 见 <a
+target="_blank" rel="noopener" href="https://zheya.cc/2025/01/19/CSAPP-2025-01-19/">CSAPP3e第二章(整数的表示)
+| Amiriox’s Storage</a>, 是个比较典型的问题)</p>
+<p>呃, 总体上就是实现了一个 C++20 的 <code>std::bit_width</code>.
+不得不感叹一下刚学的时候说起 C++20 都感觉很新潮很先进,
+<del>现在还是觉得很先进</del>, 现在 C++23 都是过去式了,
+我也再也没有青春的挡箭牌, 终归是走进了大学生活。</p>
+<p><del>事到如今只好祭奠嗎</del></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">howManyBits</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">    <span class="comment">// The prohibition of using large constants is</span></span><br><span class="line">    <span class="comment">// the most disgusting thing about this disgusting lab.</span></span><br><span class="line">    <span class="comment">// It forced me to abandon the more elegant masking method</span></span><br><span class="line">    <span class="comment">// and use binary division like enumeration.</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* shit, i almost forgot macros are also banned.</span></span><br><span class="line"><span class="comment">#ifdef ENABLE_LARGE_CONSTANTS</span></span><br><span class="line"><span class="comment">    // int lowbit = x &amp; (~x + 1);</span></span><br><span class="line"><span class="comment">    // replace lowbit with highbit</span></span><br><span class="line"><span class="comment">    x |= x &gt;&gt; 1;</span></span><br><span class="line"><span class="comment">    x |= x &gt;&gt; 2;</span></span><br><span class="line"><span class="comment">    x |= x &gt;&gt; 4;</span></span><br><span class="line"><span class="comment">    x |= x &gt;&gt; 8;</span></span><br><span class="line"><span class="comment">    x |= x &gt;&gt; 16;</span></span><br><span class="line"><span class="comment">    x = (x + 1) &gt;&gt; 1;</span></span><br><span class="line"><span class="comment">    int r = 0;</span></span><br><span class="line"><span class="comment">    r |= !!(x &amp; 0xAAAAAAAA) &lt;&lt; 0; // r odd; 1010</span></span><br><span class="line"><span class="comment">    r |= !!(x &amp; 0xCCCCCCCC) &lt;&lt; 1; // r = 2/3, 6/7, 10/11; 1100</span></span><br><span class="line"><span class="comment">    r |= !!(x &amp; 0xF0F0F0F0) &lt;&lt; 2; // r = 4/5/6/7; 1111_0000</span></span><br><span class="line"><span class="comment">    r |= !!(x &amp; 0xFF00FF00) &lt;&lt; 3; // r = 8~15; 1111_1111_0000_0000</span></span><br><span class="line"><span class="comment">    r |= !!(x &amp; 0xFFFF0000) &lt;&lt; 4; // pattern</span></span><br><span class="line"><span class="comment">    return r + (!!(x ^ 0) &amp; !!(x ^ ~0));</span></span><br><span class="line"><span class="comment">#endif</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="type">int</span> sign = x &gt;&gt; <span class="number">31</span>;</span><br><span class="line">    <span class="type">int</span> y = x ^ sign;</span><br><span class="line">    <span class="type">int</span> r = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> shift2 = <span class="number">0</span>, shift4 = <span class="number">0</span>, shift8 = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    r += !!(y &gt;&gt; <span class="number">16</span>) &lt;&lt; <span class="number">4</span>;</span><br><span class="line">    y &gt;&gt;= r;</span><br><span class="line"></span><br><span class="line">    shift8 = !!(y &gt;&gt; <span class="number">8</span>) &lt;&lt; <span class="number">3</span>;</span><br><span class="line">    r += shift8;</span><br><span class="line">    y &gt;&gt;= shift8;</span><br><span class="line"></span><br><span class="line">    shift4 = !!(y &gt;&gt; <span class="number">4</span>) &lt;&lt; <span class="number">2</span>;</span><br><span class="line">    r += shift4;</span><br><span class="line">    y &gt;&gt;= shift4;</span><br><span class="line"></span><br><span class="line">    shift2 = !!(y &gt;&gt; <span class="number">2</span>) &lt;&lt; <span class="number">1</span>;</span><br><span class="line">    r += shift2;</span><br><span class="line">    y &gt;&gt;= shift2;</span><br><span class="line"></span><br><span class="line">    r += (y &gt;&gt; <span class="number">1</span>) + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> r + (!!(x ^ <span class="number">0</span>) &amp; !!(x ^ ~<span class="number">0</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>收获:</p>
+<ol type="1">
+<li>倍增填 <code>1</code> 获取 <code>highbit</code></li>
+<li>掩码计算 <code>highbit</code> 的编号</li>
+<li>二分查找实现 <code>std::bit_width</code></li>
+</ol>
+<h2 id="xb-floatscale2">0xB floatScale2</h2>
+<p><del>我突然想起来我完全忘记写 IEEE 754 浮点数相关的博客了, 而这恰好是
+CSAPP 第二章最有价值的一块</del></p>
+<p>简单说下 IEEE 754,</p>
+<p>对于阶码不全为 <code>0</code> 也不全为 <code>1</code> 的规格化数:</p>
+<ul>
+<li><span class="math inline">\(f = 1^\text{sign} \times \text{M} \times
+2^\text{E}\)</span></li>
+<li><span class="math inline">\(\text{M}\)</span> 表示 <span
+class="math inline">\(\text{1.frac}\)</span>
+(对于大多数数可以额外多表示一位, 多一位的精度)</li>
+<li><span class="math inline">\(\text{E}\)</span> 表示 <span
+class="math inline">\(e - \text{Bias}\)</span>, 其中 <span
+class="math inline">\(e\)</span> 为阶码 <span
+class="math inline">\(\text{exp}\)</span> 的原码, <span
+class="math inline">\(\text{Bias} = 2^{k-1} -1\)</span>, <span
+class="math inline">\(k\)</span> 为阶码 <span
+class="math inline">\(\text{exp}\)</span> 的位数
+(这里之所以采用偏移表示负数而不使用补码是因为易于比较,
+而浮点数的比较操作可能很多)</li>
+</ul>
+<p>对于阶码全为 <code>0</code> 的非规格化数:</p>
+<ul>
+<li><span class="math inline">\(f = 1^\text{sign} \times \text{M} \times
+2^\text{E}\)</span></li>
+<li><span class="math inline">\(M\)</span> 表示 <span
+class="math inline">\(\text{0.frac}\)</span></li>
+<li><span class="math inline">\(\text{E}\)</span> 表示 <span
+class="math inline">\(1 - Bias\)</span>, 其中 <span
+class="math inline">\(e\)</span> 为阶码 <span
+class="math inline">\(\text{exp}\)</span> 的原码, <span
+class="math inline">\(\text{Bias} = 2^{k-1} -1\)</span>, <span
+class="math inline">\(k\)</span> 为阶码 <span
+class="math inline">\(\text{exp}\)</span> 的位数 (这里之所以采用 <span
+class="math inline">\(1 - \text{Bias}\)</span> 而不是 <span
+class="math inline">\(0 - \text{Bias}\)</span>,
+是因为最小的规格化数的阶码就是当 <span class="math inline">\(e =
+1\)</span> 时的 <span class="math inline">\(1 - \text{Bias}\)</span>,
+以此保证了规格化数与非规格化数之间的连续性)</li>
+</ul>
+<p>对于阶码全为 <code>1</code> 的特殊值:</p>
+<ul>
+<li>如果 <span class="math inline">\(\text{frac}\)</span> 全为
+<code>0</code>, 则为无穷大 (说明是计算溢出来的)</li>
+<li>如果 <span class="math inline">\(\text{frac}\)</span> 不全为
+<code>0</code>, 则为 <span class="math inline">\(\text{NaN}\)</span>
+(不瞒你说, 我现去搜了一下 Not a number 用 <span
+class="math inline">\(\LaTeX\)</span> 怎么打, 但是没有)</li>
+</ul>
+<p>舍入什么的有时间再补吧, 先看题</p>
+<p>则对于本题, <del>本题是什么来着</del>, <span
+class="math inline">\(\text{uf} \times 2\)</span> 还是比较好写的,
+先提取三个段然后处理:</p>
+<ol type="1">
+<li>如果是 <span class="math inline">\(-0\)</span> (很遗憾, IEEE 754 的
+<span class="math inline">\(0\)</span> 有两个表示, 因为除 <span
+class="math inline">\(0\)</span> 可得正负无穷), 直接返回</li>
+<li>如果是无穷大或者 <span class="math inline">\(\text{NaN}\)</span>,
+直接返回</li>
+<li>如果是阶码全 <code>0</code>, 且较小(不涉及乘 <span
+class="math inline">\(2\)</span> 后变成规格化数)的非规格化数, 直接对
+<span class="math inline">\(\text{frac}\)</span> 乘 <span
+class="math inline">\(2\)</span>. 注意此时就不能对阶码 <span
+class="math inline">\(+1\)</span></li>
+<li>如果是阶码全 <code>0</code>, 较大的非规格化数, 除了 <span
+class="math inline">\(\text{frac} \times 2\)</span>, 阶码还是要 <span
+class="math inline">\(+1\)</span></li>
+<li>如果是规格化数, 阶码 <span class="math inline">\(+ 1\)</span> 即可
+(此处也可能出现溢出, <span class="math inline">\(\text{exp}\)</span>
+为全 <code>1</code>, 此时 <span
+class="math inline">\(\text{frac}\)</span> 应手动置 <span
+class="math inline">\(0\)</span>)</li>
+<li>最后再拼好数</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="title function_">floatScale2</span><span class="params">(<span class="type">unsigned</span> uf)</span> &#123;</span><br><span class="line">    <span class="comment">//   1 | 8 | 23</span></span><br><span class="line">    <span class="comment">// sign exp frac</span></span><br><span class="line">    <span class="type">unsigned</span> sign = (uf &gt;&gt; <span class="number">31</span>);</span><br><span class="line">    <span class="type">unsigned</span> <span class="built_in">exp</span> = (uf &lt;&lt; <span class="number">1</span>) &gt;&gt; (<span class="number">24</span>);</span><br><span class="line">    <span class="type">unsigned</span> frac = (uf &lt;&lt; <span class="number">9</span>) &gt;&gt; <span class="number">9</span>;</span><br><span class="line">    <span class="type">unsigned</span> dt = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (!(uf &lt;&lt; <span class="number">1</span>))</span><br><span class="line">        <span class="keyword">return</span> uf;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">exp</span> == <span class="number">0xFF</span>) <span class="comment">/*if(!frac)*/</span></span><br><span class="line">        <span class="keyword">return</span> uf;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">exp</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!(frac &gt;&gt; <span class="number">22</span>)) &#123;</span><br><span class="line">            dt--;</span><br><span class="line">        &#125;</span><br><span class="line">        frac &lt;&lt;= <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">exp</span> + dt == <span class="number">0xFF</span>)</span><br><span class="line">        frac = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> (sign &lt;&lt; <span class="number">31</span>) | ((<span class="built_in">exp</span> + dt) &lt;&lt; <span class="number">23</span>) | frac;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="xc-floatfloat2int">0xC floatFloat2Int</h2>
+<p><code>float</code> 转换为 <code>int</code>. 回顾转换规则,
+<code>float</code> 转换到 <code>int</code> 不仅会向零舍入, 还可能会溢出,
+所以要考虑溢出的情况</p>
+<p>仍然是三段提取, 开始计算:</p>
+<ol type="1">
+<li>计算一下应该乘的权重 <span class="math inline">\(e -
+\text{Bias}\)</span> (如果 <span class="math inline">\(e \lt
+\text{Bias}\)</span>, 说明是小于 <span class="math inline">\(1\)</span>
+的浮点数, 直接返回 <span class="math inline">\(0\)</span>)</li>
+<li>补上规格化数 <span class="math inline">\(\text{frac}\)</span>
+缺省的小数点前的 <span class="math inline">\(1\)</span>,
+此时小数点相当于位于最高位 <code>1</code> 前,
+需要准备恢复出本身带有的权重(右移 <span
+class="math inline">\(23\)</span> 位), 以及乘权重 <span
+class="math inline">\(E\)</span>. (<span
+class="math inline">\(\text{frac}\)</span> 表示小数点后 <span
+class="math inline">\(2\)</span> 的负整数次幂的数值, 直接乘 <span
+class="math inline">\(2\)</span> 的正整数次幂提升权重是兼容的)</li>
+<li>按照 <span class="math inline">\(\text{Tmax}\)</span>
+的值注意一下可能会溢出的情况. 实际上这行
+<code>((E &gt;= 31 &amp;&amp; (!sign || (sign &amp;&amp; frac))) || exp == 0xFF)</code>
+是主要的难点</li>
+<li>如果先右移移动 <span class="math inline">\(23\)</span>
+位可能会丢精度, 所以这里考虑和 <span class="math inline">\(E\)</span>
+计算差值转移.</li>
+<li>最后根据符号位转一下符号. 由于允许了 <code>if else</code>,
+我懒得写无分支了</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">floatFloat2Int</span><span class="params">(<span class="type">unsigned</span> uf)</span> &#123;</span><br><span class="line">    <span class="comment">//   1 | 8 | 23</span></span><br><span class="line">    <span class="comment">// sign exp frac</span></span><br><span class="line">    <span class="type">unsigned</span> sign = (uf &gt;&gt; <span class="number">31</span>);</span><br><span class="line">    <span class="type">unsigned</span> <span class="built_in">exp</span> = (uf &lt;&lt; <span class="number">1</span>) &gt;&gt; (<span class="number">24</span>);</span><br><span class="line">    <span class="type">unsigned</span> frac = (uf &lt;&lt; <span class="number">9</span>) &gt;&gt; <span class="number">9</span>;</span><br><span class="line">    <span class="type">unsigned</span> E = <span class="number">0</span>, A = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!(uf &lt;&lt; <span class="number">1</span>) || <span class="comment">/*!exp*/</span> <span class="built_in">exp</span> &lt; <span class="number">0x7f</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    E = <span class="built_in">exp</span> - <span class="number">0x7f</span>;</span><br><span class="line">    A = (<span class="number">1U</span> &lt;&lt; <span class="number">23</span>) | frac;</span><br><span class="line">    <span class="comment">// check overflow</span></span><br><span class="line">    <span class="comment">// INT_MAX = T32Max = 0b_0111_1111_1111_1111_1111_1111_1111_1111</span></span><br><span class="line">    <span class="keyword">if</span> ((E &gt;= <span class="number">31</span> &amp;&amp; (!sign || (sign &amp;&amp; frac))) || <span class="built_in">exp</span> == <span class="number">0xFF</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0x80000000u</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (E &gt;= <span class="number">23</span>) &#123;</span><br><span class="line">        A &lt;&lt;= (E - <span class="number">23</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        A &gt;&gt;= (<span class="number">23</span> - E);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (sign) &#123;</span><br><span class="line">        <span class="keyword">return</span> ~A + <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> A;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="xd-floatpower2">0xD floatPower2</h2>
+<p>构造 <span class="math inline">\(2.0 ^ {x}\)</span> 的 <span
+class="math inline">\(32\)</span> 位 IEEE 754 浮点数</p>
+<p>主要考察对非规格数, 规格数的值域以及其连续性</p>
+<p><span class="math inline">\(\text{exp}\)</span> 是 8 位无符号整型,
+分类讨论一下</p>
+<ul>
+<li><code>0b11111111</code> $ = 2^8 - 1$, 说明浮点数是 <span
+class="math inline">\(\infty /\text{NaN}\)</span></li>
+<li><code>0b11111110</code> <span class="math inline">\(= 2^8-2 =
+254\)</span></li>
+<li><span class="math inline">\(\text{U8Min} = 0\)</span>, 是非规格化数;
+对于规格数, 最小的阶码就是1</li>
+<li>规格化数可表示的 <span class="math inline">\(2^x\)</span>, <span
+class="math inline">\(x = {e - 127}\)</span>, 取值范围: <span
+class="math inline">\([-126, 127]\)</span> 连续 (保持 M 为 0.0, 即
+1.0)</li>
+<li>非规格化数: <span class="math inline">\(x &lt; 0\)</span>,
+算入阶码权重计算出来是这样的: <span
+class="math inline">\(2^{-1-126}+2^{-2-126}+2^{-3-126}+...+2^{-23-126}\)</span>,
+取值范围 <span class="math inline">\([-149, -127]\)</span></li>
+</ul>
+<p>得出值域后分别构造 IEEE 754 标准浮点数处理就行</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="title function_">floatPower2</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">    <span class="type">unsigned</span> <span class="built_in">exp</span> = <span class="number">0</span>, s = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (x &gt; <span class="number">127</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0x7f800000</span>; <span class="comment">//(0xFF &lt;&lt; 23);</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (x &gt;= <span class="number">-126</span> &amp;&amp; x &lt;= <span class="number">127</span>) &#123;</span><br><span class="line">        <span class="built_in">exp</span> = (<span class="number">127</span> + x);</span><br><span class="line">        <span class="keyword">return</span> (<span class="built_in">exp</span> &lt;&lt; <span class="number">23</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (x &gt;= <span class="number">-149</span> &amp;&amp; x &lt; <span class="number">-126</span>) &#123;</span><br><span class="line">        s = <span class="number">149</span> + x;</span><br><span class="line">        <span class="keyword">return</span> (<span class="number">1U</span> &lt;&lt; s);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="summary">Summary</h2>
+<p>我个人对这个 Lab 的评价不是很高, 感觉不是很有意思</p>
+<p>但是确实对于数的表示上有很大的作用, 就是枯燥了些</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/08/17/CSAPP-Lab-Data/" title="CSAPP Data Lab 笔记">https://amiriox.github.io/2025/08/17/CSAPP-Lab-Data/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/CSAPP-cmu15213/" rel="tag"># CSAPP/cmu15213</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/08/14/Dairy_250814/" rel="prev" title="Geleitet durch Not und Nacht">
+                  <i class="fa fa-angle-left"></i> Geleitet durch Not und Nacht
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/08/19/CSAPP-Lab-Cache/" rel="next" title="CSAPP Cache Lab 笔记">
+                  CSAPP Cache Lab 笔记 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

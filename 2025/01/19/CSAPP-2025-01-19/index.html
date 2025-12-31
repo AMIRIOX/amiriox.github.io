@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="整数的表示(第二章 Part1) 博客还没装 Mathjax 插件，所以下面的 \(\LaTeX\) 应该都是乱的 已修 整数表示 这一段如果没有目的和顺序地硬看会觉得关系很多很复杂，但其实只要按照一定的目的和顺序结构就会很清晰。 以设计者的视角思考如何设计 如果我们是设计用二进制表示整数的人，我们需要如何表示二进制？ 利用 \(w\) 位二进制的最高位 $ x_{w-1} $ 为 \(1\) 代">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP3e第二章(整数的表示)">
+<meta property="og:url" content="https://amiriox.github.io/2025/01/19/CSAPP-2025-01-19/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="整数的表示(第二章 Part1) 博客还没装 Mathjax 插件，所以下面的 \(\LaTeX\) 应该都是乱的 已修 整数表示 这一段如果没有目的和顺序地硬看会觉得关系很多很复杂，但其实只要按照一定的目的和顺序结构就会很清晰。 以设计者的视角思考如何设计 如果我们是设计用二进制表示整数的人，我们需要如何表示二进制？ 利用 \(w\) 位二进制的最高位 $ x_{w-1} $ 为 \(1\) 代">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://amiriox.github.io/images/2025-01-19-122537_hyprshot.png">
+<meta property="article:published_time" content="2025-01-19T02:43:30.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.822Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="CSAPP&#x2F;cmu15213">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://amiriox.github.io/images/2025-01-19-122537_hyprshot.png">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2025/01/19/CSAPP-2025-01-19/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/01/19/CSAPP-2025-01-19/","path":"2025/01/19/CSAPP-2025-01-19/","title":"CSAPP3e第二章(整数的表示)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CSAPP3e第二章(整数的表示) | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B4%E6%95%B0%E7%9A%84%E8%A1%A8%E7%A4%BA%E7%AC%AC%E4%BA%8C%E7%AB%A0-part1"><span class="nav-number">1.</span> <span class="nav-text">整数的表示(第二章 Part1)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B4%E6%95%B0%E8%A1%A8%E7%A4%BA"><span class="nav-number">1.1.</span> <span class="nav-text">整数表示</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A5%E8%AE%BE%E8%AE%A1%E8%80%85%E7%9A%84%E8%A7%86%E8%A7%92%E6%80%9D%E8%80%83%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.1.1.</span> <span class="nav-text">以设计者的视角思考如何设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%8F%96%E8%B4%9F"><span class="nav-number">1.1.2.</span> <span class="nav-text">如何取负？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF%E7%BB%95-%E6%BA%A2%E5%87%BA-%E5%8F%96%E6%A8%A1-%E5%90%8C%E4%BD%99%E4%B8%8E%E7%BE%A4"><span class="nav-number">1.1.3.</span> <span class="nav-text">环绕, 溢出, 取模, 同余与群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A5%E7%A0%81%E7%9A%84%E4%B8%8D%E5%AF%B9%E7%A7%B0%E6%80%A7"><span class="nav-number">1.1.4.</span> <span class="nav-text">补码的不对称性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%95%B0%E8%A7%A3%E9%87%8A%E5%92%8C%E8%A1%A5%E7%A0%81%E8%A7%A3%E9%87%8A%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.1.5.</span> <span class="nav-text">无符号数解释和补码解释的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%96%E7%9B%B8%E5%8F%8D%E6%95%B0%E7%9A%84%E8%AF%81%E6%98%8E"><span class="nav-number">1.1.6.</span> <span class="nav-text">取相反数的证明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E5%92%8C%E6%88%AA%E6%96%AD"><span class="nav-number">1.1.7.</span> <span class="nav-text">扩展和截断</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/01/19/CSAPP-2025-01-19/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CSAPP3e第二章(整数的表示) | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSAPP3e第二章(整数的表示)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-01-19 10:43:30" itemprop="dateCreated datePublished" datetime="2025-01-19T10:43:30+08:00">2025-01-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="整数的表示第二章-part1">整数的表示(第二章 Part1)</h1>
+<p><del>博客还没装 Mathjax 插件，所以下面的 <span
+class="math inline">\(\LaTeX\)</span> 应该都是乱的</del> 已修</p>
+<h2 id="整数表示">整数表示</h2>
+<p>这一段如果没有目的和顺序地硬看会觉得关系很多很复杂，但其实只要按照一定的目的和顺序结构就会很清晰。</p>
+<h3 id="以设计者的视角思考如何设计">以设计者的视角思考如何设计</h3>
+<p>如果我们是设计用二进制表示整数的人，我们需要如何表示二进制？</p>
+<p>利用 <span class="math inline">\(w\)</span> 位二进制的最高位 $
+x_{w-1} $ 为 <span class="math inline">\(1\)</span>
+代表这个数是负数，剩下的部分正常用二进制表示即 <span
+class="math inline">\(\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i\)</span></p>
+<p>但显然光表示是完全不够的，我们还需要运算，<strong>而符号位由于不对具体数值做贡献，会导致运算错误。</strong>
+因此我们需要让符号位也代表数值，用另一种映射方式计算，于是我们令最高位的符号位具有负的权重
+<span class="math inline">\(-x_{w-1} \cdot
+2^{w-1}\)</span>，这样符号位也参与了计算。但是这样数值又对不上了，因此我们需要把后面的位也变一下。由于我们不是真的设计师，所以我们直接看答案：取反后面的每一位后再
++1。例如<code>10010</code><strong>除符号位</strong>取反后变为<code>11101</code>，
++1后是<code>11110</code>。这样的表示方法计算出的数值是 <span
+class="math inline">\(-x_{w-1}\cdot2^{w-1}+\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i\)</span>
+如何论证这样的数值是”对”的呢？</p>
+<span id="more"></span>
+<p>我们需要给”对”下一个定义: ALU (CPU 的算术单元)
+的运算只是单纯的进行纯粹二进制的加减法(因为存在更好的方案,
+所以专门设计表示负数的硬件是不明智的), 这也就提示我们,
+无论我们如何设计各种表示方法, 我们必须要保证他们在纯粹二进制 Binary
+的计算下维持转换关系.
+所以我们需要考虑我们的表示法和纯粹二进制之间的转换关系。那么”对”就意味着:</p>
+<blockquote>
+<ol type="1">
+<li>存在一个某个函数,
+能够将一个纯粹二进制映射到一定范围内的所有数值(尤其是负值)</li>
+<li>这个函数必须是双射, 也就是任意二进制可以按照规则解释(映射)出值,
+任意值可以用二进制表示</li>
+<li>这个映射必须保证数值的运算和底层进行二进制运算的结果同步(这一点暂时不懂可以往下读)</li>
+</ol>
+</blockquote>
+<p>我们称<code>10010</code> <code>11101</code> <code>11110</code>
+这样的二进制形式为<em>位模式</em>或<em>位向量</em>, 也就是 ALU
+真正在算的东西。Formally, <span class="math inline">\(w\)</span>
+位的位向量 <span class="math inline">\(\vec{x_w}=[x_{w-1}, x_{w-2}, ...,
+x_1, x_0]\)</span> (其中 <span class="math inline">\(x \in \{0, 1\},
+\text{ where } x \in
+\mathbb{Z}\)</span>)。另外，称一开始的符号位不参与计算的位模式为<em>原码</em>，除符号位取反后的位模式为<em>反码</em>，取反后+1的为<em>补码</em>。我们还将<strong>以无符号整数形式</strong>(即所有位模式都是
+<span class="math inline">\(2^{i}\)</span>
+的权值)<strong>解释位模式所计算出的十进制数值</strong>这个过程写作一个函数
+<span class="math inline">\(B2U(\vec{x_w})\)</span> 即 Binary to
+Unsigned，易得<span class="math inline">\(B2U(\vec{x_w}) =
+\displaystyle\sum_{i=0}^{w-1}x_i\cdot2^i\)</span>。类似地，我们有<strong>以反码形式解释位模式所计算出的十进制数值</strong>
+<span class="math inline">\(B2O(\vec{x_w})\)</span>
+和<strong>以补码形式解释位模式所计算出的十进制数值</strong> <span
+class="math inline">\(B2T(\vec{x_w})\)</span>。对应地，我们也有这些函数的反函数<span
+class="math inline">\(U2B(x), T2B(x), O2B(x)\)</span>。</p>
+<p>则我们需要证明的问题以数学语言描述就是，设 <span
+class="math inline">\(B2T(\vec{x_w}\prime) =
+-x_{w-1}\prime\cdot2^{w-1}+\displaystyle\sum_{i=0}^{w-2}x_i\prime\cdot2^i\)</span>
+那么我们需要表示的数值 <span class="math inline">\(x =
+-\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i =
+B2T(\vec{x_w}\prime)\)</span>, 其中 <span
+class="math inline">\(\vec{x}\prime\)</span> 是 <span
+class="math inline">\(T2B(x)\)</span> 即原码 <span
+class="math inline">\(\vec{x_w}\)</span> 取反后 +
+1的位模式。(正数的无符号表示、原码、反码、补码都一样，以下只考虑负数)</p>
+<p>考虑到 +1 导致的进位影响我们对 <span
+class="math inline">\(\vec{x_w}\prime\)</span> 的表达，我们借助反码
+<span class="math inline">\(\vec{x_w}\prime\prime\)</span>，根据定义得知
+<span class="math inline">\(B2O(\vec{x_w}\prime\prime) + 1 =
+B2T(\vec{x_w}\prime)\)</span> 。则 <span
+class="math inline">\(x_i\prime\prime = (1 -
+x_i)\)</span>一个连等式就能证明全部：</p>
+<p><del>(沟槽的 hexo-filter-mathjax 插件有 Bug，我本地 MarkText 的
+Mathjax 正常解析多行，这里就变单行了，对付看罢。)</del> 已修 <span
+class="math display">\[
+\begin{aligned}
+x &amp;= -\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i \\
+  &amp;= -2^{w-1} + 2^{w-1} - 1 -
+\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i + 1 \\
+  &amp;= -2^{w-1} + \displaystyle\sum_{i=0}^{w-2}2^i -
+\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i + 1 \\
+  &amp;= -2^{w-1} + \displaystyle\sum_{i=0}^{w-2}(1-x_i)\cdot2^i + 1
+\end{aligned}
+\]</span></p>
+<p>其中 <span class="math inline">\((1-x_i) = x_i\prime\prime\)</span>
+即对每一位取反, 得到反码的位模式 <span
+class="math inline">\(\vec{x_w}\prime\prime\)</span>，按照我们补码位模式
+<span class="math inline">\(x_i\prime\)</span> 的定义 <span
+class="math inline">\(\vec{x_w}\prime = \vec{x_w}\prime\prime +
+1\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+x &amp;= -2^{w-1} + \displaystyle\sum_{i=0}^{w-2}(1-x_i)\cdot2^i + 1 \\
+  &amp;= -2^{w-1} + \displaystyle\sum_{i=0}^{w-2}x_i\prime \cdot 2^i
+\end{aligned}
+\]</span></p>
+<p>而由于我们讨论的都是负数, 也就是符号位 <span
+class="math inline">\(x_{w-1}\prime = 1\)</span>,
+这样我们证明了补码的数值转换函数<span
+class="math inline">\(B2T(\vec{x_w}) =
+-x_{w-1}\cdot2^{w-1}+\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i\)</span>
+的数值表示是正确的(实际上这个函数是一个双射)，而此时符号位也参与了运算，所以这套表示体系也能正常参与运算（后面会更详细地说明运算问题）</p>
+<blockquote>
+<p>事实上，反码也能正常参与运算，只是对 0 的表示有两种 (0000 和 1111)
+。</p>
+<p>给出反码的数值转换函数 <span class="math inline">\(B2O =
+-x_{w-1}\cdot(2^{w-1}-1)+\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i\)</span></p>
+</blockquote>
+<h3 id="如何取负">如何取负？</h3>
+<p>创造补码的主要需求就是表示负数。既然我们有了补码的定义，很容易就知道对一个数
+<span class="math inline">\(x\)</span> 取相反数就是令 <span
+class="math inline">\(x\)</span> 的补码 <span
+class="math inline">\(\vec{x_w}\)</span> <strong>所有位</strong>
+取反然后再 +1。</p>
+<blockquote>
+<p>Q: 为什么是所有位取反？补码不是除符号位取反再 +1 吗？</p>
+<p>A: 取相反数符号位肯定要变化啊。我们是+3 -&gt; -3</p>
+</blockquote>
+<p>注意到这个其实就是 <span class="math inline">\(-x = (2^w - x) \mod
+2^w\)</span>， 注意不到也没关系，<del>因为我就没注意到</del>,
+但是要记住这个式子。</p>
+<p>一直说到这, 看起来补码就像是一个美丽的巧合,
+我们设计(照书抄的)了一个不错的转换关系,
+让补码的运算规则恰好能表示负数值, 同时符号位也参与运算,
+也能得出正确的计算结果, 对吧? ….对吗?</p>
+<h3 id="环绕-溢出-取模-同余与群">环绕, 溢出, 取模, 同余与群</h3>
+<p>正式的运算规则要到下一篇博客 (Part II) 说,
+这里只是借运算来指出补码的设计原理。</p>
+<p>首先无论是什么码, ALU 是不会管那么多的, 只会按照 Binary
+即纯粹的二进制进行运算,
+我们需要<strong>保证我们设计的补码能够在纯粹二进制的运算下保证得出的结果仍然符合
+<span class="math inline">\(B2T\)</span> 的计算公式</strong>. 即 <span
+class="math inline">\(z = x + y = B2T(\vec{x}\prime) +
+B2T(\vec{y}\prime) = B2T(\vec{x}\prime)\)</span>
+(也就是上文说的”<strong>数值要和映射函数的运算结果同步</strong>”)</p>
+<p>乍一看(负数)补码的二进制(或者称作 <span
+class="math inline">\(T2B\)</span>),
+最高位符号位导致这个二进制对应的一个非常大的数,
+用一个在纯二进制中很大的数来表示一个负数, 这看起来似乎是非常反直觉的,
+但是先不要急, 不管表示方式如何,
+我们只要理解为什么这样的表示方式能够在运算后(以及多次运算,
+交换/结合运算后)仍然符合数值转换规则就可以了, 那要怎么理解呢?</p>
+<p>一种方式是暴力拆解上面的公式, 当然这样也能证出来,
+但是缺乏直观的原理理解。</p>
+<p>另一种方法是, 考虑一个时钟, 现在是 <span
+class="math inline">\(2\)</span> 点钟, <span
+class="math inline">\(3\)</span> 小时前是 <span class="math inline">\(2
+- 3 = -1\)</span> 点吗? 显然不是, 而是 <span
+class="math inline">\(11\)</span> 点钟, 是不是很像补码的感觉
+“用一个很大的数表示一个负数”?
+这样在纯粹的二进制无法直接表示负数的情况下, 把一个负数 <span
+class="math inline">\(-3\)</span> 变成了一个很大的正数 <span
+class="math inline">\(9\)</span>, 并计算得到 $ 2 - 3 = 2 + 9 = 11$, 这个
+<span class="math inline">\(9\)</span> 就是 $ -3 = -3 + 12 = 9$,
+用同余的话来说, 因为 <span class="math inline">\(9 \equiv -3 \pmod
+{12}\)</span></p>
+<p>这样我们用一个大数表达了一个负数, 通过加上当前计数系统的最大值 <span
+class="math inline">\(12\)</span> (或者说通过 <span
+class="math inline">\(\mod 12\)</span>), 通过在计算机中应用类似的技巧,
+只是把 $ $ 变为 $ ^w$. 所以就有了上面的式子 <span
+class="math inline">\(-x = (-x + 2^w) \mod 2^w\)</span>.</p>
+<p>具体来说, <span class="math inline">\(\mod 2^w\)</span> 的操作是靠
+ALU (更准确具体地说是加法器) 天然的溢出性质实现的, <span
+class="math inline">\(1111_B + 1_B = 0000_B\)</span>, 高位的 <span
+class="math inline">\(1\)</span> 因为溢出被舍掉了, 就相当于截断超出
+<span class="math inline">\(w\)</span> 位的位, 也就是对 <span
+class="math inline">\(2^w\)</span> 取模.</p>
+<p>类比时钟来说, 我们的映射关系 <span
+class="math inline">\(B2T(\vec{x_w}) =
+-x_{w-1}\cdot2^{w-1}+\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i\)</span>
+就相当于把时钟中的 <span class="math inline">\(11\)</span> 减去 <span
+class="math inline">\(12\)</span> 得到 <span
+class="math inline">\(-1\)</span>,
+而<strong>维持这个映射关系的运算结果和数值的运算结果同步</strong>(以下简称”性质”)的原理就是往回拨弄时钟.</p>
+<p>那有没有更 formal 的表达呢? 有的兄弟有的:</p>
+<blockquote>
+<p><span class="math inline">\(11\)</span> 和 <span
+class="math inline">\(-1\)</span> 关于 <span
+class="math inline">\(12\)</span> 同余, ALU
+的溢出截断产生的实际上就是与未截断的原数同余的数值。<br />
+而补码所对应的二进制数值实际上就是原负数<strong>模 <span
+class="math inline">\(2^w\)</span> 的同余等价类</strong>。</p>
+</blockquote>
+<p>从数学推理的角度思考, 我们要做的是:</p>
+<ol type="1">
+<li>为了能用二进制表示负数, 需要找一个无符号大数 <span
+class="math inline">\(x\)</span> 作为负数 <span
+class="math inline">\(-v\)</span> 的代理人</li>
+<li>为了维持性质, 结合 ALU 溢出的同余性质, 需要找这个代理人满足对任意数
+<span class="math inline">\(a\)</span> 满足 <span
+class="math inline">\(a + x \equiv a - v \pmod {2^w}\)</span></li>
+</ol>
+<p>根据同余的性质, 得到 <span class="math inline">\(x \equiv -v \pmod
+{2^w}\)</span>, 即 <strong>补码所对应的二进制数值实际上就是原负数模
+<span class="math inline">\(2^w\)</span> 的同余群</strong>。</p>
+<h3 id="补码的不对称性">补码的不对称性</h3>
+<blockquote>
+<p>想一想，设 <span class="math inline">\(\mathrm{TMin}\)</span> 为
+<span class="math inline">\(w\)</span> 位补码表示的最小数值，那么：</p>
+<ul>
+<li><p><span class="math inline">\(\mathrm{TMin}\)</span>
+的补码位模式(即 <span class="math inline">\(T2B(\mathrm{TMin})\)</span>
+) 是多少？</p></li>
+<li><div class="sourceCode" id="cb1"><pre
+class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> custom_abs<span class="op">(</span><span class="dt">signed</span> <span class="dt">int</span> x<span class="op">)</span> <span class="op">&#123;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>x <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="cf">return</span> <span class="op">-</span>x<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">&#125;</span></span></code></pre></div>
+<p>这段代码有什么问题？</p></li>
+</ul>
+</blockquote>
+<p>根据上面的问题，我们发现 <code>custom_abs(TMin)</code> 返回的还是
+TMin.</p>
+<p>在补码语境下，由于符号位是 1 表示的都是正数，符号位是 0
+的表示的都是非负数，这两者表示的数字个数相等，而 0
+不是正数也不是负数，但它是非负数，所以表示的正数比负数少一个，所以 <span
+class="math inline">\(\mathrm{TMax + 1 = abs(TMin)}\)</span> , 例如对 4
+字节正数，最大值是 <span class="math inline">\(2^{31} - 1 =
+2147483647\)</span>, 而最小值是 <span class="math inline">\(-2^{31} =
+-2147483648\)</span>。</p>
+<blockquote>
+<p>在 C 和 C++
+语言中，<code>unsigned</code>修饰的无符号数以无符号形式解释，即我们的
+<span class="math inline">\(B2U\)</span>， 其他的则以补码解释。</p>
+<p>Java 以补码解释。Rust <code>i32</code> <code>i64</code>
+等以补码表示，<code>u32</code> 等以无符号数形式解释。</p>
+<p>C 和 C++ 的 <code>unsigned</code>
+溢出是行为良好的，上下溢出都是循环，但有符号正数的溢出是未定义行为。注意浮点数的溢出也是行为良好的，因为
+IEEE 754 规定了溢出产生正负无穷。</p>
+<p>Java 的溢出是行为良好的，按照补码规则循环环绕到最小值</p>
+<p>Rust 的溢出取决于编译模式，<code>Debug</code>
+模式会触发<code>panic</code> ，<code>Release</code> 模式类似 Java。</p>
+<p>Python
+不太清楚具体怎么表示的，理论上只要内存够应该不存在溢出的情况？我还在学
+py。</p>
+</blockquote>
+<h3 id="无符号数解释和补码解释的关系">无符号数解释和补码解释的关系</h3>
+<p>对于一个位模式 <span class="math inline">\(\vec{x_w}\)</span>
+以无符号数解释的数值 <span class="math inline">\(B2U(\vec{x_w})\)</span>
+和以补码解释的数值 <span class="math inline">\(B2T(\vec{x_w})\)</span>
+有什么关系？考虑这两者的公式（设 <span class="math inline">\(x_{w-1} =
+1\)</span> )：</p>
+<p><span class="math inline">\(B2U(\vec{x_w}) =
+\displaystyle\sum_{i=0}^{w-1}x_i\cdot2^i =
+x_{w-1}\cdot2^{w-1}+\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i\)</span></p>
+<p><span class="math inline">\(B2T(\vec{x_w}) =
+-x_{w-1}\cdot2^{w-1}+\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i\)</span></p>
+<p>发现只有最高为的权重正负不同，即两者只差 <span
+class="math inline">\(2 \times 2^{w-1} = 2^w\)</span></p>
+<p>当然如果是正数，<span class="math inline">\(x_{w-1} = 0\)</span>
+则二者相等。</p>
+<p>故：<span class="math inline">\(B2U(\vec{x_w}) - 2^w =
+B2T(\vec{x_w})\)</span></p>
+<p>(当然, 从补码的同余原理上我们也能得出这一结论)</p>
+<p>于是就有了这个经典的图：</p>
+<p><img src="/images/2025-01-19-122537_hyprshot.png" /></p>
+<h3 id="取相反数的证明">取相反数的证明</h3>
+<p>我们上面说了取相反数就是 <span class="math inline">\(-x = (2^w - x)
+\mod 2^w\)</span> .下面来证明一下。</p>
+<p>Formaly, 我们需要证明 <span class="math inline">\(U2B(2^w - b) =
+T2B(-b)\)</span> ,急症 $B2T(U2B(2^w - b)) = -b $</p>
+<p>由上面说到的 <span class="math inline">\(B2U(\vec{x_w}) - 2^w =
+B2T(\vec{x_w})\)</span> ，令 <span class="math inline">\(x = U2B(2^w -
+b)\)</span></p>
+<p>得 <span class="math inline">\(B2T(U2B(2^w - b)) = B2U(U2B(2^w - b))
+- 2^2 = 2^w - b - 2^w = -b\)</span></p>
+<p>得证。</p>
+<p>举个例子:</p>
+<p><span class="math inline">\(T2B(-3) = U2B(2^w - 3) =
+T2B(-3)\)</span></p>
+<h3 id="扩展和截断">扩展和截断</h3>
+<p>无符号数扩展直接补 <span class="math inline">\(0\)</span> 在前面,
+补码扩展在前面补 <span class="math inline">\(1\)</span>
+(之所以上面说”同余等价类”就是这个原因), 可以证明是正确的。</p>
+<p>截断无符号数相当于对 <span class="math inline">\(2^k\)</span>
+取模(前面也说了),
+截断补码相当于位模式下截断无符号数再转换为补码表示。</p>
+<p>换句话说就是：无符号数和补码的操作在位级表示上是相同的,
+这一点会在后面大量用到。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/01/19/CSAPP-2025-01-19/" title="CSAPP3e第二章(整数的表示)">https://amiriox.github.io/2025/01/19/CSAPP-2025-01-19/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/CSAPP-cmu15213/" rel="tag"># CSAPP/cmu15213</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/12/29/CSAPP-Lab-Attack/" rel="prev" title="CSAPP Attack Lab 笔记">
+                  <i class="fa fa-angle-left"></i> CSAPP Attack Lab 笔记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/01/25/CSAPP-2025-01-25/" rel="next" title="CSAPP3e第二章(整数的运算)">
+                  CSAPP3e第二章(整数的运算) <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

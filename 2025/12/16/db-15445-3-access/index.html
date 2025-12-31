@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="上一篇博客: 数据库系统的数据存储方式 | Amiriox’s Storage 上次写博客是在一个多月前了, 最近比较忙, 博客只能抽空写. 精神状态也不是很好, 得想想办法 () 数据库系统的访问方法 我们在这个系列的第一篇文章(数据库系统的基本概念 | Amiriox’s Storage)中就介绍了数据库的架构分层, 但没能真正展开.    典型关系型数据库的架构分层     查询优化(Que">
+<meta property="og:type" content="article">
+<meta property="og:title" content="&lt;未完成&gt;数据库系统的访问方法">
+<meta property="og:url" content="https://amiriox.github.io/2025/12/16/db-15445-3-access/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="上一篇博客: 数据库系统的数据存储方式 | Amiriox’s Storage 上次写博客是在一个多月前了, 最近比较忙, 博客只能抽空写. 精神状态也不是很好, 得想想办法 () 数据库系统的访问方法 我们在这个系列的第一篇文章(数据库系统的基本概念 | Amiriox’s Storage)中就介绍了数据库的架构分层, 但没能真正展开.    典型关系型数据库的架构分层     查询优化(Que">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-12-16T12:35:30.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.825Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="cmu15445">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2025/12/16/db-15445-3-access/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/12/16/db-15445-3-access/","path":"2025/12/16/db-15445-3-access/","title":"\u003c未完成>数据库系统的访问方法"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title><未完成>数据库系统的访问方法 | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BF%E9%97%AE%E6%96%B9%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">数据库系统的访问方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B5%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E5%A6%82%E4%BD%95%E8%A2%AB%E8%A7%A3%E9%87%8A"><span class="nav-number">2.</span> <span class="nav-text">页中的数据如何被解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">3.</span> <span class="nav-text">数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E7%82%B9%E6%9F%A5%E8%AF%A2"><span class="nav-number">3.1.</span> <span class="nav-text">单点查询</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E5%93%88%E5%B8%8C"><span class="nav-number">3.1.1.</span> <span class="nav-text">静态哈希</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E5%93%88%E5%B8%8C"><span class="nav-number">3.1.2.</span> <span class="nav-text">动态哈希</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8C%83%E5%9B%B4%E6%9F%A5%E6%89%BE"><span class="nav-number">3.2.</span> <span class="nav-text">范围查找</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%85%E5%8A%A9%E4%BC%98%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text">辅助优化</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/12/16/db-15445-3-access/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="<未完成>数据库系统的访问方法 | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          <未完成>数据库系统的访问方法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-12-16 20:35:30" itemprop="dateCreated datePublished" datetime="2025-12-16T20:35:30+08:00">2025-12-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>上一篇博客: <a
+target="_blank" rel="noopener" href="https://zheya.cc/2025/10/19/db-15445-2-storage/">数据库系统的数据存储方式
+| Amiriox’s Storage</a></p>
+<p>上次写博客是在一个多月前了, 最近比较忙, 博客只能抽空写.
+精神状态也不是很好, 得想想办法 ()</p>
+<h2 id="数据库系统的访问方法">数据库系统的访问方法</h2>
+<p>我们在这个系列的第一篇文章(<a
+target="_blank" rel="noopener" href="https://zheya.cc/2025/09/23/db-15445-1-intro/">数据库系统的基本概念
+| Amiriox’s Storage</a>)中就介绍了数据库的架构分层, 但没能真正展开.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">典型关系型数据库的架构分层</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">查询优化(Query Planning)</td>
+</tr>
+<tr>
+<td style="text-align: center;">算子执行(Operator Execution)</td>
+</tr>
+<tr>
+<td style="text-align: center;">访问方法(Access Method) &lt;-</td>
+</tr>
+<tr>
+<td style="text-align: center;">缓冲池管理器(Buffer Pool Manager)</td>
+</tr>
+<tr>
+<td style="text-align: center;">磁盘管理器(Disk Manager)</td>
+</tr>
+</tbody>
+</table>
+<p>具体来说:</p>
+<ul>
+<li>磁盘管理器单纯用来和磁盘进行交互,
+不过通常实现一些异步方案进行优化(Bustub 就利用了
+<code>std::promise</code>)</li>
+<li>缓冲池在上一篇文章(<a
+target="_blank" rel="noopener" href="https://zheya.cc/2025/10/19/db-15445-2-storage/">数据库系统的数据存储方式
+| Amiriox’s Storage</a>)中介绍了, 为防止磁盘 I/O 成为性能瓶颈,
+有计划地(一些页驱逐策略)将磁盘中的页加载到内存中作为内存中的一个页帧<span
+class="math inline">\(^{[*]}\)</span></li>
+<li>访问方法通过特定的数据结构从页中找到上层算子执行所需要的信息,
+本文将详细解释这些数据结构</li>
+<li>算子是关系代数中的具体操作实现(当然, 事实上是基于可重集合,
+甚至有序可重集合的特殊关系代数), 这在后面的文章中会详细介绍,
+例如数据和逻辑是如何在这些算子间流动最终得出查询结果的,
+算子的执行体现了程序究竟在做什么:
+“用逻辑塑造一个管道让数据在其中塑形”。</li>
+<li>查询优化, 面对一个已知的 SQL 语句, 预估大概的执行成本,
+选择采用什么索引, 某些算子的执行顺序交换, 以形成相对更优的执行计划</li>
+</ul>
+<h2 id="页中的数据如何被解释">页中的数据如何被解释</h2>
+<p>上一篇文章中介绍了各种数据存储模型。将各种数据模型联系到一起, 并向
+Access Method 负责的就是 Record ID,
+即包含了一个元组存储位置的元组唯一标识,
+对列存就是对齐的列位置(详见上一篇文章).</p>
+<p>那么, 具体来说, 这些访问方法就是用一些数据结构找这些 Record ID,
+从而访问到数据库中一行又一行元组.</p>
+<p>最简单的方法自然是全表扫描线性查找, 通过全局的 Catalog
+(这个目录中包含表的各种元数据) 找到表数据的第一个页面(例如, 这个表的
+Page Directory, 对于 Heap File 存储), 然后由 Page Directory
+中的数据找到某个页的位置(文件+偏移量), 由 Disk Manager 和 BPM
+管理读进内存, 然后按照约定的页面结构(比如之前介绍过的槽页面)解析,
+顺序扫描.</p>
+<p>需要注意的是, 数据库系统的规模可能非常大(后面我们会看到,
+将数据存在磁盘上除了可持久化需求, 另一个原因是内存是存不下了),
+例如对一条在几亿条记录的表中查找某个 id 的记录,
+线性查找除了时间复杂度问题, 还会造成大量的磁盘 I/O.
+因此我们需要找到时间复杂度更优、磁盘 I/O 较少(或尽可能保证顺序磁盘
+I/O)的办法来获取 Record ID.</p>
+<h2 id="数据结构">数据结构</h2>
+<p>重复一下我们的需求: 维护一个可重复的集合,
+尽可能地支持高效插入、删除、查找(尤其对于 OLAP workload)</p>
+<p>其次, 对于查找(或者说数据库的查询), 存在单点查找、范围查找等不同情况,
+而通常是具有查询的具体类型的,
+所以我们可以对不同查询采取不同的数据结构。</p>
+<p>最后, 我们还希望数据结构的磁盘 I/O 能尽可能少, 或者尽可能是顺序 I/O
+而不是随机 I/O</p>
+<h3 id="单点查询">单点查询</h3>
+<p>从复杂度上来讲, 毫无疑问是哈希表的 <span
+class="math inline">\(O(1)\)</span> 查询在一众数据结构中最亮眼。Yes, but
+at what cost? 哈希表基本都是随机 I/O, 但这毕竟是单点查询,
+相对于”在可能规模极大的数据中 O(1) 查找的优势”,
+在单点查询中造成一次或几次随机磁盘 I/O 并非无法接受。(No free lunch
+here)</p>
+<p>这里哈希表的键可以是主键, 或某一属性; 值可以是元组(剩余元素)本身,
+或是 Record ID(常见).</p>
+<h4 id="静态哈希">静态哈希</h4>
+<p>对于键个数已知的 scenario,
+可以采用静态哈希。静态哈希解决冲突的手段通常是<strong>开放定址</strong>:</p>
+<ol type="1">
+<li><p>探测: 线性探测/平方探测</p>
+<p>插入 <span class="math inline">\(k_2\)</span> 时若 <span
+class="math inline">\(H(k_2) = H(k_1)\)</span>,
+进而尝试其他位置(所谓”开放定址”), 对于线性探测来说可能是 <span
+class="math inline">\(H(k_2) + f(i), f(i) = c i, i=1,2,3,...\)</span>
+如果觉得线性探测可能造成堆积现象, 也可以采用 <span
+class="math inline">\(f(i)=c i^2\)</span> 进一步避免冲突的键堆积在一起.
+查找时也按相同规则找位置即可. 但要注意删除不能直接删除, 而是要 rehash
+或标记墓碑(通常采用后者): 在被删除元素的位置上打上特殊标记,
+让查找操作并不在此处终止而是继续向下寻找,
+直到在某次新的插入操作中复用这个墓碑的位置。</p></li>
+<li><p>Cuckoo Hashing</p>
+<p>非常古怪的名字.
+杜鹃这种生物会把自己的蛋下到别人窝里然后把别人的蛋挤走, Cuckoo Hash
+也是类似的策略:<br />
+在 <span class="math inline">\(H_1(k_2) = H_1(k_1)\)</span> 即新插入的
+<span class="math inline">\(k_2\)</span> 和先前的 <span
+class="math inline">\(k_1\)</span> 发生冲突时,</p>
+<ul>
+<li>先使用另一个哈希函数计算 <span
+class="math inline">\(H_2(k_2)\)</span>,
+如果那个位置恰好空缺则插入成功</li>
+<li>如果仍然不成功(存在 <span class="math inline">\(H_2(k_0) =
+H_2(k_2)\)</span>) 就只好把那里的冲突键 <span
+class="math inline">\(k_0\)</span> 踢掉, 把 <span
+class="math inline">\(k_2\)</span> 放进去</li>
+<li>当然, 我们决不会对还未出生的鸟宝宝坐视不管: 继续执行将被抢走位置的键
+<span class="math inline">\(k_0\)</span> 插回去的操作,
+同样可能涉及到其他无辜键被踢出然后重新插入(谁还不是一只杜鹃了呢?).
+由于我们有两个哈希函数 <span class="math inline">\(H_1(x)\)</span> 和
+<span class="math inline">\(H_2(x)\)</span>, 通常我们都能找到某个在
+<span class="math inline">\(H_1(k_i)\)</span> 位置的 <span
+class="math inline">\(k_i\)</span> 并且其备选位置 <span
+class="math inline">\(H_2(k_i)\)</span> 为空的键.
+如果不存在就只能自认倒霉(这可能造成死循环, 通常需要终止操作, 扩容哈希表,
+然后重新 rehash 所有元素)</li>
+</ul>
+<p>Cuckoo Hashing 的优点在于绝对的最坏 <span
+class="math inline">\(O(1)\)</span> 查询复杂度
+(探测法在极端数据下可能因为需要不断向下探测找下一个位置导致 O(n)
+的查询复杂度), 但代价就是插入操作复杂, 同时可能触发扩容.</p></li>
+</ol>
+<p>静态哈希仅仅适用于我们(大致)知道有多少键需要维护的情况,
+否则就需要重建整个哈希表并且 rehash.</p>
+<h4 id="动态哈希">动态哈希</h4>
+<p>最令人熟知的应该是 Chained Hashing,
+也就是国内常叫的拉链法(为什么你们总喜欢这么弱智的翻译? “拉链”? “主码”?).
+通常的实现是, 每个 <span class="math inline">\(H(x)\)</span>
+值域对应的位置上是一个链表的表头,
+每次冲突时只需要头插法(同样弱智的翻译)插在这个链表头即可. 然而,
+拉链法同样可能像探测法一样造成查询的退化
+(你可能会说这主要是哈希函数太烂导致多个键冲突在一起,
+但是总有这种情况发生, 对吧?<span class="math inline">\(^{[*]}\)</span>),
+以下是一些优化:</p>
+<ol type="1">
+<li><p>Extendible Hashing</p>
+<p>设立一些桶和桶对应的局部计数器 <span
+class="math inline">\(d_i\)</span>, 其意义是: 在桶 <span
+class="math inline">\(i\)</span> 容纳的键值对中, 最少需要查看 <span
+class="math inline">\(d_i\)</span>
+个键的哈希值的二进制位才能区分开桶里的这些键值对 (例如 <code>010</code>
+和 <code>110</code> 只需要 <span class="math inline">\(1\)</span>
+位区分, 而 <code>010111</code> 和 <code>011111</code> 需要至少两位 <span
+class="math inline">\(2\)</span> 位才能区分)</p>
+<p>维护一个全局计数器 <span class="math inline">\(d\)</span>,
+其意义是对当前哈希表中所有键值对的键的哈希值, 最少需要 <span
+class="math inline">\(d\)</span> 个二进制位才能进行区分.
+以及配套的一个长为 <span class="math inline">\(2^d\)</span> 的目录,
+这个目录记录了对一个哈希值应该去哪个桶来找 (例如, <span
+class="math inline">\(d=3, H(k) = 0b0110010\)</span>, 则在前三位
+<code>011</code> 对应的目录指向的桶中查找/插入/删除这个键值对)</p>
+<p>一条<strong>不变量</strong>是: 局部计数器 <span
+class="math inline">\(d_i\)</span> 永远小于全局计数器 <span
+class="math inline">\(d\)</span>. (否则目录项一定会是错的,
+导致查找到的桶无法正确离散不同键的哈希值)</p>
+<p>对于查找操作, 计算哈希值, 取哈希值的前 <span
+class="math inline">\(d\)</span> 位二进制, 通过目录中这 <span
+class="math inline">\(d\)</span> 位二进制对应的目录项指针找到对应的桶,
+最多查找 <span class="math inline">\(2^d\)</span> 次就能找到(更确切来说,
+只需要查找 <span class="math inline">\(2^{d_i}\)</span>
+即局部计数器即可)</p>
+<p>对于插入操作, 定位过程类似, 但是若插入导致桶满了需要分裂,
+则存在以下情况:</p>
+<ul>
+<li><span class="math inline">\(d_i + 1 \leq d\)</span>: 创建新桶,
+并且修改新旧两个桶的局部计数器为 <span
+class="math inline">\(d_i+1\)</span>, 因为超出 <span
+class="math inline">\(2^{d_i}\)</span> 个(不重复的)键意味着仅靠 <span
+class="math inline">\(d_i\)</span> 位无法区分这 <span
+class="math inline">\(\gt 2^{d_i}\)</span> 个(不重复的)键的哈希值了.
+不过此时局部计数器较小仍不需要动全局计数器</li>
+<li><span class="math inline">\(d_i + 1 \gt d\)</span>: 准确来说是 <span
+class="math inline">\(d_i = d\)</span>.
+此时强行扩展局部计数器会导致一个目录项必须指向两个桶(这显然是不符合规则的).
+所以要扩展全局计数器, 将目录从 <span class="math inline">\(2^d\)</span>
+扩展为 <span class="math inline">\(2^{d+1}\)</span> 项,
+此时两个目录项会指向同一个桶(对于未分裂的桶),
+或是两个目录项分别指向分裂操作造成的两个桶, 桶分裂的过程和上面一样.</li>
+</ul>
+<p>是靠”哈希值的二进制位”对哈希表中的位置进行了一次离散化,
+然后在这个离散化精度不够高的时候在(惰性地)增加精度(<span
+class="math inline">\(d\)</span> 位到 <span
+class="math inline">\(d+1\)</span> 位)</p></li>
+<li><p>Linear Hashing</p>
+<p>&lt;TODO: 也是个很有想法的哈希, 但是解释起来有点麻烦,
+先鸽一下&gt;</p></li>
+</ol>
+<h3 id="范围查找">范围查找</h3>
+<p>范围查找通常是基于索引的, 而提到数据库的索引就不得不提到 B+ Tree,
+时间复杂度和体系结构友好的完美权衡.</p>
+<p>从需求下手,
+我们需要一个能够以优良时间复杂度维护元素有序性质的、磁盘随机 I/O
+次数较少的数据结构.</p>
+<p>那么, 链表怎么样? 有序链表维护有序性代价太高了,
+插入等操作需要遍历定位(注意链表是不能二分查找的, 因为不具有 <span
+class="math inline">\(O(1)\)</span> 随机访问性质).</p>
+<p>跳表(跳跃表, <code>SkipList</code>) 怎么样?
+跳表可以通过不同层数的节点巧妙界定范围, 并且依据随机性可以勉强维持 log
+的时间复杂度, 但是跳表的节点定位几乎都是随机磁盘 I/O, 因此也否决了.
+但跳表的确在数据库系统中得到了一些应用,
+主要是在纯内存数据结构上(不涉及磁盘 I/O)的情境下.</p>
+<p>因为类似的原因, 平衡树也同样被否决了(而且常规平衡树也只能做单点查询,
+当然这不是主要问题, Splay, FHQ Treap,
+线段树这样的数据结构也能进行区间查询, 但是依然存在随机磁盘 I/O
+次数较多的问题).</p>
+<p>那么有没有一种办法, 可以把跳表和平衡树的优势结合起来?</p>
+<ol type="1">
+<li>跳表可以通过不同层次的节点确定查找范围,
+平衡树可以根据二叉查找树的节点性质和平衡树的平衡性质(防退化)以 <span
+class="math inline">\(O(\log n)\)</span> 的复杂度确定查找范围;
+但在这两个问题上两者的缺陷是一致的: 需要跳转太多次导致随机磁盘 I/O 太多,
+那么能不能通过添加分叉数的方式降低平衡树的树高,
+从而降低查找结点所需的跳转次数呢? 对于平衡树不能,
+因为平衡树几乎都是基于二叉搜索树添加了一系列平衡规则,
+但我们可以记着这一点, 称为 <em>性质1</em>.</li>
+<li>在跳表中, 一旦达到最低层次, 就可以通过链表结点的连接指针向后遍历,
+这是常规平衡树所不具备的. 我们称之为 <em>性质2</em></li>
+</ol>
+<p>而 B+ Tree 就是具备 <em>性质1</em> 和 <em>性质2</em> 的数据结构.
+具体来说:</p>
+<ul>
+<li>只在叶子节点存储实际数据,
+且每个节点存储多个<strong>相邻且处于同一范围</strong>的(单调的)数据,
+相邻叶子节点通过 sibling pointer 连接, 形成一个链表,
+用于加速范围查询.</li>
+<li>内部节点不存储实际数据, 而是发挥类似跳表上层的定位功能. 具体来说,
+内部节点存储一系列单调的元素(<span class="math inline">\(e_1 &lt; e_2
+&lt; e_3 &lt; ...\)</span>),
+而在每两个元素间存在一个指针指向下一层的节点,
+含义是这个指针指向的子树中的所有元素大小都在这两个元素之间 (例如 <span
+class="math inline">\(e_1\)</span> 和 <span
+class="math inline">\(e_2\)</span> 之间的指针指向的子树中所有的元素
+<span class="math inline">\(e\)</span> 都保证 <span
+class="math inline">\(e_1 \leq e \lt e_2\)</span>, 取等取决于具体实现).
+由于每个节点能够索引到的范围变多了(对平衡树来说,
+一个节点只能区分出两个范围: 大于这个节点值的子树,
+和小于这个节点值的元素), 树高可以明显降低,
+而在由于每个节点的元素都是单调的, 可以通过二分查找加速索引过程,
+依然可以保证 log 复杂度.</li>
+<li>完美平衡, 节点平衡因子为0. 这一点保证了 log 级别的查找复杂度,
+实现上是通过保证每个节点内的元素个数大于半满小于全满从而防止太多范围聚集到一个节点上而很多节点几乎为空导致退化为链的情况.
+(取决于具体实现, 对于叶子节点和内部节点实际上要求略有不同,
+这一点后面会说)</li>
+</ul>
+<p>仅仅从数据结构的定义形态上来看, B+ Tree 是简洁自然的,
+然而为了保证这些性质, <del>可遭老罪了</del>, <code>Insert</code> 和
+<code>Remove</code> 操作真的要处理很多种 case:</p>
+<ul>
+<li>插入导致节点满了, 进行 split, 同时要保持上述性质</li>
+<li>删除导致节点空了, 或者小于半满(这些约束称为”不变量约束”), 需要
+re-distribute 或者 merge</li>
+</ul>
+<p>而这些操作需要在 B+ Tree 复杂结构的条件下, 区分叶子节点和内部节点,
+还要对根节点特判, 同时数据库系统中通常还要保证并发安全… 没错, 这就是
+cmu15445 的 <a
+target="_blank" rel="noopener" href="https://15445.courses.cs.cmu.edu/fall2024/project2/">Project #2:
+Database Index</a>: 手写一个并发安全的 B+ Tree.</p>
+<p>split, re-distribute 和 merge 操作, 以及兼顾并发安全和效率的 Latch
+Coupling 技术, 我会接着展开, 同时我还会介绍一些使用 <code>cgdb</code> 和
+<code>rr</code>, 包括使用自己的 <code>GTest</code> 测试进行调试的经验.
+&lt;TODO: 但因为太麻烦所以暂时先鸽着&gt;</p>
+<p>此外, 对于倒排索引、Trie
+树等在数据库系统中广泛运用的数据结构这里不做展开.</p>
+<h2 id="辅助优化">辅助优化</h2>
+<p>&lt;TODO: 概率数据结构(如布隆过滤器)&gt;</p>
+<hr />
+<p>下一篇博客: <a
+target="_blank" rel="noopener" href="https://zheya.cc/2025/12/19/db-15445-4-operator/">数据库系统的算子执行
+| Amiriox’s Storage</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/12/16/db-15445-3-access/" title="&lt;未完成&gt;数据库系统的访问方法">https://amiriox.github.io/2025/12/16/db-15445-3-access/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/cmu15445/" rel="tag"># cmu15445</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/10/19/db-15445-2-storage/" rel="prev" title="<未完成>数据库系统的数据存储方式">
+                  <i class="fa fa-angle-left"></i> <未完成>数据库系统的数据存储方式
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/12/19/db-15445-4-operator/" rel="next" title="<未完成>数据库系统的算子执行">
+                  <未完成>数据库系统的算子执行 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

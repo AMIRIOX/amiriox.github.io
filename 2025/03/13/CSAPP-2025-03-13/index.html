@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="CSAPP3e第四章(处理器体系结构) 这一章理解难度不大, 但是内容很多, 比较复杂, 读着读着时而觉得”我艹这简直是艺术品”时而觉得”我他妈快睡着了”。 指令集体系结构  指令集与指令编码 pushq&#x2F;popq二义性(数据操作在外侧, 栈指针变化在内测) 编码寄存器 异常处理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="&lt;未完成&gt;CSAPP3e第四章(处理器体系结构)">
+<meta property="og:url" content="https://amiriox.github.io/2025/03/13/CSAPP-2025-03-13/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="CSAPP3e第四章(处理器体系结构) 这一章理解难度不大, 但是内容很多, 比较复杂, 读着读着时而觉得”我艹这简直是艺术品”时而觉得”我他妈快睡着了”。 指令集体系结构  指令集与指令编码 pushq&#x2F;popq二义性(数据操作在外侧, 栈指针变化在内测) 编码寄存器 异常处理">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-03-13T07:25:41.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.822Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="CSAPP&#x2F;cmu15213">
+<meta property="article:tag" content="未完成">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2025/03/13/CSAPP-2025-03-13/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/03/13/CSAPP-2025-03-13/","path":"2025/03/13/CSAPP-2025-03-13/","title":"\u003c未完成>CSAPP3e第四章(处理器体系结构)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title><未完成>CSAPP3e第四章(处理器体系结构) | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#csapp3e%E7%AC%AC%E5%9B%9B%E7%AB%A0%E5%A4%84%E7%90%86%E5%99%A8%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">CSAPP3e第四章(处理器体系结构)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">指令集体系结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%8F%E8%BF%B0%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9A%84%E6%96%B9%E6%B3%95-%E7%A1%AC%E4%BB%B6%E8%AE%BE%E8%AE%A1%E8%AF%AD%E8%A8%80-hcl"><span class="nav-number">1.2.</span> <span class="nav-text">描述体系结构的方法:
+硬件设计语言 HCL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%B6%E9%92%9F%E4%BF%A1%E5%8F%B7%E7%BB%84%E5%90%88%E7%94%B5%E8%B7%AF-%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">1.3.</span> <span class="nav-text">时钟信号，组合电路, 存储器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E5%99%A8%E9%98%B6%E6%AE%B5%E4%B8%8E%E6%97%B6%E5%BA%8F%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.3.1.</span> <span class="nav-text">处理器阶段与时序设计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E9%A1%BA%E5%BA%8F%E6%89%A7%E8%A1%8C%E7%9A%84-y86-64-%E5%A4%84%E7%90%86%E5%99%A8%E7%A1%AC%E4%BB%B6%E7%BB%93%E6%9E%84-seq"><span class="nav-number">1.4.</span> <span class="nav-text">设计顺序执行的 Y86-64
+处理器硬件结构: SEQ</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%89%A7%E8%A1%8C%E7%9A%84-pipe-%E5%A4%84%E7%90%86%E5%99%A8%E7%A1%AC%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-number">1.5.</span> <span class="nav-text">流水线执行的 PIPE
+处理器硬件结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%8E%9F%E7%90%86"><span class="nav-number">1.5.1.</span> <span class="nav-text">流水线原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">1.5.2.</span> <span class="nav-text">流水线的局限性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#y86-64-%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AE%9E%E7%8E%B0-pipe"><span class="nav-number">1.5.3.</span> <span class="nav-text">Y86-64 流水线实现: PIPE</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A0%E5%85%A5%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">1.5.3.1.</span> <span class="nav-text">加入流水线寄存器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A2%84%E6%B5%8B%E4%B8%8B%E4%B8%80%E4%B8%AA-pc"><span class="nav-number">1.5.3.2.</span> <span class="nav-text">预测下一个 PC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%86%92%E9%99%A9%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">1.5.3.3.</span> <span class="nav-text">流水线冒险的处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E5%86%92%E9%99%A9"><span class="nav-number">1.5.3.4.</span> <span class="nav-text">控制冒险</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="nav-number">1.5.3.5.</span> <span class="nav-text">异常处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pipe-%E5%90%84%E9%98%B6%E6%AE%B5%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.5.3.6.</span> <span class="nav-text">PIPE 各阶段的实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%8E%A7%E5%88%B6%E6%9C%BA%E5%88%B6"><span class="nav-number">1.5.3.7.</span> <span class="nav-text">流水线控制机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90"><span class="nav-number">1.5.3.8.</span> <span class="nav-text">性能分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pipe-%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%A4%84%E7%90%86%E5%99%A8%E6%9C%AA%E5%AE%9E%E7%8E%B0%E7%9A%84"><span class="nav-number">1.5.4.</span> <span class="nav-text">PIPE 流水线处理器未实现的</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/03/13/CSAPP-2025-03-13/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="<未完成>CSAPP3e第四章(处理器体系结构) | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          <未完成>CSAPP3e第四章(处理器体系结构)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-13 15:25:41" itemprop="dateCreated datePublished" datetime="2025-03-13T15:25:41+08:00">2025-03-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="csapp3e第四章处理器体系结构">CSAPP3e第四章(处理器体系结构)</h1>
+<p>这一章理解难度不大, 但是内容很多, 比较复杂,
+读着读着时而觉得”我艹这简直是艺术品”时而觉得”我他妈快睡着了”。</p>
+<h2 id="指令集体系结构">指令集体系结构</h2>
+<ul>
+<li>指令集与指令编码<br />
+<code>pushq</code>/<code>popq</code>二义性(数据操作在外侧,
+栈指针变化在内测)</li>
+<li>编码寄存器</li>
+<li>异常处理</li>
+</ul>
+<span id="more"></span>
+<h2 id="描述体系结构的方法-硬件设计语言-hcl">描述体系结构的方法:
+硬件设计语言 HCL</h2>
+<p>简述:
+逻辑门-&gt;组合电路(<code>==</code>/多路复用器/ALU/集合关系)</p>
+<p>通过 AND/OR/XOR
+等逻辑门的输入输出相连构成组合电路。一些常见的逻辑电路:</p>
+<ul>
+<li>字级别的组合电路: 根据需求把位级的逻辑门串起来即可</li>
+<li><code>==</code> 的组合电路实现: 每一位都相等并且 AND 起来</li>
+<li>多路复用器: 其实就是 if, 通过 code 的真假来选择输出值是输入值 A
+还是输入值 B</li>
+<li>集合关系</li>
+</ul>
+<p>字级别的组合电路, <code>==</code> 的实现, 多路复用器(即数据选择器)
+就可以构建硬件描述语言 HCL</p>
+<h2 id="时钟信号组合电路-存储器">时钟信号，组合电路, 存储器</h2>
+<p>时钟信号每定时间输出高/低信号形成时钟周期，<br />
+每个时钟周期:</p>
+<ol type="1">
+<li>先一次时钟上升更新存储器使其输出恒定为组合电路中的新输入</li>
+<li>然后时钟信号下降，组合电路变化</li>
+</ol>
+<h3 id="处理器阶段与时序设计">处理器阶段与时序设计</h3>
+<p>每一阶段通过多路复用器, 根据不同的条件(eg. 什么指令?),
+向不同的位置(eg. 这个指令需要哪个寄存器?) 取出并分发数据(到下一阶段)
+<code>val*</code>, 并且生成控制信号告知下面的阶段</p>
+<ol type="1">
+<li>Fetch:
+<ul>
+<li>从 <code>M[PC]</code> 取指 <code>icode</code></li>
+<li>从 <code>M[PC+1]</code> 取 <code>rA</code>, <code>rB</code>
+的寄存器名字</li>
+<li>根据指令长度计算新的 PC 值 <code>valP</code></li>
+</ul></li>
+<li>Decode
+<ul>
+<li>取 <code>rA</code>, <code>rB</code> 为 <code>valA</code>,
+<code>valB</code></li>
+<li>在实际的(复杂)指令集上, 会把一条指令拆分为更基础更细粒度的指令</li>
+</ul></li>
+<li>Execute
+<ul>
+<li>ALU 根据 <code>ifun</code> 对输入进行运算并将结果存入
+<code>valE</code>. 输入可能是
+<code>valA</code>/<code>valB</code>/<code>valC</code></li>
+<li><code>[setCC]</code></li>
+</ul></li>
+<li>Memory
+<ul>
+<li>从内存中读取到 <code>valM</code>, 或写入内存</li>
+</ul></li>
+<li>Write-back
+<ul>
+<li>将 <code>valE</code> 写回寄存器 <code>rB</code>,
+对于内存读取相关的指令则是 <code>valM</code> 写回 <code>rA</code></li>
+</ul></li>
+<li>Update
+<ul>
+<li>PC 设置为新 <code>valP</code>, 如果采纳了跳转指令则设置为
+<code>valC</code>, 当然 <code>ret</code> 会设置为 <code>valM</code></li>
+</ul></li>
+</ol>
+<h2 id="设计顺序执行的-y86-64-处理器硬件结构-seq">设计顺序执行的 Y86-64
+处理器硬件结构: SEQ</h2>
+<p>用组合电路和存储器描述上述时序即可。<br />
+一个比较泛用的方案的简单描述:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PC-&gt;指令内存-&gt;寄存器-&gt;ALU-&gt;Memory-&gt;寄存器-&gt;PC</span><br></pre></td></tr></table></figure>
+<p>至于具体的 HCL 描述:<br />
+数据是自然在组合电路中流动并在时钟上升时”锁”在存储器里的,<br />
+HCL 的描述基本上就是根据 <code>icode</code>
+或者其他输入值的类型来”选择”输出值<br />
+不过要考虑的还挺多的, 拿更新 PC 来说, 不同指令下要更新 PC
+的值是不同的,</p>
+<ul>
+<li>call 就是 call 的参数 <code>valC</code></li>
+<li>jmp 并且条件码为真也是 jmp 的参数 <code>valC</code></li>
+<li>ret 就是访存获得的之前压栈的返回地址 <code>valM</code></li>
+</ul>
+<h2 id="流水线执行的-pipe-处理器硬件结构">流水线执行的 PIPE
+处理器硬件结构</h2>
+<h3 id="流水线原理">流水线原理</h3>
+<p>每条指令从<code>一个大的组合逻辑-&gt;寄存器</code>的执行,<br />
+改为<code>拆分出的组合逻辑A-&gt;寄存器-&gt;拆分出的组合逻辑B-&gt;寄存器-&gt;...</code><br />
+流水线就是将这样的多条指令中的不同阶段并行<span
+class="math inline">\(^{[1]}\)</span>执行<br />
+之所以中间还要加寄存器是由于不同阶段组合逻辑是并行执行的,
+所以每个阶段都必须要保存状态</p>
+<ul>
+<li><p>提升: 多条指令的不同阶段可以重叠起来(因为不同阶段用到的硬件不同,
+避免 CPU 出现空闲)</p></li>
+<li><p>降低: 多加了几个寄存器的位置，流水线寄存器操作有一定开销
+所以流水线设计是平衡的艺术, 可以用一些值衡量:</p></li>
+<li><p>吞吐量:</p>
+<p><span class="math display">\[
+  \frac{\text{1 Instruction}}{\max(分割后的组合逻辑用时)+单次寄存器开销}
+\times \frac{1000ps}{1ns}
+  \]</span></p>
+<p>单位是 $ $ , 每秒千兆(十亿)条指令</p></li>
+<li><p>延迟: 一条指令执行所需的时间(<span
+class="math inline">\(\text{ps}\)</span>), 吞吐量的倒数</p>
+<p><span class="math inline">\(^{[1]}\)</span>:
+并行(Parallel)和并发(Concurrency)的区别:
+前者是同一时间内同时执行(流水线一个周期内同时处理多个指令的不同阶段,
+多执行单元乱序执行即下一章说的超标量, 多核心 CPU 等),
+后者是通过快速切换任务使得看起来”在同时运行多个任务”(单核 CPU
+上的的多线程和操作系统进程并发(上下文切换), 操作系统中断处理)</p>
+<p>另外从概念定义以及概念的应用上流水线就是并行, 也不是什么”准并行”,
+和你说并发的都可以埋了。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Pipeline_(computing)">Pipeline
+(computing) - Wikipedia</a></p>
+<p>In <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Computing">computing</a>, a
+pipeline, also known as a data pipeline, is a set of <a
+target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Data">data</a> processing elements
+connected in series, where the output of one element is the input of the
+next one. The elements of a pipeline are often executed in
+<strong>parallel</strong> or in time-sliced fashion. Some amount of <a
+target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Buffer_(computer_science)">buffer
+storage</a> is often inserted between elements.</p>
+</blockquote></li>
+</ul>
+<h3 id="流水线的局限性">流水线的局限性</h3>
+<ol type="1">
+<li>不等长的划分,
+吞吐量的分子是按最长时间的组合逻辑计算的(其他并行的组合逻辑需要空闲等待,
+造成浪费)</li>
+<li>流水线过深, 拆分的的组合逻辑太多太细,
+导致要加入的流水线寄存器操作也太多, 可能性能反而下降</li>
+<li>稍后要说的流水线数据/控制冒险(带反馈的流水线:
+数据相关或者控制相关造成的冲突)</li>
+</ol>
+<h3 id="y86-64-流水线实现-pipe">Y86-64 流水线实现: PIPE</h3>
+<h4 id="加入流水线寄存器">加入流水线寄存器</h4>
+<p>首先需要把更新 PC 逻辑放到每个时钟周期的最前面称为 SEQ+
+处理器硬件结构<br />
+因为后续需要有分支预测之类的, 这里的 PC
+更新逻辑还要通过很多其他阶段传回来的值 Predict 等</p>
+<p>然后回看流水线的原理, 就是拆分组合逻辑, 加入流水线寄存器<br />
+最大化地避免出现控制混乱的情况肯定是要按 Fetch/Decode/Exec
+等处理器阶段来拆分<br />
+(比如说把 Fetch 的读 <code>rA</code> 和读 <code>rB</code>
+拆到两个组合逻辑里, 这他妈不傻逼吗?)</p>
+<p>那么要做的就很明确了:
+在每个处理器阶段的中间插入流水线寄存器保存当前的状态,<br />
+当然要注意每一个阶段的流水线处理器都是<strong>保存了需要保存的全部状态</strong>的,
+比如每个阶段的流水线寄存器都有 <code>stat</code> 和 <code>icode</code>
+寄存器<br />
+还有就是这是流水线寄存器不是 <code>rA</code>, <code>rB</code>
+这种程序可见状态的寄存器</p>
+<p>给这些流水线寄存器以其所在阶段的前缀命名:<br />
+执行(<strong>E</strong>xecute)阶段的 <code>valA</code> 流水线寄存器就是
+<code>E_valA</code></p>
+<p>整体的流水线执行 be like: <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1 2 3 4 5 6 7 8 9</span><br><span class="line">F D E M W</span><br><span class="line">  F D E M W</span><br><span class="line">    F D E M W</span><br><span class="line">      F D E M W</span><br><span class="line">        F D E M W</span><br><span class="line"></span><br><span class="line">周期五:</span><br><span class="line">        W(I1)</span><br><span class="line">        M(I2)</span><br><span class="line">        E(I3)</span><br><span class="line">        D(I4)</span><br><span class="line">        F(I5)</span><br></pre></td></tr></table></figure></p>
+<h4 id="预测下一个-pc">预测下一个 PC</h4>
+<p>上面我们也说了不同指令更新 PC 所用的不同值,
+不过这里还有一个分支预测的问题<br />
+Y86-64 所采取的分支预测策略是”始终预测选择了条件分支”, 不过 ret
+是从内存里取地址, 所以不能预测<br />
+加入 Predict 的块用来预测 PC</p>
+<h4 id="流水线冒险的处理">流水线冒险的处理</h4>
+<p>$(分类讨论一下每个存储器冒险的可能性)</p>
+<p>如果指令A B连续执行并且B依赖A的数据, 则出现流水线数据冒险<br />
+此时有两种处理方式: 暂停(插入气泡) 或 转发</p>
+<ol type="1">
+<li>暂停是在某个阶段检查到出现数据依赖,
+就插入一条控制令(气泡)代替这条指令执行<br />
+实际上也就是”等一会,
+等依赖的数据写回寄存器了在继续执行”而”在这个等待的过程中执行这条空白指令使流水线继续满载”</li>
+<li>转发是发生数据依赖时不等到写回寄存器再继续执行获取值了,
+而是直接接收执行阶段计算完的结果(通过我们的硬件设计转发过来)</li>
+</ol>
+<p>有一种数据冒险不能单纯用转发解决, 即加载/使用冒险<br />
+本质原因是发现数据冲突到结果被计算出来的间隔时钟周期太短,值还没计算出来当然不可能转发了,<br />
+所以这时候同时使用暂停插入气泡+转发,<br />
+这种方法叫做”加载互锁”</p>
+<h4 id="控制冒险">控制冒险</h4>
+<p>控制冒险仅仅发生在 Fetch 阶段无法获得下一条指令的地址时,
+有几种情况<br />
+1. ret 和 jmp, 需要至少到访存阶段之后才能获取 2. 分支预测错误 :(</p>
+<ol type="1">
+<li><p>对于 ret: 流水线暂停到 ret 写回阶段完成即可继续 Fetch
+下一条指令</p></li>
+<li><p>对于分支预测错误: Y86-64 默认预测选择分支,
+不过最多两个时钟周期后就能知道分支预测是否正确(<code>jne</code>
+之类的指令的执行阶段),</p></li>
+</ol>
+<p>也就是说错误的指令顶多执行到了 Decode,
+而这一阶段执行完(到下一阶段时钟信号上升)才会造成影响(设置了条件码),<br />
+满载流水线每个周期都会有一个 W 阶段完成并有一个 F 阶段进入,
+所以两个周期有两条错误指令, 一条在 D 阶段, 一条在 F 阶段<br />
+所以只要在第一条错误指令的 D 阶段和第二条错误指令的 F
+阶段插入气泡即可</p>
+<h4 id="异常处理">异常处理</h4>
+<p>主要有两个原则: 1. 通过在流水线中传递 stat
+状态码使异常状态和该指令的其他信息一起在流水线中传递。 2.
+导致异常后禁止任何指令更新条件码寄存器</p>
+<ul>
+<li>多条指令引起异常优先报最深的指令(因为最早)</li>
+<li>取消了一条可能引起异常的指令时, 由于是在流水线中传递异常信号,
+可以在下一条指令 F 阶段时把错误的指令的后续阶段填成气泡取消掉</li>
+</ul>
+<h4 id="pipe-各阶段的实现">PIPE 各阶段的实现</h4>
+<ol type="1">
+<li>首先最大的区别是寄存器前面都要加前缀, 区分不同阶段的流水线寄存器(SEQ
+只有一个全局的寄存器状态, PIPE 有五种)</li>
+<li>取指阶段要考虑是否跳转/是否是ret, 如果都不是就是
+<code>f_predPC</code>, 即预测的下一个 PC (由于默认预测选择分支,
+所以如果是跳转指令就跳 <code>f_valPC</code>, 否则就是正常的
+<code>f_valP</code>)</li>
+<li>由于没有指令同时需要 <code>valP</code> 和 <code>valA</code>,
+所以通过一个 <code>Sel A</code> 单元(是否选择
+<code>valA</code>)直接合并为一个 <code>valA</code> 信号了,
+不过流水线还要加一个变成 <code>Sel + Fwd A</code> 单元, <code>Fwd</code>
+用于之前说的转发</li>
+<li>执行阶段要考虑一下异常处理, 如果有异常就继续通过流水线传递,
+但是要禁止程序修改条件码, 并且插入气泡暂停流水线</li>
+</ol>
+<h4 id="流水线控制机制">流水线控制机制</h4>
+<ul>
+<li><p>流水线寄存器的暂停和气泡信号: 暂停信号设置为 1
+时锁定存储内容输出本来存的数据, 气泡信号设置为 1 时随时钟上升输出
+<code>nop</code><br />
+以此来解决
+<code>处理 ret</code>/<code>加载/使用冒险</code>/<code>分支预测错误</code></p></li>
+<li><p>$(控制条件的组合)</p></li>
+<li><p>$(流水线控制逻辑的实现) # 单独操作流水线寄存器,
+通过覆盖流水线正常指令处理上述特殊条件</p></li>
+</ul>
+<h4 id="性能分析">性能分析</h4>
+<p><span class="math display">\[
+\begin{aligned}
+\text{CPI} &amp;= \frac{C_i + C_b}{C_i} \\
+    &amp;= 1.0 + \frac{C_b}{C_i} \\
+    &amp;= 1.0 + lp + mp + rp
+\end{aligned}
+\]</span></p>
+<p>后面三个分别是三种特殊情况的惩罚,
+计算方式为该原因引起插入气泡的总数除以执行次数的总数</p>
+<h3 id="pipe-流水线处理器未实现的">PIPE 流水线处理器未实现的</h3>
+<ol type="1">
+<li>多周期指令,
+发射到特殊单元(例如同样流水线化的浮点单元)然后同步回来</li>
+<li>与存储系统的接口, 比如说第六章的高速缓存和第九章的 TLB</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/03/13/CSAPP-2025-03-13/" title="&lt;未完成&gt;CSAPP3e第四章(处理器体系结构)">https://amiriox.github.io/2025/03/13/CSAPP-2025-03-13/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/CSAPP-cmu15213/" rel="tag"># CSAPP/cmu15213</a>
+              <a href="/tags/%E6%9C%AA%E5%AE%8C%E6%88%90/" rel="tag"># 未完成</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/03/04/Dairy_250304/" rel="prev" title="碎了我的丰碑 捡起锋利一片">
+                  <i class="fa fa-angle-left"></i> 碎了我的丰碑 捡起锋利一片
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/03/26/rCore_learn/" rel="next" title="一条操作系统的使命">
+                  一条操作系统的使命 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

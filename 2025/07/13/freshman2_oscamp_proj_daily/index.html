@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="(六) 7.13: 回顾会议内容, 总结任务目标:  为 arceos&#x2F;tour&#x2F;* 添加对其他架构 (aarch64&#x2F;x86_64&#x2F;loongarch) 的支持 在 arceos&#x2F;tour 下新增一些例子, 体现 ArceOS 特定功能, 如图形显示功能&#x2F;文件系统功能&#x2F;新调度算法功能  把工具链换到最新的:  #[naked] 更改为 #[unsafe(naked)]. 裸函数使得编译器不会为函">
+<meta property="og:type" content="article">
+<meta property="og:title" content="oscamp 暑期 proj 周纪要">
+<meta property="og:url" content="https://amiriox.github.io/2025/07/13/freshman2_oscamp_proj_daily/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="(六) 7.13: 回顾会议内容, 总结任务目标:  为 arceos&#x2F;tour&#x2F;* 添加对其他架构 (aarch64&#x2F;x86_64&#x2F;loongarch) 的支持 在 arceos&#x2F;tour 下新增一些例子, 体现 ArceOS 特定功能, 如图形显示功能&#x2F;文件系统功能&#x2F;新调度算法功能  把工具链换到最新的:  #[naked] 更改为 #[unsafe(naked)]. 裸函数使得编译器不会为函">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-13T12:55:00.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.825Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="日记">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2025/07/13/freshman2_oscamp_proj_daily/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/07/13/freshman2_oscamp_proj_daily/","path":"2025/07/13/freshman2_oscamp_proj_daily/","title":"oscamp 暑期 proj 周纪要"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>oscamp 暑期 proj 周纪要 | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD-7.13"><span class="nav-number">1.</span> <span class="nav-text">(六) 7.13:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E9%A1%BE%E4%BC%9A%E8%AE%AE%E5%86%85%E5%AE%B9-%E6%80%BB%E7%BB%93%E4%BB%BB%E5%8A%A1%E7%9B%AE%E6%A0%87"><span class="nav-number">1.1.</span> <span class="nav-text">回顾会议内容, 总结任务目标:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%8A%E5%B7%A5%E5%85%B7%E9%93%BE%E6%8D%A2%E5%88%B0%E6%9C%80%E6%96%B0%E7%9A%84"><span class="nav-number">1.2.</span> <span class="nav-text">把工具链换到最新的:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%95%E5%9B%BE%E8%BF%81%E7%A7%BB%E5%88%B0%E5%85%B6%E4%BB%96%E6%9E%B6%E6%9E%84"><span class="nav-number">1.3.</span> <span class="nav-text">试图迁移到其他架构:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-7.15"><span class="nav-number">2.</span> <span class="nav-text">(一) 7.15:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-7.16"><span class="nav-number">3.</span> <span class="nav-text">(二) 7.16:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94-7.18"><span class="nav-number">4.</span> <span class="nav-text">(五) 7.18:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD-%E6%97%A5-7.107.20"><span class="nav-number">5.</span> <span class="nav-text">(六, 日) 7.10~7.20:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80..%E4%BA%94-7.217.25"><span class="nav-number">6.</span> <span class="nav-text">(一..五) 7.21~7.25:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD-7.26"><span class="nav-number">7.</span> <span class="nav-text">(六) 7.26:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5..%E5%9B%9B-7.27-7.31"><span class="nav-number">8.</span> <span class="nav-text">(日..四) 7.27-7.31:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94..%E5%85%AD-8.1-8.2"><span class="nav-number">9.</span> <span class="nav-text">(五..六) 8.1-8.2:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5..%E4%B8%89-8.3-8.6"><span class="nav-number">10.</span> <span class="nav-text">(日..三) 8.3-8.6:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B..%E5%85%AD-8.7-8.9"><span class="nav-number">11.</span> <span class="nav-text">(四..六) 8.7-8.9:</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/07/13/freshman2_oscamp_proj_daily/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="oscamp 暑期 proj 周纪要 | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          oscamp 暑期 proj 周纪要
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-07-13 20:55:00" itemprop="dateCreated datePublished" datetime="2025-07-13T20:55:00+08:00">2025-07-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%9D%82%E8%B0%88/" itemprop="url" rel="index"><span itemprop="name">杂谈</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="六-7.13">(六) 7.13:</h2>
+<h3 id="回顾会议内容-总结任务目标">回顾会议内容, 总结任务目标:</h3>
+<ul>
+<li>为 <code>arceos/tour/*</code> 添加对其他架构
+(<code>aarch64</code>/<code>x86_64</code>/<code>loongarch</code>)
+的支持</li>
+<li>在 <code>arceos/tour</code> 下新增一些例子, 体现 ArceOS 特定功能,
+如图形显示功能/文件系统功能/新调度算法功能</li>
+</ul>
+<h3 id="把工具链换到最新的">把工具链换到最新的:</h3>
+<ul>
+<li><p><code>#[naked]</code> 更改为 <code>#[unsafe(naked)]</code>.
+裸函数使得编译器不会为函数生成序言和尾声代码(比如保存/恢复寄存器,
+设置栈帧等), 操作系统开发的部分场景要求完全控制寄存器细节</p></li>
+<li><p>同时将 <code>asm!</code> 改为 <code>naked_asm!</code>.
+裸函数内一般没有 Rust 代码, 因为会隐含地依赖序言和尾声,
+所以几乎都是内联汇编代码</p></li>
+<li><p><code>naked_asm!</code>
+不支持伪指令和宏(虽然我不知道为什么原来这里要写伪指令, 可能是和 arm
+统一?), 所以要把那一段全部改写成 RISC-V 汇编, 好在代码量比较少,
+如果多了我还真想不出什么方便的方法</p></li>
+</ul>
+<span id="more"></span>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">naked_asm!(</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    &quot;</span></span><br><span class="line"><span class="comment">    // save old context (callee-saved registers)</span></span><br><span class="line"><span class="comment">    STR     ra, a0, 0</span></span><br><span class="line"><span class="comment">    STR     sp, a0, 1</span></span><br><span class="line"><span class="comment">    STR     s0, a0, 2</span></span><br><span class="line"><span class="comment">    STR     s1, a0, 3</span></span><br><span class="line"><span class="comment">    STR     s2, a0, 4</span></span><br><span class="line"><span class="comment">    STR     s3, a0, 5</span></span><br><span class="line"><span class="comment">    STR     s4, a0, 6</span></span><br><span class="line"><span class="comment">    STR     s5, a0, 7</span></span><br><span class="line"><span class="comment">    STR     s6, a0, 8</span></span><br><span class="line"><span class="comment">    STR     s7, a0, 9</span></span><br><span class="line"><span class="comment">    STR     s8, a0, 10</span></span><br><span class="line"><span class="comment">    STR     s9, a0, 11</span></span><br><span class="line"><span class="comment">    STR     s10, a0, 12</span></span><br><span class="line"><span class="comment">    STR     s11, a0, 13</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    // restore new context</span></span><br><span class="line"><span class="comment">    LDR     s11, a1, 13</span></span><br><span class="line"><span class="comment">    LDR     s10, a1, 12</span></span><br><span class="line"><span class="comment">    LDR     s9, a1, 11</span></span><br><span class="line"><span class="comment">    LDR     s8, a1, 10</span></span><br><span class="line"><span class="comment">    LDR     s7, a1, 9</span></span><br><span class="line"><span class="comment">    LDR     s6, a1, 8</span></span><br><span class="line"><span class="comment">@@ -318,6 +319,46 @@</span></span><br><span class="line"><span class="comment">    LDR     ra, a1, 0</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    ret&quot;,</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// --- Save old context (callee-saved registers) ---</span></span><br><span class="line">    <span class="comment">// The address of `_current_task` is in a0.</span></span><br><span class="line">    <span class="comment">// Offsets are index * 8 bytes (for 64-bit registers).</span></span><br><span class="line"></span><br><span class="line">    <span class="string">&quot;sd ra, 0(a0)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sd sp, 8(a0)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sd s0, 16(a0)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sd s1, 24(a0)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sd s2, 32(a0)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sd s3, 40(a0)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sd s4, 48(a0)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sd s5, 56(a0)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sd s6, 64(a0)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sd s7, 72(a0)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sd s8, 80(a0)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sd s9, 88(a0)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sd s10, 96(a0)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sd s11, 104(a0)&quot;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// --- Restore new context ---</span></span><br><span class="line">    <span class="comment">// The address of `_next_task` is in a1.</span></span><br><span class="line">    <span class="string">&quot;ld ra, 0(a1)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ld sp, 8(a1)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ld s0, 16(a1)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ld s1, 24(a1)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ld s2, 32(a1)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ld s3, 40(a1)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ld s4, 48(a1)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ld s5, 56(a1)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ld s6, 64(a1)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ld s7, 72(a1)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ld s8, 80(a1)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ld s9, 88(a1)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ld s10, 96(a1)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ld s11, 104(a1)&quot;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Return to the new task&#x27;s execution flow.</span></span><br><span class="line">    <span class="comment">// `ret` is a pseudo-instruction for `jalr zero, 0(ra)`.</span></span><br><span class="line">    <span class="string">&quot;ret&quot;</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>由于在裸函数汇编中必须完全手动控制行为, 所以也要删除
+<code>options(no_return)</code></p>
+<h3 id="试图迁移到其他架构">试图迁移到其他架构:</h3>
+<p>不同的架构在 make run 时通过不同的 SBI 启动 (OpenSBI for RISC-V,
+SeaSBI for x86_64);</p>
+<p>在 qemu 中模拟 x86_64 架构是模拟 q35 机器而不是像模拟 RISC-V
+时那样模拟 <code>virt</code> 虚拟化通用机器;</p>
+<p>不同架构对 pflash 的要求不同</p>
+<ul>
+<li><p>aarch64 下要求 64M 的 pflash, 所以</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">dd</span> <span class="keyword">if</span>=/dev/zero of=/home/amiriox/oscamp/arceos/pflash.img bs=1M count=32 seek=32 conv=notrunc</span></span><br></pre></td></tr></table></figure></p></li>
+</ul>
+<p>另外 pflash 的起始地址也不一样, 所以必须重新调整</p>
+<ul>
+<li><p>x86_64 下较为复杂, 查阅资料发现在 q35 机器中 pflash
+被严格用于固件而不能作为通用闪存设备, 且要求两块 Flash 芯片: 只读的
+unit0 包含了 UEFI/BIOS 代码, 可读写的 unit1 包含一些固件变量,
+后者严格依赖前者.</p>
+<p>所以为 x86_64 多写一行</p></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-drive if=pflash,readonly=on,file=$(CURDIR)/dummy_code.img,unit=0</span><br></pre></td></tr></table></figure>
+<p>​ 其中 <code>dummy_code.img</code> 是空镜像. 启动后没有任何输出，gdb
+调试发现甚至都没进 _start，一直在执行 <code>add %al,(%rax)</code>
+(一个全 0 的机器码)</p>
+<p>​ 我好好想了下, <code>unit=0</code> 里应当是 BIOS 固件代码,
+我传了个空镜像进去, 那自然最开始执行的就应该是全 0 代表的机器码了.
+换句话说, <code>unit=0</code> 的 pflash 里的 BIOS 优先级更高,
+如果有则会优先执行 (此时 QEMU 负责启动的 SeaBIOS 就相当于被忽略的板载
+BIOS), 而 <code>unit=1</code> 的 “NVRAM_SLOT” 是不能单独使用的,
+根本矛盾在于这个例子需要将 pflash 作为通用闪存使用而 q35
+机型禁止这样操作. (相反对于统一 <code>virtio</code> 接口的
+<code>virt</code> 机型, pflash 则仅仅是通用存储设备,
+可以单纯地作为块设备读入)</p>
+<p>​ 如果试图使用 unit=0, 会导致直接进入空的 SBI 反复执行
+<code>add %al,(%rax)</code>; 使用 <code>unit=1</code> 要求
+<code>unit=0</code> 存在 (连续定义), 所以也行不通; 而 q35 不支持更多的
+pflash 了.</p>
+<h2 id="一-7.15">(一) 7.15:</h2>
+<ol type="1">
+<li><code>riscv64-qemu-virt</code> 的 pflash 在 MMIO 段中, ArceOS 作为
+Unikernel 启动会 map 内核镜像+MMIO段+空余内存, 所以可以正常访存;
+而且此时是还没有处理 PAGE_FAULT 的 Trap Handler 的, 由于
+<code>ああrch64-qemu-virt</code> 规定的 pflash 并不在 MMIO 段, 而是
+<code>0x0400_0000</code>, 所以并不在 <code>new_kernel_space</code>
+的映射范围内, 会触发无法处理的 Trap 的 panic. 所以
+<code>new_kernel_space</code> 要额外处理一下这段的映射</li>
+<li><code>u_1_0</code> 到 <code>u_8_0</code> 均能在 aarch64 下正常运行,
+aarch64 的迁移宣告成功 <a
+href="%5B%5Bbuild%5D%20Adapted%20to%20x86_64%20(with%20a%20tiny%20bug)%20·%20AMIRIOX/oscamp@f91e0b0%5D(https://github.com/AMIRIOX/oscamp/commit/f91e0b0c137ed0147bd5539e30f705862d21cf26)">f91e0b0</a>.</li>
+<li>TODO: 需要把额外生成的镜像写进 Makefile (已完成)</li>
+</ol>
+<h2 id="二-7.16">(二) 7.16:</h2>
+<p>使用 ramdisk 代替 pflash. 先创建个空的 <code>ramdisk.img</code>
+(TODO: 写入 makefile)</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">dd</span> <span class="keyword">if</span>=/dev/zero of=ramdisk.img bs=1M count=32</span></span><br></pre></td></tr></table></figure>
+<p>根据 Multiboot 规范规定, multiboot 相关的信息 (包括 ramdisk 信息) 由
+Bootloader 放在 <code>%rbx</code> 寄存器 ( magic 在 <code>%rax</code>
+),</p>
+<p><code>multiboot.S</code> 已经把这 magic 和 multiboot 信息传递给
+<code>rust_entry</code> 的两个参数了, 所以只需要处理一下即可</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">mbi_info</span> = *(mbi <span class="keyword">as</span> *<span class="keyword">const</span> MultibootInfo);</span><br></pre></td></tr></table></figure>
+<p>关于 <code>MultibootInfo</code>:</p>
+<p>ArceOS 没有 Multiboot 信息的处理, 所以要按照规范手写结构体:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// Multiboot 1 info struct</span></span><br><span class="line"><span class="comment">/// See：https://www.gnu.org/software/grub/manual/multiboot/multiboot.html#Boot-information-format</span></span><br><span class="line"><span class="meta">#[repr(C)]</span></span><br><span class="line"><span class="meta">#[derive(Debug, Copy, Clone)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">MultibootInfo</span> &#123;</span><br><span class="line">    <span class="comment">/// `flags[0]`: validity of `mem_lower` `mem_upper`</span></span><br><span class="line">    <span class="comment">/// `flags[3]`: validity of `mods_addr` `mods_count`</span></span><br><span class="line">    <span class="keyword">pub</span> flags: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> mem_lower: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> mem_upper: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> boot_device: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> cmdline: <span class="type">u32</span>,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> mods_count: <span class="type">u32</span>,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> mods_addr: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> syms: [<span class="type">u32</span>; <span class="number">4</span>],</span><br><span class="line">    <span class="keyword">pub</span> mmap_length: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> mmap_addr: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> drives_length: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> drives_addr: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> config_table: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> boot_loader_name: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> apm_table: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> vbe_control_info: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> vbe_mode_info: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> vbe_mode: <span class="type">u16</span>,</span><br><span class="line">    <span class="keyword">pub</span> vbe_interface_seg: <span class="type">u16</span>,</span><br><span class="line">    <span class="keyword">pub</span> vbe_interface_off: <span class="type">u16</span>,</span><br><span class="line">    <span class="keyword">pub</span> vbe_interface_len: <span class="type">u16</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[repr(C)]</span></span><br><span class="line"><span class="meta">#[derive(Debug, Copy, Clone)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">ModuleEntry</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> mod_start: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> mod_end: <span class="type">u32</span>,</span><br><span class="line">    <span class="keyword">pub</span> cmdline: <span class="type">u32</span>,</span><br><span class="line">    _reserved: <span class="type">u32</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>考虑到这个 info 是一个只能被初始化一次的静态变量, 所以考虑使用
+<code>OnceCell</code></p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">once_cell</span> = &#123; version = <span class="string">&quot;^1.5.0&quot;</span>, default-features = <span class="literal">false</span>, features = [<span class="string">&quot;critical-section&quot;</span>] &#125;</span><br></pre></td></tr></table></figure>
+<p>(<code>default-features = false</code> 是 <code>no_std</code>
+环境下必要的, 而必须开了临界区的 feature 才能用
+<code>OnceCell</code>.)</p>
+<p>由于是内核极早期, 此时在全局分配器初始化之前, 所以用不了
+<code>alloc::boxed::Box</code>, 所以 <code>once_cell</code> 引以为傲的
+<code>no_std</code> 下的 <code>once_cell::race::OnceBox</code>
+也用不了.</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> once_cell::sync::OnceCell;</span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">static</span> BOOT_INFO: OnceCell&lt;MultibootInfo&gt; = OnceCell::<span class="title function_ invoke__">new</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">boot_info</span>() <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;static</span> MultibootInfo &#123;</span><br><span class="line">    BOOT_INFO</span><br><span class="line">        .<span class="title function_ invoke__">get</span>()</span><br><span class="line">        .<span class="title function_ invoke__">expect</span>(<span class="string">&quot;Boot information has not been initialized!&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">unsafe</span> <span class="keyword">fn</span> <span class="title function_">set_boot_info</span>(info: MultibootInfo) &#123;</span><br><span class="line">    BOOT_INFO</span><br><span class="line">        .<span class="title function_ invoke__">try_insert</span>(info)</span><br><span class="line">        .<span class="title function_ invoke__">expect</span>(<span class="string">&quot;Boot information can only be initialized once!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但这样还不够, 还需要手写一个临界区的 acquire 和 release 逻辑才行,
+否则链接器会抱怨找不到符号</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">unsafe</span> <span class="keyword">impl</span> <span class="title class_">critical_section</span>::Impl <span class="keyword">for</span> <span class="title class_">MyCriticalSection</span> &#123;</span><br><span class="line">    <span class="comment">// TODO</span></span><br><span class="line">    <span class="keyword">unsafe</span> <span class="keyword">fn</span> <span class="title function_">acquire</span>() <span class="punctuation">-&gt;</span> () &#123;</span><br><span class="line">        <span class="comment">//asm!(&quot;cli&quot;, options(nomem, nostack));</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">unsafe</span> <span class="keyword">fn</span> <span class="title function_">release</span>(_restore_state: ()) &#123;</span><br><span class="line">        <span class="comment">//asm!(&quot;sti&quot;, options(nomem, nostack));</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>获取 multiboot info:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[cfg(target_arch = <span class="string">&quot;x86_64&quot;</span>)]</span> &#123;</span><br><span class="line">    <span class="keyword">use</span> axhal::ModuleEntry;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">multiboot_info</span> = axhal::<span class="title function_ invoke__">boot_info</span>();</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, &amp;multiboot_info);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">mods_vaddr</span> = <span class="title function_ invoke__">phys_to_virt</span>(PhysAddr::<span class="title function_ invoke__">from</span>(multiboot_info.mods_addr <span class="keyword">as</span> <span class="type">usize</span>)).<span class="title function_ invoke__">as_usize</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">mods_cnt</span>: <span class="type">usize</span> = multiboot_info.mods_count <span class="keyword">as</span> <span class="type">usize</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">modules</span> = <span class="keyword">unsafe</span> &#123; </span><br><span class="line">        core::slice::<span class="title function_ invoke__">from_raw_parts</span>(mods_vaddr <span class="keyword">as</span> *<span class="keyword">const</span> ModuleEntry, mods_cnt)</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">for</span> (i, md) <span class="keyword">in</span> modules.<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">enumerate</span>() &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">st</span> = md.mod_start <span class="keyword">as</span> <span class="type">usize</span>;</span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">size</span> = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">cmd_vaddr</span> = <span class="title function_ invoke__">phys_to_virt</span>(PhysAddr::<span class="title function_ invoke__">from</span>(multiboot_info.cmdline <span class="keyword">as</span> <span class="type">usize</span>)).<span class="title function_ invoke__">as_usize</span>();</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">cmd</span> = <span class="keyword">unsafe</span> &#123; core::ffi::CStr::<span class="title function_ invoke__">from_ptr</span>(cmd_vaddr <span class="keyword">as</span> *<span class="keyword">const</span> <span class="type">i8</span>).<span class="title function_ invoke__">to_str</span>().<span class="title function_ invoke__">unwrap</span>() &#125;;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">part</span> <span class="keyword">in</span> cmd.<span class="title function_ invoke__">split_whitespace</span>() &#123;</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(val_str) = part.<span class="title function_ invoke__">strip_prefix</span>(<span class="string">&quot;ramdisk_size=&quot;</span>) &#123;</span><br><span class="line">                size = val_str.parse::&lt;<span class="type">usize</span>&gt;().<span class="title function_ invoke__">unwrap_or</span>(<span class="number">0</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">ed</span> = st + size;</span><br><span class="line">        <span class="built_in">println!</span>(</span><br><span class="line">            <span class="string">&quot;Ramdisk &#123;&#125;: addr = [&#123;:#x&#125;, &#123;:#x&#125;), size = &#123;&#125; KB&quot;</span>, </span><br><span class="line">            i, st, ed, size / <span class="number">1024</span></span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>(qemu 的 bootloader 似乎不怎么好好填结尾地址, 所以得根据传入参数算
+<code>size</code>)</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ifeq</span> (<span class="variable">$(ARCH)</span>, x86_64) </span><br><span class="line">  qemu_args-<span class="variable">$(PFLASH)</span> += \</span><br><span class="line">    -initrd <span class="variable">$(CURDIR)</span>/ramdisk.img \</span><br><span class="line">	-append <span class="string">&quot;ramdisk_size=33554432&quot;</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h2 id="五-7.18">(五) 7.18:</h2>
+<p>完成了 <code>virtio-blk</code> 的新 <code>tour/u_9_0</code>.
+<code>u_7_0</code> 只展示了 block 的大小等信息, <code>u_9_0</code>
+展示了 block 的读写</p>
+<p>TODO: 添加多块读写和随机访问测试</p>
+<p>首先获取信息的初始化和 7 差不多都是
+<code>axdriver::init_drivers()</code> (这部分在 ArceOS
+的获取设备相关解析过, 之前写的那篇博客也会更新); 对其中一个块
+<code>all_devices.block.take_one()</code> 打印设备名
+(<code>virtio-blk</code>) 和设备类型 (<code>Block</code>)</p>
+<p>测试读写: 构造字符串通过 <code>copy_from_slice</code> 拷贝到缓冲区,
+然后通过 <code>AxBlockDevice</code> 的
+<code>write_block</code>/<code>flush</code>/<code>read_block</code>
+测试功能, 最后比较读入与写入是否一致.</p>
+<hr />
+<h2 id="六-日-7.107.20">(六, 日) 7.10~7.20:</h2>
+<p>试着根据已有的 ArceOS 代码直接写图形界面:</p>
+<p><code>ax_framebuffer_info</code> 获取 <code>fb_info</code>,
+得到显示资源的长宽和一个显存缓冲区,
+根据二维到一维的映射关系向其中写入十六进制 RGBA 颜色值, 然后
+<code>ax_framebuffer_flush</code> 刷新屏幕.</p>
+<p>但是不知道为什么 <code>ax_framebuffer_flush</code> 会始终阻塞,
+并且无法显示颜色.</p>
+<h2 id="一..五-7.217.25">(一..五) 7.21~7.25:</h2>
+<p>阅读 rCore Tutorial 原版的第九章, 关于 I/O
+设备和驱动程序相关的内容</p>
+<p>并整理复习: <a
+target="_blank" rel="noopener" href="https://zheya.cc/2025/07/26/driver_tutorial/">(草稿)从设备到操作系统:
+如何编写驱动 | Amiriox’s Storage</a></p>
+<h2 id="六-7.26">(六) 7.26:</h2>
+<p>阅读 ArceOS 关于驱动部分的源代码:</p>
+<p><code>axdisplay</code> -&gt; <code>axdriver_crates</code>
+(<code>axdriver_virtio</code> -&gt; <code>axdriver_display</code>) -&gt;
+<code>virtio-drivers</code></p>
+<p>其中 <code>virio-drivers</code> 这个 crate 就是 rCore Tutorial
+第九章的例子</p>
+<p>然后用 Bresenham 算法画两点之间直线/矩形, 用中点画圆法绘制圆形,
+实现了简单几何图形的绘制</p>
+<hr />
+<p>进一步计划:</p>
+<ol type="1">
+<li>整理几何图形绘制算法的博客</li>
+<li>整理一下 Makefile</li>
+<li>考虑为 <code>axdriver_gpu</code> 新增光标位置的接口</li>
+<li>并在操作系统引入 <code>virtio-input</code> 设备实现光标操作</li>
+<li><em>GUI 基础控件</em></li>
+<li>音频设备驱动和相关的 tour</li>
+</ol>
+<h2 id="日..四-7.27-7.31">(日..四) 7.27-7.31:</h2>
+<p>读 OSTEP</p>
+<h2 id="五..六-8.1-8.2">(五..六) 8.1-8.2:</h2>
+<ol type="1">
+<li>完成 <code>lvgl</code> 到 ArceOS 的 FFI 调用和交叉编译</li>
+<li>基于 <code>lvgl_sys</code> 实现了一个简单的图形显示demo</li>
+</ol>
+<hr />
+<h2 id="日..三-8.3-8.6">(日..三) 8.3-8.6:</h2>
+<p>阅读 OSTEP 到第 33 章</p>
+<h2 id="四..六-8.7-8.9">(四..六) 8.7-8.9:</h2>
+<p>基于 <code>virtio-drivers</code> crate 编写对于 VirtIO Input
+设备的驱动:</p>
+<ul>
+<li>定义 <code>VirtIOInputDev&lt;H, T&gt;</code> 类型, 实现
+<code>try_new(transport)</code> 和 <code>BaseDriverOps</code>,
+维护统一的设备接口</li>
+<li><code>InputDeviceOps</code> 主要有 <code>poll_event</code> 和
+<code>hash_events</code> 两个函数, 后者判断是否有新事件, 前者 poll
+出新事件</li>
+<li><code>has_events</code> 的实现: 由于 <code>virtio-drivers</code>
+似乎没有提供对底层 <code>VirtQueue</code> 的访问,
+所以只能先设置一个时间缓冲区, 每次 <code>has_events</code> 时
+<code>poll</code> 一下如果没有事件就返回 false, 否则放入事件缓冲区; 同理
+<code>poll</code> 就可以先查一查缓冲区有没有东西.</li>
+<li>将难以理解的事件编号等封装为可读性强的枚举</li>
+</ul>
+<p>编写符合 ArceOS 设计架构的 <code>axinput</code> 模块:</p>
+<ul>
+<li>全局静态变量 <code>LazyInit&lt;Mutex&lt;AxInputDevice&gt;&gt;</code>
+表示 <code>MAIN_INPUT</code></li>
+<li>封装 <code>poll_event</code>, <code>has_event</code> 等接口为更
+Rusty 的形式</li>
+<li>最后再通过 <code>arceos_api</code> 封装为全局的函数, 类似
+<code>ax_framebuffer_info</code></li>
+</ul>
+<p>编写 <code>u_12_0</code> 展示对鼠标/平板设备的支持:</p>
+<ul>
+<li>通过 <code>arceos_api</code> 暴露出的 <code>ax_input_*</code>
+轮询检查并获取事件, 如果没有就 (TODO) <code>yield</code> 走</li>
+<li>对事件类型进行模式匹配, 分类处理 (同时进行绘图):</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> loop_count &lt; max_loops &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="title function_ invoke__">ax_input_has_events</span>() &#123;</span><br><span class="line">        <span class="comment">//print!(&quot;Input events available: &quot;);</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(event) = <span class="title function_ invoke__">ax_input_poll_event</span>() &#123;</span><br><span class="line">            <span class="keyword">match</span> event.<span class="title function_ invoke__">get_type</span>() &#123;</span><br><span class="line">                <span class="title function_ invoke__">Some</span>(InputEventType::Relative) =&gt; &#123;</span><br><span class="line">                    <span class="keyword">if</span> event.code == RelativeAxis::X <span class="keyword">as</span> <span class="type">u16</span> &#123;</span><br><span class="line">                        <span class="built_in">panic!</span>();</span><br><span class="line">                        <span class="keyword">let</span> <span class="variable">mouse_dx</span> = event.value; <span class="comment">// as i32;</span></span><br><span class="line">                        x += mouse_dx;</span><br><span class="line">                        <span class="comment">// println!(&quot;Quick mouse X movement: &#123;&#125;&quot;, mouse_dx);</span></span><br><span class="line">                    &#125; <span class="keyword">else</span> <span class="keyword">if</span> event.code == RelativeAxis::Y <span class="keyword">as</span> <span class="type">u16</span> &#123;</span><br><span class="line">                        <span class="keyword">let</span> <span class="variable">mouse_dy</span> = event.value; <span class="comment">// as i32;</span></span><br><span class="line">                        y += mouse_dy;</span><br><span class="line">                        <span class="comment">// println!(&quot;Quick mouse Y movement: &#123;&#125;&quot;, mouse_dy);</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="title function_ invoke__">Some</span>(InputEventType::Absolute) =&gt; &#123;</span><br><span class="line">                    <span class="keyword">if</span> event.code == AbsoluteAxis::X <span class="keyword">as</span> <span class="type">u16</span> &#123;</span><br><span class="line">                        <span class="keyword">let</span> <span class="variable">tablet_x</span> = event.value;</span><br><span class="line">                        x = tablet_x;</span><br><span class="line">                        <span class="comment">// println!(&quot;Quick tablet X position: &#123;&#125;&quot;, tablet_x);</span></span><br><span class="line">                    &#125; <span class="keyword">else</span> <span class="keyword">if</span> event.code == AbsoluteAxis::Y <span class="keyword">as</span> <span class="type">u16</span> &#123;</span><br><span class="line">                        <span class="keyword">let</span> <span class="variable">tablet_y</span> = event.value;</span><br><span class="line">                        y = tablet_y;</span><br><span class="line">                        <span class="comment">// println!(&quot;Quick tablet Y position: &#123;&#125;&quot;, tablet_y);</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="title function_ invoke__">Some</span>(InputEventType::Key) =&gt; &#123;</span><br><span class="line">                    pressed = event.value == <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="title function_ invoke__">Some</span>(InputEventType::<span class="built_in">Sync</span>) =&gt; &#123;</span><br><span class="line">                    <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(<span class="keyword">ref</span> <span class="keyword">mut</span> screen) = screen &#123;</span><br><span class="line">                        <span class="keyword">let</span> (h, w) = (screen.height, screen.width);</span><br><span class="line">                        <span class="keyword">let</span> <span class="variable">ax</span> = (x <span class="keyword">as</span> <span class="type">u64</span> * (w <span class="keyword">as</span> <span class="type">u64</span> - <span class="number">1</span>) + <span class="number">16383</span>) / <span class="number">32767</span>;</span><br><span class="line">                        <span class="keyword">let</span> <span class="variable">ay</span> = (y <span class="keyword">as</span> <span class="type">u64</span> * (h <span class="keyword">as</span> <span class="type">u64</span> - <span class="number">1</span>) + <span class="number">16383</span>) / <span class="number">32767</span>;</span><br><span class="line"></span><br><span class="line">                        <span class="keyword">if</span> pressed &#123;</span><br><span class="line">                            screen.<span class="title function_ invoke__">draw_line</span>(</span><br><span class="line">                                <span class="number">0x006400</span>,</span><br><span class="line">                                (<span class="number">0</span>, <span class="number">0</span>),</span><br><span class="line">                                (ax.<span class="title function_ invoke__">try_into</span>().<span class="title function_ invoke__">unwrap</span>(), ay.<span class="title function_ invoke__">try_into</span>().<span class="title function_ invoke__">unwrap</span>()),</span><br><span class="line">                            );</span><br><span class="line">                            <span class="title function_ invoke__">ax_framebuffer_flush</span>();</span><br><span class="line">                            <span class="built_in">println!</span>(<span class="string">&quot;Moved to: (&#123;&#125;, &#123;&#125;)&quot;</span>, ax, ay);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="keyword">if</span> pressed &#123;</span><br><span class="line">                            <span class="built_in">println!</span>(<span class="string">&quot;Moved to: (&#123;&#125;, &#123;&#125;)&quot;</span>, x, y);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                _ =&gt; &#123;&#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// println!(&quot;No fucking events.&quot;);</span></span><br><span class="line">        <span class="comment">// yield?</span></span><br><span class="line">        std::thread::<span class="title function_ invoke__">sleep</span>(std::time::Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">10</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    loop_count += <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/07/13/freshman2_oscamp_proj_daily/" title="oscamp 暑期 proj 周纪要">https://amiriox.github.io/2025/07/13/freshman2_oscamp_proj_daily/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%97%A5%E8%AE%B0/" rel="tag"># 日记</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/06/24/free_time_schedule_1/" rel="prev" title="假期计划(0x1)">
+                  <i class="fa fa-angle-left"></i> 假期计划(0x1)
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/07/26/driver_tutorial/" rel="next" title="(草稿)从设备到操作系统: 如何编写驱动">
+                  (草稿)从设备到操作系统: 如何编写驱动 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

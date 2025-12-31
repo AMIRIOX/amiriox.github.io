@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="此文章的 撰写时间 可能有误  又到了开心的周末! CSAPP Today:  Amdahl’s law  \(Amdahl\) 定律: 设一个操作原来需要 \(T_{old}\) 的时间执行, 现在我们对其\(a\)的部分(即 \(\text{总部分}\times\text{a}\) 这部分进行\(1&#x2F;k\)的优化(原来这部分 \(T\) 时间可以执行完, 现在加速到了 \(T&#x2F;k\) ),">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP 2020-11-20">
+<meta property="og:url" content="https://amiriox.github.io/2020/11/20/CSAPP-2020-11-20/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="此文章的 撰写时间 可能有误  又到了开心的周末! CSAPP Today:  Amdahl’s law  \(Amdahl\) 定律: 设一个操作原来需要 \(T_{old}\) 的时间执行, 现在我们对其\(a\)的部分(即 \(\text{总部分}\times\text{a}\) 这部分进行\(1&#x2F;k\)的优化(原来这部分 \(T\) 时间可以执行完, 现在加速到了 \(T&#x2F;k\) ),">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.821Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="迁移">
+<meta property="article:tag" content="计算机科学">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2020/11/20/CSAPP-2020-11-20/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2020/11/20/CSAPP-2020-11-20/","path":"2020/11/20/CSAPP-2020-11-20/","title":"CSAPP 2020-11-20"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CSAPP 2020-11-20 | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2020/11/20/CSAPP-2020-11-20/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CSAPP 2020-11-20 | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSAPP 2020-11-20
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-20 00:00:00" itemprop="dateCreated datePublished" datetime="2020-11-20T00:00:00+08:00">2020-11-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">组成原理</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>此文章的 <em>撰写时间</em> 可能有误</p>
+</blockquote>
+<p><del>又到了开心的周末!</del></p>
+<p>CSAPP Today:</p>
+<ol type="1">
+<li><p>Amdahl’s law</p>
+<ul>
+<li><span class="math inline">\(Amdahl\)</span> 定律: 设一个操作原来需要
+<span class="math inline">\(T_{old}\)</span> 的时间执行,
+现在我们对其<span class="math inline">\(a\)</span>的部分(即 <span
+class="math inline">\(\text{总部分}\times\text{a}\)</span>
+这部分进行<span class="math inline">\(1/k\)</span>的优化(原来这部分
+<span class="math inline">\(T\)</span> 时间可以执行完, 现在加速到了
+<span class="math inline">\(T/k\)</span> ), 则
+<ul>
+<li>没有加速的部分所需时间: <span class="math inline">\((1-a)\times
+T_{old}\)</span></li>
+<li>加速的部分所需时间: <span class="math inline">\((a\times
+T_{old})/k\)</span></li>
+</ul></li>
+</ul>
+<p>所以总体加速后的时间为 <span
+class="math display">\[T_{new}=(1-a)\times T_{old} + (a\times
+T_{old})/k\]</span> 所以加速比<span
+class="math inline">\(S=T_{old}/T_{new}\)</span>就是</p>
+<p><span
+class="math display">\[S=\frac{T_{old}}{T_{new}}=\frac{T_{old}}{(1-a)\times
+T_{old} + (a\times T_{old})/k}=\frac{1}{(1-a)+a/k}\]</span></p>
+<p>常见的表示方法是用算出的加速比后加上一个”<span
+class="math inline">\(\times\)</span>“,我们对 <span
+class="math inline">\(60\%\)</span> 的部分进行优化,
+这部分执行时间到了原来的 <span class="math inline">\(1/3\)</span> , 则
+<span class="math inline">\(a=0.6, k=3\)</span> ,带入公式得出 <span
+class="math inline">\(S=1.67\)</span> , 则加速比就是<span
+class="math inline">\(1.67 \times\)</span>, 读做”1.67倍”.</p>
+<ul>
+<li>当 <span class="math inline">\(k\)</span> 趋向于 <span
+class="math inline">\(\infty\)</span> 时, 这部分时间可以忽略不计,
+于是就有 <span
+class="math display">\[S_{\infty}=\frac{1}{(1-a)}\]</span> 即使 <span
+class="math inline">\(60\%\)</span> 的系统可以加速到可以忽略时间的程度,
+总体加速比也只有 <span class="math inline">\(2.5 \times\)</span>,
+这体现了amdahl定律的一个重要思想: &gt; 只有提升了系统的大部分,
+才能更好的提升整个系统</li>
+</ul>
+<p>待更新, 先吃个饭</p></li>
+<li><p>并行/并发</p>
+<ul>
+<li>并发是指同时处理多个活动</li>
+<li>并行是指通过并发来加速系统
+<ol type="1">
+<li>线程级并发
+<ul>
+<li>最初的系统并不是完全意义上的同时操作, 而是反复切换上下文(<del>反 复
+横 跳</del> 上一篇有说上下文, 主要是指当前进程的主存/寄存器文件),
+后来多核和超线程出现才有了真正的并发</li>
+<li>多核是指把多个CPU搞到一个集成电路板上,
+每个CPU叫一个<em>核心(core)</em> 比如我的dell-inspiron 5590是4核心,
+就是四个倒霉鬼被焊在电路板上了 (逃, 据工厂主 <del>资本家</del>
+说未来他们可以焊接几百的核心到一块板子上</li>
+<li>超线程指的是一个核心执行多个线程, 主要也是线程切换实现的,
+但是比普通的CPU横跳地更科学, 所以速度也更快,
+比如如果这个线程需要一些时间加载一个数据, 那我就切走了 你自己玩,
+我去干别的</li>
+<li>这就很好解释了为什么我的PC叫”四核心八线程”, 表示有四个核心,
+每个核心是一个可以同时执行两个线程(<del>跳板</del>)的超线程核心</li>
+<li>现代CPU大多数都是多核多线程核心,
+一般他们的结构都是<strong>每个核心分别</strong>有一个寄存器,
+两个L1高速缓存(详见上一篇)和两个L1共用的L2高速缓存,
+然后总体上有一个所有核心共用的高速缓存L3, 然后接到总线和主存,
+其中每个核心中的两个L1高速缓存分别是数据和指令缓存.
+所以4核心8线程的CPU一般来讲有 <span class="math inline">\(4 \times 3 + 1
+= 13\)</span>个高速缓存和<span class="math inline">\(4 \times
+1=4\)</span>个寄存器</li>
+</ul></li>
+<li>指令级并发
+<ul>
+<li>指同时执行多个指令, 这是个比较nb的概念,
+之前可能一个指令执行很多个(3~10)时钟周期,
+现在通过一个叫”流水线”的东西实现指令级并发,
+可以一个时钟周期内执行<strong>上百个</strong>指令</li>
+<li>像上面那样,
+一个时钟周期可以处理<strong>不止一个</strong>指令叫<strong>超标量</strong>,
+大多数PC的CPU都支持这个
+<del>不会吧不会吧不会都0202年了还有人的电脑不支持超标量吧</del></li>
+</ul></li>
+<li>单指令多数据
+<ul>
+<li>比如处理单精度浮点数(float)加法是一个指令, 这叫单指令</li>
+<li>同时处理8对float加法, 这叫多数据</li>
+<li>这是同时执行的, 也叫SIMD, 不知道具体叫什么, 我猜<span
+class="math inline">\(Single\ Instruction\ Multi\ Data\)</span></li>
+<li>有时候cpu会对一些程序自动处理SIMD, 但更好的办法是编译器来解决这些,
+比如GCC就支持向量变量</li>
+</ul></li>
+</ol></li>
+</ul></li>
+</ol>
+<p>为什么我用中文输入法打出来<code>cpu</code>第一个是<code>川普</code>啊</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2020/11/20/CSAPP-2020-11-20/" title="CSAPP 2020-11-20">https://amiriox.github.io/2020/11/20/CSAPP-2020-11-20/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%BF%81%E7%A7%BB/" rel="tag"># 迁移</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/11/20/CSSC/" rel="prev" title="Crash Course Computer Science">
+                  <i class="fa fa-angle-left"></i> Crash Course Computer Science
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/12/06/CSAPP-2020-12-06/" rel="next" title="CSAPP 2020-12-06">
+                  CSAPP 2020-12-06 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="本文是 OSTEP (Operating System: Three Easy Pieces) 的简单笔记, 由于 OSTEP 和我写博客的叙述思路很像(日常往自己脸上贴金hhh), 所以这里就只列一个大纲供自己复习. 并且本文建立在 一条操作系统的使命 | Amiriox’s Storage 和 CSAPP3e第六章(存储器层次结构) | Amiriox’s Storage 两篇文章的叙述之上,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CPU&#x2F;内存虚拟化, 调度和并发">
+<meta property="og:url" content="https://amiriox.github.io/2025/08/14/ostep/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="本文是 OSTEP (Operating System: Three Easy Pieces) 的简单笔记, 由于 OSTEP 和我写博客的叙述思路很像(日常往自己脸上贴金hhh), 所以这里就只列一个大纲供自己复习. 并且本文建立在 一条操作系统的使命 | Amiriox’s Storage 和 CSAPP3e第六章(存储器层次结构) | Amiriox’s Storage 两篇文章的叙述之上,">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-14T10:10:33.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.826Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="OSTEP">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2025/08/14/ostep/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/08/14/ostep/","path":"2025/08/14/ostep/","title":"CPU/内存虚拟化, 调度和并发"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CPU/内存虚拟化, 调度和并发 | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#cpu-%E8%99%9A%E6%8B%9F%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">CPU 虚拟化:</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%BA%E5%88%B6%E6%97%B6%E9%92%9F%E4%B8%AD%E6%96%AD"><span class="nav-number">1.1.</span> <span class="nav-text">(机制)时钟中断:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%96%E7%95%A5%E8%BF%9B%E7%A8%8B%E8%B0%83%E5%BA%A6"><span class="nav-number">1.2.</span> <span class="nav-text">(策略)进程调度:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%96%E7%95%A5%E5%A4%9A%E5%A4%84%E7%90%86%E5%99%A8%E8%B0%83%E5%BA%A6"><span class="nav-number">1.3.</span> <span class="nav-text">(策略)多处理器调度:</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E8%99%9A%E6%8B%9F%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">内存虚拟化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%96%E7%95%A5%E5%88%86%E9%A1%B5"><span class="nav-number">2.1.</span> <span class="nav-text">(策略)分页:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#linux-%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">2.1.1.</span> <span class="nav-text">Linux 中的内存管理:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%BA%E9%97%B2%E7%A9%BA%E9%97%B4%E7%AE%A1%E7%90%86-%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="nav-number">2.1.2.</span> <span class="nav-text">(空闲空间管理: 内存分配)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91"><span class="nav-number">3.</span> <span class="nav-text">并发</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE%E5%AF%BC%E8%87%B4%E4%BA%86%E4%BB%80%E4%B9%88"><span class="nav-number">3.1.</span> <span class="nav-text">共享数据导致了什么</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/08/14/ostep/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CPU/内存虚拟化, 调度和并发 | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CPU/内存虚拟化, 调度和并发
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-08-14 18:10:33" itemprop="dateCreated datePublished" datetime="2025-08-14T18:10:33+08:00">2025-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>本文是 OSTEP (<em>Operating System: Three Easy Pieces</em>)
+的简单笔记, 由于 OSTEP 和我写博客的叙述思路很像(日常往自己脸上贴金hhh),
+所以这里就只列一个大纲<strong>供自己复习</strong>.</p>
+<p>并且本文建立在 <a
+target="_blank" rel="noopener" href="https://zheya.cc/2025/03/26/rCore_learn/">一条操作系统的使命 |
+Amiriox’s Storage</a> 和 <a
+target="_blank" rel="noopener" href="https://zheya.cc/2025/02/19/CSAPP-2025-02-20/">CSAPP3e第六章(存储器层次结构)
+| Amiriox’s Storage</a> 两篇文章的叙述之上, 仅仅增量补充了必要的内容</p>
+<p>一些重要的主题 (如调度和并发) 可能 (几乎是一定) 会单独开一篇文章,
+在基于这本书介绍的内容下再补充一些我其他地方学到的相关知识和经验.</p>
+<p>OSTEP 是一本无论从知识本身还是讲解技巧上都比较不错的书,
+推荐读原书而非总结博客.</p>
+<span id="more"></span>
+<h1 id="cpu-虚拟化">CPU 虚拟化:</h1>
+<h2 id="机制时钟中断">(机制)时钟中断:</h2>
+<ol type="1">
+<li>时钟中断的意义: 定期把控制权交还给操作系统</li>
+<li>初始化陷阱表</li>
+<li>时钟中断保存和恢复的上下文由硬件操作(很有限),
+操作系统执行的上下文切换(如调度)保存和恢复的状态更多</li>
+<li>协作式可能导致恶意程序一直抢占CPU</li>
+</ol>
+<blockquote>
+<p>测量上下文中断: 把两个进程绑定到同一cpu,
+然后利用两个管道导致两个进程阻塞, 强迫 Linux CFS
+根据亲和性轮流调度这两个进程 ( <code>gettimeofday</code>
+的精度其实不太够看, 懒得改了)</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> _GNU_SOURCE</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sched.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/time.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ITERATIONS 1000000</span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">bind_to_cpu0</span><span class="params">(<span class="type">pid_t</span> pid)</span> &#123;</span><br><span class="line">    <span class="type">cpu_set_t</span> mask;</span><br><span class="line">    CPU_ZERO(&amp;mask);</span><br><span class="line">    CPU_SET(<span class="number">0</span>, &amp;mask);</span><br><span class="line">    sched_setaffinity(pid, <span class="keyword">sizeof</span>(mask), &amp;mask);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">signed</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">/* WARN: No check func() &lt; 0 */</span></span><br><span class="line">    <span class="type">int</span> pipe1[<span class="number">2</span>], pipe2[<span class="number">2</span>];</span><br><span class="line">    pipe(pipe1);</span><br><span class="line">    pipe(pipe2);</span><br><span class="line"></span><br><span class="line">    bind_to_cpu0(<span class="number">0</span>); <span class="comment">// child extends from father</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * lmbench</span></span><br><span class="line"><span class="comment">     * F [1]pipe1[0] C</span></span><br><span class="line"><span class="comment">     * C [1]pipe2[0] F</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="type">int</span> child = fork();</span><br><span class="line">    <span class="keyword">if</span> (child == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// child</span></span><br><span class="line">        close(pipe1[<span class="number">1</span>]);</span><br><span class="line">        close(pipe2[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="type">char</span> c;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; ITERATIONS; i++) &#123;</span><br><span class="line">            read(pipe1[<span class="number">0</span>], &amp;c, <span class="number">1</span>);</span><br><span class="line">            write(pipe2[<span class="number">1</span>], <span class="string">&quot;c&quot;</span>, <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// father</span></span><br><span class="line">        close(pipe1[<span class="number">0</span>]);</span><br><span class="line">        close(pipe2[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Clock is on.\n&quot;</span>);</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">timeval</span> <span class="title">st</span>, <span class="title">ed</span>;</span></span><br><span class="line">        gettimeofday(&amp;st, <span class="literal">NULL</span>);</span><br><span class="line">        <span class="type">char</span> c;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; ITERATIONS; i++) &#123;</span><br><span class="line">            write(pipe1[<span class="number">1</span>], <span class="string">&quot;c&quot;</span>, <span class="number">1</span>);</span><br><span class="line">            read(pipe2[<span class="number">0</span>], &amp;c, <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        gettimeofday(&amp;ed, <span class="literal">NULL</span>);</span><br><span class="line">        <span class="type">int</span> wc = wait(<span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> total_us = (ed.tv_sec - st.tv_sec) * <span class="number">1000000LL</span> + (ed.tv_usec - st.tv_usec);</span><br><span class="line">        <span class="type">double</span> result_us = (<span class="type">double</span>)total_us / (ITERATIONS * <span class="number">2.0</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Total: %ld us (%ld ns)\n&quot;</span>, total_us, total_us * <span class="number">1000</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Cost of context switch: %lf us (%lf ns)\n&quot;</span>, result_us, result_us * <span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="策略进程调度">(策略)进程调度:</h2>
+<ol type="1">
+<li>进程调度与线程调度</li>
+<li>调度指标: 周转时间(T完成-T初次开始); 公平性; 响应时间</li>
+<li>假设能够得知所有任务时长; 假定所有任务同时到达(T初次开始相同),
+假设所有任务时长相等</li>
+</ol>
+<ul>
+<li>FIFO: 简单 | 周转时间无法保证, 公平性无法保证,
+响应时间无法保证.</li>
+</ul>
+<ol start="4" type="1">
+<li>假设能够得知所有任务时长; 假定所有任务同时到达(T初次开始相同)</li>
+</ol>
+<ul>
+<li>SJF: 短的任务先做可以避免护航效应, 周转时间短 |
+实际情况中任务不一定同时到达</li>
+</ul>
+<ol start="5" type="1">
+<li>假设能够得知所有任务时长;</li>
+</ol>
+<ul>
+<li>STCF: 对 SJF 添加抢占, 新工作进入系统时 reschedule
+找能最快完成的任务 | 响应时间差</li>
+<li>RR: 为每个任务分配时间片, 时间片用完 reschedule | 响应时间快, 公平;
+周转时间长, 需要考虑上下文切换开销和时间片大小的平衡</li>
+<li>关于 I/O: 在 I/O 时可以调度其他任务实现 overlap. (未来)</li>
+</ul>
+<ol start="6" type="1">
+<li>无假设:</li>
+</ol>
+<ul>
+<li>MLFQ:
+<ol start="0" type="1">
+<li>设置多个队列, 每个队列有不同的优先级, 容纳一些任务</li>
+<li>若 A 所在队列优先级 &gt; B 所在队列优先级, 则运行 A 而不运行 B</li>
+<li>如果 A B 在同一队列(优先级相同), 分配相同长度时间片轮转 A 和 B 缺点:
+如果有两个任务 A 和 B 在最高优先级队列, 低一些优先级的 C 会一直饿死</li>
+<li>任务初次进入加入最高优先级队列 4a. 任务用完整个时间片(优化:
+某任务在某优先级的配额)后降低一个优先级 4b.
+如果任务在用完时间片之前就主动释放 CPU, 则优先级不变 缺点:
+多个交互型工作 I/O 过多使得这些工作长久占用 CPU, 其他任务饿死.</li>
+<li>一定时间后洗牌: 将所有任务放在最高优先级</li>
+</ol></li>
+<li>CFS:
+<ol start="0" type="1">
+<li><span class="math inline">\(vruntime_{tid} = init\_time_{tid} +
+\frac{\delta}{prior}\)</span></li>
+<li>新任务 <code>vruntime</code> 初始化为 最小值,
+让其尽快被调度(响应时间快)</li>
+<li>每次时钟中断时 <span class="math inline">\(\delta\)</span> 递增,
+除以 <span class="math inline">\(prior\)</span> 优先级</li>
+<li><code>vruntime</code> 最小的放在任务调度队列队首</li>
+</ol></li>
+<li>其他: BFS</li>
+</ul>
+<h2 id="策略多处理器调度">(策略)多处理器调度:</h2>
+<p>(SMP 对称多处理架构上的操作系统支持)</p>
+<ol type="1">
+<li>缓存一致性: (多处理器有分别的 L1/2/3 缓存) : 总线窥探
+(监听对某个地址的读写, 作废缓存)</li>
+<li>同步: 加锁/原子操作</li>
+<li>缓存亲和度: (反复作废缓存太浪费了):
+<ol type="1">
+<li>单队列调度所有任务导致需要对队列加锁保证原子性,
+而且缓存亲和度差</li>
+<li>多队列调度: 避免加锁, 但不对称的任务数可能导致负载不均(1 队列 A, 2
+队列 B, C, 则 A 获得了 B/C 两倍的时间片)</li>
+<li>多队列调度+任务迁移: B 反复在 CPU1 和 CPU2 两个队列之间迁移,
+保证公平</li>
+</ol></li>
+</ol>
+<h1 id="内存虚拟化">内存虚拟化</h1>
+<ol type="1">
+<li>现代操作系统已经弱化了分段的概念, 主要以分页+逻辑段为主</li>
+<li>地址空间: (不)透明(抽象屏障) + 保护 +- 效率, 为实现地址空间,
+实现地址转换 ## (机制)地址转换</li>
+</ol>
+<p>将物理地址映射到虚拟地址, 应用程序仅能够使用虚拟地址(除非读/proc), 由
+MMU 翻译回物理地址来访问</p>
+<p>由于 MMU 并不知道具体的翻译规则, 所以需要读取 OS
+放置在内存某处中的某些映射规则(如分段或页表), 而访存相比位于 CPU 的 MMU
+是很慢的, 所以需要 TLB 作为缓存:</p>
+<ul>
+<li>TLB 是全相联缓存, 只有一个组所以不需要组索引, 标记为 VPN 号,
+块偏移为虚拟地址的页内偏移</li>
+<li>上下文切换时需要 flush TLB (或支持 ASID 位的多任务共享 TLB)</li>
+<li>替换策略一般是 LRU</li>
+</ul>
+<h2 id="策略分页">(策略)分页:</h2>
+<ol start="0" type="1">
+<li>把整块虚拟内存分为定长的页映射到同样划分的虚拟内存(但映射关系由页表项决定),
+称之为页帧(一般为 4 KB).
+在页帧上映射逻辑段进去(如代码段/数据段/栈等)</li>
+<li>根据页数将虚拟地址的前几位划分为虚拟页号, 余下位为页内偏移</li>
+<li>页表条目</li>
+<li>多级页表: ![CSAPP 的图] 更好一些.
+虚拟页号分为几个部分(取决于页表级数), 分别对应每一级页表的索引,
+最后在最低级页表中找到实际包含物理地址数据的页表条目,
+然后和偏移合并起来</li>
+</ol>
+<h3 id="linux-中的内存管理">Linux 中的内存管理:</h3>
+<ul>
+<li><p><code>mmap</code>: 文件映射, 匿名映射</p></li>
+<li><p>(机制)交换到磁盘(存在位与 PAGE_FAULT, 内存中页的换出(交换)策略,
+高低水位线)</p></li>
+<li><p>(策略)内存中页的换出策略: Optimal, FIFO, Random, LFU, LRU, ###
+Windows 中的内存管理:</p></li>
+<li><p>提交页, 分配页</p>
+<blockquote>
+<p>利用分页的 TLB miss 测量 L1/L2 缓存大小</p>
+</blockquote></li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> _GNU_SOURCE</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;assert.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sched.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;time.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> NUMOFPAGES, ITERATIONS;</span><br><span class="line"></span><br><span class="line"><span class="type">double</span> <span class="title function_">iter</span><span class="params">(<span class="type">int</span> total_pages, <span class="type">const</span> <span class="type">int</span> *page_indices, <span class="type">int</span> *arr)</span> &#123;</span><br><span class="line">    <span class="type">int</span> PAGESIZE = getpagesize();</span><br><span class="line">    <span class="type">int</span> stride = PAGESIZE / <span class="keyword">sizeof</span>(<span class="type">int</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">timespec</span> <span class="title">st</span>, <span class="title">ed</span>;</span></span><br><span class="line">    clock_gettime(CLOCK_MONOTONIC, &amp;st);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> it = <span class="number">0</span>; it &lt; ITERATIONS; ++it) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; total_pages; ++i) &#123;</span><br><span class="line">            <span class="type">int</span> page_index = page_indices[i];</span><br><span class="line">            arr[page_index * stride] += <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    clock_gettime(CLOCK_MONOTONIC, &amp;ed);</span><br><span class="line">    </span><br><span class="line">    <span class="type">long</span> <span class="type">long</span> duration_ns = (ed.tv_sec - st.tv_sec) * <span class="number">1000000000LL</span> + (ed.tv_nsec - st.tv_nsec);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1.0</span> * duration_ns / ITERATIONS / total_pages; <span class="comment">// result is in ns</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">signed</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv)</span> &#123;</span><br><span class="line">    assert(argc == <span class="number">3</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">cpu_set_t</span> mask;</span><br><span class="line">    CPU_ZERO(&amp;mask);</span><br><span class="line">    CPU_SET(<span class="number">0</span>, &amp;mask);</span><br><span class="line">    sched_setaffinity(<span class="number">0</span>, <span class="keyword">sizeof</span> mask, &amp;mask);</span><br><span class="line"></span><br><span class="line">    NUMOFPAGES = atoi(argv[<span class="number">1</span>]);</span><br><span class="line">    ITERATIONS = atoi(argv[<span class="number">2</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> *page_indices = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">int</span>) * NUMOFPAGES);</span><br><span class="line">    assert(page_indices != <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; NUMOFPAGES; i++) &#123;</span><br><span class="line">        page_indices[i] = i;</span><br><span class="line">    &#125;</span><br><span class="line">    srand(time(<span class="literal">NULL</span>));</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = NUMOFPAGES - <span class="number">1</span>; i &gt; <span class="number">0</span>; i--) &#123;</span><br><span class="line">        <span class="type">int</span> j = rand() % (i + <span class="number">1</span>);</span><br><span class="line">        <span class="type">int</span> temp = page_indices[i];</span><br><span class="line">        page_indices[i] = page_indices[j];</span><br><span class="line">        page_indices[j] = temp;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> PAGESIZE = getpagesize();</span><br><span class="line">    <span class="type">int</span> stride = PAGESIZE / <span class="keyword">sizeof</span>(<span class="type">int</span>);</span><br><span class="line">    <span class="type">int</span> max_length = NUMOFPAGES * stride;</span><br><span class="line">    <span class="type">int</span> *arr = (<span class="type">int</span> *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">int</span>) * max_length);</span><br><span class="line">    assert(arr != <span class="literal">NULL</span>);</span><br><span class="line">    <span class="built_in">memset</span>(arr, <span class="number">0</span>, <span class="keyword">sizeof</span>(<span class="type">int</span>) * max_length);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> p = <span class="number">1</span>; p &lt;= NUMOFPAGES; p *= <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d pages:\t%lf ns\n&quot;</span>, p, iter(p, page_indices, arr));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">free</span>(page_indices);</span><br><span class="line">    <span class="built_in">free</span>(arr);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="空闲空间管理-内存分配">(空闲空间管理: 内存分配)</h3>
+<p>相邻合并的空闲链表+各种匹配机制 Slab / Buddy / TLSF</p>
+<h1 id="并发">并发</h1>
+<p>多线程: 线程作为操作系统调度的单位,
+但同一进程容器内的线程共享一片地址空间, 不过有自己独立的栈</p>
+<h2 id="共享数据导致了什么">共享数据导致了什么</h2>
+<p>从高级语言层面上看来是一个操作的很多操作实际上是分为多步实现的,
+例如赋值包含了访存, 写入内存; 甚至对于 CISC, 很多指令也是分为多步实现的
+(在 FDEMW 中的 D 阶段可能会拆分指令).</p>
+<p>由于这样的行动分为多个步骤, 因此被打断时可能出现中间状态.</p>
+<p>我们称”一次执行完毕, 即使被打断也不会出现中间状态,
+要么是未执行要么是执行完毕”的操作为”原子操作”, 自然,
+上述的操作都<strong>不是</strong>原子操作.</p>
+<p>那么这个和多线程有什么关系呢? 同一进程内的所有线程共享进程的地址空间,
+如果 A 线程的某操作被打断, 产生了中间状态, 而这个中间状态对 B
+线程也是可见的, 很可能会影响到 B 线程的决策导致错误的语义.
+调度是不可控的,
+我们不能指望操作系统的调度程序本身拥有足够的智能来防止这样的情况出现.
+(硬要说原因的话, 一是性能不允许, reschedule 的次数还是比较多的,
+要尽可能高性能; 二是这本身也不是调度程序的职责,
+而是程序本身语义应该提供的保证)</p>
+<p>总结一下就是: 访问共享资源时(最经典的情境就是多线程),
+可能因为非原子化的操作执行错误的语义.
+我们称这种情况为<strong>竞态条件</strong>,
+称访问共享资源的这一段代码为<strong>临界区</strong>.</p>
+<p>一个很自然的想法就是, 在执行非原子操作时,
+让临界区中的共享资源暂时对其他线程不可见. 这就是”互斥锁”的概念,
+在临界区开头加锁(获取锁),
+令本线程独占这一资源(怎么有种”本小姐要独占你…“的感觉?),
+其他线程暂时不可见, 在临界区结束后解锁(释放锁),
+这样其他线程也可以获取锁并使得资源对自己可见.</p>
+<p><code>pthread</code> 库的互斥锁用起来比较麻烦, 需要手动初始化,
+在代码块的前后调用 lock 和 unlock, 评价为没有 RAII 导致的,
+<code>std::mutex</code> 和 <code>Mutex&lt;T&gt;</code>
+显然用起来更方便些. (尤其是后者加上生命周期,
+对于某些临时变量的生命周期管理使得”忘了解锁”的现象更少, 参考 <a
+target="_blank" rel="noopener" href="https://blog.m-ou.se/super-let/">Rust Temporary Lifetimes and
+“Super Let” - Mara’s Blog</a> 的开头部分)</p>
+<ul>
+<li>互斥锁的实现
+<ul>
+<li>关闭中断的自旋锁</li>
+<li>常见CAS原子操作指令</li>
+<li>具体实现例子: Linux <code>futex</code>)</li>
+</ul></li>
+<li>并发数据结构:
+<ul>
+<li>加锁(加锁的临界区范围尽可能小)</li>
+<li>无锁数据结构(依靠原子操作原语)</li>
+</ul></li>
+<li>生产者-消费者问题</li>
+<li>条件变量及其实现, 解决生产者-消费者问题</li>
+<li>信号量
+<ul>
+<li>信号量实现互斥锁(二值信号量)</li>
+<li>信号量实现条件变量</li>
+<li>信号量解决生产者-消费者问题</li>
+<li>信号量实现读写锁(读写锁与 Rust 引用规则: 可变性与别名问题)</li>
+<li>信号量实现哲学家就餐问题</li>
+</ul></li>
+<li>并发问题:
+<ul>
+<li>未锁定执行顺序</li>
+<li>未保证原子语义</li>
+<li>死锁, 避免死锁的原则(顺序一致性)</li>
+</ul></li>
+<li>基于实现的并发:
+<ul>
+<li>I/O 多路复用 (<code>select/poll/epoll</code>)</li>
+<li>异步 I/O (Linux 的 <code>io_uring</code>)</li>
+</ul></li>
+<li>总结: 生产者消费者模型 -&gt; 环形缓冲区 -&gt; 异步 I/O -&gt; 实例:
+<code>io_uring</code> 或 VirtIO 虚拟队列的可用环/已用环</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/08/14/ostep/" title="CPU&#x2F;内存虚拟化, 调度和并发">https://amiriox.github.io/2025/08/14/ostep/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/OSTEP/" rel="tag"># OSTEP</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/07/26/driver_tutorial/" rel="prev" title="(草稿)从设备到操作系统: 如何编写驱动">
+                  <i class="fa fa-angle-left"></i> (草稿)从设备到操作系统: 如何编写驱动
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/08/14/Dairy_250814/" rel="next" title="Geleitet durch Not und Nacht">
+                  Geleitet durch Not und Nacht <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

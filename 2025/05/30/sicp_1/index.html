@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#EEE8AA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2F4F4F" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#EEE8AA">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=LXGW+WenKai+TC:300,300italic,400,400italic,700,700italic%7CCourier+Prime:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amiriox.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+    <meta name="description" content="程序设计需要考虑的基本元素  基本的表达形式: 基本的数据表达与基本的过程表达 组合的方法: 将基本表达组合起来构成复合的元素, 如 Lisp 的组合式 抽象的方法: 为复合对象命名, 从一个新的抽象层次操作非基本单元  在 lisp (SICP 使用 scheme 方言) 中有如下体现:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SICP 第一章(构造过程抽象)">
+<meta property="og:url" content="https://amiriox.github.io/2025/05/30/sicp_1/index.html">
+<meta property="og:site_name" content="Amiriox&#39;s Storage">
+<meta property="og:description" content="程序设计需要考虑的基本元素  基本的表达形式: 基本的数据表达与基本的过程表达 组合的方法: 将基本表达组合起来构成复合的元素, 如 Lisp 的组合式 抽象的方法: 为复合对象命名, 从一个新的抽象层次操作非基本单元  在 lisp (SICP 使用 scheme 方言) 中有如下体现:">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://amiriox.github.io/images/image-20250530113707542.png">
+<meta property="og:image" content="https://amiriox.github.io/images/image-20250530124016847.png">
+<meta property="og:image" content="https://amiriox.github.io/images/image-20250530123735194.png">
+<meta property="article:published_time" content="2025-05-30T00:17:39.000Z">
+<meta property="article:modified_time" content="2025-12-31T14:39:18.826Z">
+<meta property="article:author" content="折鸦夜明け前">
+<meta property="article:tag" content="计算机科学">
+<meta property="article:tag" content="SICP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://amiriox.github.io/images/image-20250530113707542.png">
+
+
+<link rel="canonical" href="https://amiriox.github.io/2025/05/30/sicp_1/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amiriox.github.io/2025/05/30/sicp_1/","path":"2025/05/30/sicp_1/","title":"SICP 第一章(构造过程抽象)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SICP 第一章(构造过程抽象) | Amiriox's Storage</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Amiriox's Storage</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Declaration does not declare anything.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E9%9C%80%E8%A6%81%E8%80%83%E8%99%91%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%85%83%E7%B4%A0"><span class="nav-number">1.</span> <span class="nav-text">程序设计需要考虑的基本元素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E8%BF%B0%E6%A6%82%E5%BF%B5%E5%9C%A8-lisp-%E7%9A%84%E4%BD%93%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">上述概念在 Lisp 的体现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">2.1.</span> <span class="nav-text">表达式:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E5%90%88%E6%95%B0%E6%8D%AE-%E7%BB%84%E5%90%88%E5%BC%8F"><span class="nav-number">2.2.</span> <span class="nav-text">复合数据: 组合式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E5%90%88%E8%BF%87%E7%A8%8B"><span class="nav-number">2.3.</span> <span class="nav-text">复合过程:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.4.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E7%A8%8B%E5%8F%8A%E5%85%B6%E4%BA%A7%E7%94%9F%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="nav-number">3.</span> <span class="nav-text">过程及其产生的计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%92%E5%BD%92%E4%B8%8E%E8%BF%AD%E4%BB%A3%E8%BF%87%E7%A8%8B"><span class="nav-number">3.1.</span> <span class="nav-text">递归与迭代过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%91%E5%BD%A2%E9%80%92%E5%BD%92"><span class="nav-number">3.2.</span> <span class="nav-text">树形递归</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%92%E5%BD%92%E5%A6%82%E4%BD%95%E7%AE%80%E5%8C%96%E9%80%BB%E8%BE%91"><span class="nav-number">3.3.</span> <span class="nav-text">递归如何简化逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90"><span class="nav-number">3.4.</span> <span class="nav-text">复杂度分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E9%98%B6%E5%87%BD%E6%95%B0%E5%81%9A%E6%8A%BD%E8%B1%A1"><span class="nav-number">4.</span> <span class="nav-text">高阶函数做抽象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E7%A8%8B%E4%BD%9C%E4%B8%BA%E5%8F%82%E6%95%B0"><span class="nav-number">4.1.</span> <span class="nav-text">过程作为参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E7%A8%8B%E4%BD%9C%E4%B8%BA%E4%B8%80%E8%88%AC%E6%80%A7%E6%96%B9%E6%B3%95"><span class="nav-number">4.2.</span> <span class="nav-text">过程作为一般性方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E7%A8%8B%E4%BD%9C%E4%B8%BA%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="nav-number">4.3.</span> <span class="nav-text">过程作为返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1%E4%BD%9C%E4%B8%BA%E7%AC%AC%E4%B8%80%E7%BA%A7%E8%BF%87%E7%A8%8B"><span class="nav-number">4.4.</span> <span class="nav-text">抽象作为第一级过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E5%89%A7%E5%9C%BA"><span class="nav-number">5.</span> <span class="nav-text">小剧场:</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="折鸦夜明け前"
+      src="/images/icon.jpg">
+  <p class="site-author-name" itemprop="name">折鸦夜明け前</p>
+  <div class="site-description" itemprop="description">世界再大 不过是些代价</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/amiriox" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;amiriox" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wumingyun2120@gmail.com" title="E-Mail → mailto:wumingyun2120@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/wu-ming-57-22-24" title="Zhihu → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;wu-ming-57-22-24" rel="noopener me" target="_blank"><i class="fab fa-zhihu fa-fw"></i>Zhihu</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/444947789" title="Bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;444947789" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>Bilibili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://kawayww.com/" title="https:&#x2F;&#x2F;kawayww.com&#x2F;" rel="noopener" target="_blank">柳下川的博客</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.overturn.cn/" title="https:&#x2F;&#x2F;www.overturn.cn&#x2F;" rel="noopener" target="_blank">远视台</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amiriox.github.io/2025/05/30/sicp_1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/icon.jpg">
+      <meta itemprop="name" content="折鸦夜明け前">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Amiriox's Storage">
+      <meta itemprop="description" content="世界再大 不过是些代价">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SICP 第一章(构造过程抽象) | Amiriox's Storage">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SICP 第一章(构造过程抽象)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-05-30 08:17:39" itemprop="dateCreated datePublished" datetime="2025-05-30T08:17:39+08:00">2025-05-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-31 22:39:18" itemprop="dateModified" datetime="2025-12-31T22:39:18+08:00">2025-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">编程语言理论</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="程序设计需要考虑的基本元素">程序设计需要考虑的基本元素</h2>
+<ol type="1">
+<li>基本的表达形式:
+<strong>基本的数据表达</strong>与<strong>基本的过程表达</strong></li>
+<li>组合的方法: 将基本表达组合起来构成复合的元素, 如 Lisp 的组合式</li>
+<li>抽象的方法: 为复合对象命名, 从一个新的抽象层次操作非基本单元</li>
+</ol>
+<p>在 lisp (SICP 使用 scheme 方言) 中有如下体现:</p>
+<span id="more"></span>
+<h2 id="上述概念在-lisp-的体现">上述概念在 Lisp 的体现</h2>
+<h3 id="表达式">表达式:</h3>
+<p><strong>基本表达式</strong>(如数这样的自求值原子表达式 或
+<code>+</code> 这样表示基本过程(算术运算)的符号表达式),
+或基本表达式组合构成的复合表达式</p>
+<h3 id="复合数据-组合式">复合数据: 组合式</h3>
+<p>形如 <code>(+ 1 2)</code>
+用一对括号扩起一些表达式称为组合式来表示一个<strong>过程</strong>应用,
+最左侧称为<strong>运算符</strong>, 其它称为<strong>运算对象</strong>.
+允许出现组合式嵌套的情况(组合式元素本身还是组合式).</p>
+<ol type="1">
+<li><p>组合式的求值</p>
+<p>先求值子表达式,
+再将其最左子表达式的值(即一个运算符代表的过程)应用于相应的实际参数(即子表达式运算对象的值),
+如 <code>(+ 1 2)</code> 先对 1 和 2 求值, 自求值原子表达式的值分别为
+<code>1</code> 和 <code>2</code>, 再将 <code>+</code>
+代表的加法过程应用到实际参数 <code>1</code> 和 <code>2</code> 上.</p>
+<p>如果有 <code>(define x 1)</code> 或者 <code>let</code>
+使名字与一个值相关联后, 求值时就会环境中找这个名字对应的值.
+<strong>环境</strong> 维护一个名字与一个值的映射, 具有不同层级
+(全局环境和局部环境), 与上下文的概念类似,
+在一些常见编程语言中通常用栈帧实现.</p>
+<p>有嵌套的组合式就涉及递归求值.</p></li>
+<li><p>结构化求值:</p>
+<p><strong>树形积累</strong> 是一种结构化求值的模型,
+将表达式作为一个树形结构, 从叶子节点开始逐渐向上组合.</p></li>
+<li><p>代换模型</p>
+<p>通过替换逐步规约表达式, 直到无法继续规约.</p></li>
+</ol>
+<ul>
+<li><p>应用序: 在任何表达式的计算过程中, 先求值得到实际参数,
+再将过程操作应用于实际参数.如 <code>(square_1 (square_2 x))</code>
+的计算过程(这里角标只是方便叙述): 先求 <code>(square_2 x)</code>
+得到实际参数 (<code>* x x</code> 的值) 再应用 <code>square_1</code>
+过程到这个实际参数上面, 可以看到 <code>square_2</code>
+被应用一次.</p></li>
+<li><p>正则序: 在任何表达式的计算过程中, 先尽可能完全展开树形结构,
+而后向上规约. 同样以上一个为例: 先尽可能展开:
+<code>(* (square_2 x) (square_2 x))</code> 再展开
+<code>(* (* x x) (* x x))</code>, 可以发现 <code>square_2</code>
+被应用了两次.</p>
+<p>由于正则序的重复计算性质, Lisp 采用应用序. (当然,
+正则序也是有意义的)</p></li>
+</ul>
+<h3 id="复合过程">复合过程:</h3>
+<p><strong>过程</strong> 和 <strong>函数</strong> 的区别:
+函数更注重”是什么”, 过程更注重”怎么做”.</p>
+<ol type="1">
+<li><code>(define (&lt;name&gt; &lt;parameters&gt;) &lt;body&gt;)</code>
+是一个过程定义. 注意这(本身)并不是一个组合式,
+而是一种<strong>特殊形式</strong>, 不遵循上述求值的一般规则.</li>
+<li>条件表达式:
+<code>(cond (&lt;p1&gt; &lt;e1&gt;) (&lt;p2&gt; &lt;e2&gt;) ...)</code>,
+其中 <code>&lt;p&gt;</code> 是一个 <strong>谓词</strong>(Predicate,
+值为真或假), <code>&lt;e&gt;</code> 是一个普通表达式. 计算过程是先判断
+<code>&lt;p1&gt;</code> 是否为真, 如果为真则 <code>cond</code> 的值就是
+<code>&lt;e1&gt;</code>, 否则检查 <code>&lt;p2</code>&gt; , 依次类推.
+如果 <code>&lt;p1&gt;</code> 到 <code>&lt;pn&gt;</code> 均为假, 则
+<code>cond</code> 无意义; 另一种条件表达式是
+<code>(if &lt;predicate&gt; &lt;consequent&gt; &lt;alternative&gt;)</code>.</li>
+<li>过程封装了内部复杂的逻辑形成了一个黑箱, 这种抽象方式减轻了思维负载,
+其依靠的特性之一就是局部名不影响全局的值.</li>
+</ol>
+<h3 id="总结">总结</h3>
+<p>1.1.7 以牛顿法求平方根为例简单展示了使用 Scheme
+复合基本数据和复合基本过程来构成代码的实例</p>
+<p>1.1 - 1.8习题:<br />
+改写为前缀表达式和根据需求写 lisp 比较简单.<br />
+比较有意思的是1.5, 如果是应用序, 先规约后展开, 解释器会一直在对
+<code>(p)</code> 进行求值 (<code>(define (p) (p))</code>) 时无限递归,
+永远无法得到实际参数; 如果是正则序, 先展开后规约: 根据 <code>if</code>
+的短路特性, 在 <code>predicate</code> 为真时只对 <code>consequent</code>
+求值, <code>alternative</code> 不会被求值, (p) 不会被递归.<br />
+1.6 中的 <code>new-if</code> 是一个过程并不是特殊形式, 所以没有
+<code>if</code> 的短路特性. (注意区分语义和实现过程,
+不要和分支预测混淆)</p>
+<h2 id="过程及其产生的计算">过程及其产生的计算</h2>
+<h3 id="递归与迭代过程">递归与迭代过程</h3>
+<p>通过 <code>(* n (f (- n 1)))</code> 和
+<code>(iter (* result n) (- n 1))</code> 方式计算阶乘</p>
+<ul>
+<li><p>对前者来说, 其代换模型展现出一个先构造其一个推迟执行的长链(先求
+<span class="math inline">\((n-1)!\)</span> 获得返回值再推迟乘 <span
+class="math inline">\(n\)</span> )后再收缩(对每个得到的返回值乘当前
+<span class="math inline">\(n\)</span>), 这个计算过程是一个
+<strong>递归</strong>, 且因为其执行次数与 <span
+class="math inline">\(n\)</span> 成正比, 称为 <strong>线性递归</strong>.
+总结一下: 递归过程的特点: 信息由返回值获得, 推迟执行,
+计算状态隐含在代换模型长链的构造与收缩中</p></li>
+<li><p>对后者来说, 由第一个形式参数 <code>result</code> 保存信息,
+不推迟, 直接执行乘 <span class="math inline">\(n\)</span>,
+然后再用乘法所得结果替换下一次执行的形式参数实现了用参数而不是返回值保存信息.
+由于执行次数与 <span class="math inline">\(n\)</span> 成正比, 称为
+<strong>线性迭代</strong>. 迭代过程的特点: 由几个变量保存迭代状态,
+不推迟执行, 计算状态单纯由迭代状态量表示</p></li>
+<li><p><strong>注意不要混淆计算过程的与实现的区别</strong>,
+从这个实现上来讲这两者都是递归;
+迭代的实现也不一定是要用递归和参数保存信息,
+部分语言中也有循环语法实现迭代<span
+class="math inline">\(^{[1]}\)</span>.</p></li>
+</ul>
+<blockquote>
+<p>${[1]}: $ 任何循环都能由递归表示和实现, 反之亦然<br />
+但由于递归的实际实现方式开销较大(保存上下文等),
+所以编译器往往是将递归优化成循环. 编译器通常只优化尾递归
+(称为尾调用优化), <strong>尾递归</strong>
+是”递归调用在过程的最后一步”的递归, 这样的递归转换为循环是很方便的.
+但通用递归到循环的转换非常复杂, 需要模拟调用栈等,
+反而开销会更大一些.</p>
+</blockquote>
+<p>练习 1.9:</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name"><span class="built_in">+</span></span> a b) </span><br><span class="line">    (<span class="name"><span class="built_in">if</span></span> (<span class="name"><span class="built_in">=</span></span> b <span class="number">0</span>) a</span><br><span class="line">        (<span class="name">inc</span> (<span class="name"><span class="built_in">+</span></span> a (<span class="name">dec</span> b)) ) </span><br><span class="line">    )</span><br><span class="line">)</span><br><span class="line"><span class="comment">; 代换模型类似 (inc (inc (inc (+ 0 res)))), 在达到递归边界之前一直在推迟计算</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name"><span class="built_in">+</span></span> a b) </span><br><span class="line">  (<span class="name"><span class="built_in">if</span></span> (<span class="name"><span class="built_in">=</span></span> b <span class="number">0</span>) a</span><br><span class="line">      (<span class="name"><span class="built_in">+</span></span> (<span class="name">inc</span> a) (<span class="name">dec</span> b))</span><br><span class="line">  )</span><br><span class="line">)</span><br><span class="line"><span class="comment">; 代换模型类似 (+ 0 res), 没有推迟计算</span></span><br></pre></td></tr></table></figure>
+<p><del>话说我第一次老老实实展开看代换模型写对了,
+写这个博客的时候算第二次试图直接看结果看错了</del></p>
+<p>练习 1.10: 直接展开模拟然后归纳, 但是我之前写的时候墨迹太乱了,
+依稀只能看出有一个是 <span class="math inline">\(^{n-1}2\)</span> (即
+<span class="math inline">\(2^{2^{2^{2^{...}}}}\)</span>)</p>
+<h3 id="树形递归">树形递归</h3>
+<p>像斐波那契的递归求法这样的 DFS 过程称为树形递归,
+其代换模型不是一长链, 而是一棵树.</p>
+<h3 id="递归如何简化逻辑">递归如何简化逻辑</h3>
+<p>以书中对任意数量 <span class="math inline">\(n\)</span> 现金求拆分成
+<span class="math inline">\(c\)</span> 种价值的零钱的方法数 (称为 <span
+class="math inline">\(f(n, c)\)</span> ) 为例.<br />
+递归可以将其简化为单纯的分类过程: 数量为 <span
+class="math inline">\(n\)</span> 的现金可以 “使用第一种硬币” 和
+“不使用第一种硬币”, 因此拆分种数也就是 “拆分 <span
+class="math inline">\(n\)</span> 为除第一种硬币之外的其他 <span
+class="math inline">\(c-1\)</span> 币种的拆分数” 加上
+“仅使用一次第一种硬币, 递归拆分 <span class="math inline">\(n -
+d\)</span> 为 <span class="math inline">\(c\)</span> 币种的拆分书”,
+即递归为 <span class="math inline">\(f(n, c-1)+f(n-d, c)\)</span> .
+再确认相关递归边界即可.</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name">f</span> n c) (<span class="name"><span class="built_in">cond</span></span> </span><br><span class="line">                 ((<span class="name"><span class="built_in">=</span></span> c <span class="number">0</span>) <span class="number">1</span>) </span><br><span class="line">                 ((<span class="name"><span class="built_in">or</span></span> (<span class="name"><span class="built_in">&lt;</span></span> c <span class="number">0</span>) (<span class="name"><span class="built_in">=</span></span> n <span class="number">0</span>)) <span class="number">0</span>)</span><br><span class="line">                 (<span class="name"><span class="built_in">else</span></span> (<span class="name"><span class="built_in">+</span></span> (<span class="name">f</span> n (<span class="name"><span class="built_in">-</span></span> c <span class="number">1</span>)) </span><br><span class="line">                          (<span class="name">f</span> (<span class="name"><span class="built_in">-</span></span> n (<span class="name">coins</span> c)) c) </span><br><span class="line">                          ))</span><br><span class="line">                 ))</span><br><span class="line"><span class="comment">; coins 是一个根据 c 币种编号返回对应币种价值的过程, 类似承担数组/map的职责</span></span><br><span class="line"><span class="comment">; 这 scheme 写起来匹配括号看眼花了, 我懒得写了()</span></span><br></pre></td></tr></table></figure>
+<p>练习 1.11: 看起来是个非常直观的树形递归, 所以用递归很好写;
+迭代过程需要反着算(因为不能推迟计算), 从 f(0), f(1), f(2) 往上加算出
+f(n) 来</p>
+<h3 id="复杂度分析">复杂度分析</h3>
+<p>给了标准的大 <span class="math inline">\(\Theta\)</span> 记法的定义:
+<span class="math inline">\(k_1g(n) \leq f(n) \leq k_2g(n)\)</span> 称为
+<span class="math inline">\(f(n) = \Theta(g(n))\)</span>.<br />
+(btw, 大 <span class="math inline">\(O\)</span> 记法就是把下界换成0,
+仅代表上界, 即最坏情况)</p>
+<p>练习 1.19 很有意思, 总之就是按他说的去推, 最后是: <span
+class="math inline">\(T^2_{pq} = T_{p&#39;q&#39;}\)</span>, 其中 <span
+class="math inline">\(p&#39; = p^2+q^2, q&#39; = 2pq + q^2\)</span>.</p>
+<figure>
+<img src="/images/image-20250530113707542.png"
+alt="image-20250530113707542" />
+<figcaption aria-hidden="true">image-20250530113707542</figcaption>
+</figure>
+<h2 id="高阶函数做抽象">高阶函数做抽象</h2>
+<h3 id="过程作为参数">过程作为参数</h3>
+<p>lisp 中过程可以直接作为其他过程的参数.<br />
+如果需要临时的匿名过程, 可以使用 lambda:
+<code>lambda (&lt;parameters&gt;) &lt;body&gt;</code><br />
+如果需要建立临时变量约束, 可以用 lambda 的一种语法糖
+<code>let</code>:</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">let</span></span> ((<span class="name">&lt;var1&gt;</span> &lt;exp1&gt;)</span><br><span class="line">  (<span class="name">&lt;var2&gt;</span> &lt;exp2&gt;)</span><br><span class="line">	...</span><br><span class="line">  )</span><br><span class="line">  &lt;body&gt;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><code>// TODO</code></p>
+<h3 id="过程作为一般性方法">过程作为一般性方法</h3>
+<p>折半法找函数的根, 找函数不动点</p>
+<h3 id="过程作为返回值">过程作为返回值</h3>
+<p>牛顿法</p>
+<p>练习: <img src="/images/image-20250530124016847.png"
+alt="image-20250530124016847" /></p>
+<h3 id="抽象作为第一级过程">抽象作为第一级过程</h3>
+<h2 id="小剧场">小剧场:</h2>
+<figure>
+<img src="/images/image-20250530123735194.png"
+alt="image-20250530123735194" />
+<figcaption aria-hidden="true">image-20250530123735194</figcaption>
+</figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>折鸦夜明け前
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://amiriox.github.io/2025/05/30/sicp_1/" title="SICP 第一章(构造过程抽象)">https://amiriox.github.io/2025/05/30/sicp_1/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        <div>
+            
+                
+
+            
+        </div>
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" rel="tag"># 计算机科学</a>
+              <a href="/tags/SICP/" rel="tag"># SICP</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/05/27/os_libc_support/" rel="prev" title="操作系统的 libc 支持">
+                  <i class="fa fa-angle-left"></i> 操作系统的 libc 支持
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/06/17/sicp_2/" rel="next" title="SICP 第二章(构造数据抽象)">
+                  SICP 第二章(构造数据抽象) <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+
+  <div class="post-copyright">
+    <p>
+      本博客所有文章除特别声明外，<br>
+	均采用
+      <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" target="_blank" rel="noopener">
+        CC BY-NC-ND 4.0 (署名-非商业性使用-禁止演绎 4.0 国际)
+      </a> 许可协议。
+    </p>
+  </div>
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">折鸦夜明け前</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
