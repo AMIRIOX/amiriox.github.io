@@ -6,7 +6,7 @@
   <link href="https://amiriox.github.io/atom.xml" rel="self"/>
   
   <link href="https://amiriox.github.io/"/>
-  <updated>2025-12-31T14:56:30.225Z</updated>
+  <updated>2026-01-01T17:14:37.338Z</updated>
   <id>https://amiriox.github.io/</id>
   
   <author>
@@ -21,9 +21,9 @@
     <link href="https://amiriox.github.io/2025/12/31/2025_first_failed_resistance/"/>
     <id>https://amiriox.github.io/2025/12/31/2025_first_failed_resistance/</id>
     <published>2025-12-31T14:54:33.000Z</published>
-    <updated>2025-12-31T14:56:30.225Z</updated>
+    <updated>2026-01-01T17:14:37.338Z</updated>
     
-    <content type="html"><![CDATA[<p>该写点什么呢？退役，折腾lecture，迷茫，比较，怀念，自我批判，一些微妙的改变</p><p>等期末周过去，放假再写吧。毕竟传统是在除夕前后去写年终总结。</p>]]></content>
+    <content type="html"><![CDATA[<p>该写点什么呢？退役，折腾lecture，迷茫，比较，怀念，自我批判，一些微妙的改变</p><p>等期末周过去，放假再写吧。毕竟传统是在除夕前后去写年终总结。</p><p>以下是草稿，</p><hr /><p>记录一些问题:</p><ol type="1"><li>学习上应该适度调整战略。在过去的几年中，尽可能涉猎更多领域来增加对计算机科学了解的广度是合理的，但是时候选择一个方向来深入下去了。如你所见，我不是很乐于承担这份选择的责任，尤其是可能带来的后果：我选错了方向怎么办？在【进一步的学习方案】和【更多的实践拷打】上要多下功夫。</li><li>后半年的任务调度存在严重的问题，而任务调度的实质是精力管理、心情管理和驱力管理。<ol type="1"><li>精力管理：今年一整年的作息、饮食都相当错乱，久坐、缺乏运动等对身体伤害极大。可以说，今年的问题是六分心理四分身体。这是好事啊！起码还有四分是能控制得了的。另一方面，后半年急于求成、过于冒进，贪心地安排了一堆任务，反而造成护航效应，使得在做一件事时不能够心无旁骛。所谓“无后顾之忧”，如果只需要考虑这一件事并且这件事足够“正统”，那么事情就简单很多。</li><li>心情管理：这是个伪命题，我实际上不太明白心情怎么会能够被管理的。但是由于本人的性格缺陷，倒有些成事不足败事有余：很多时候我面对逆境是“伸头是一刀缩头也是一刀”的态度，导致很多时候放任情绪恶化仍然强迫自己干活，比如国庆假期期间调一个bug连续调了十小时还是通宵然后顶不住自动睡着了的迷惑操作，典型的意气用事，极其低效，还影响驱力和身体状态。<del>但这个很难改啊</del></li><li>驱力管理：上半年做了很好的榜样。虽然退役是我极不愿意看到的事情，但是在退役后的自救几乎是无可指摘的（迅速转换学习方向，聚焦到一个任务上不断收获反馈，虽然本质上是逃跑——战略转移——但谁管那是黑猫白猫呢）。操作系统夏令营的第二阶段是本年度学习状态最稳定最充实的时间，这首先要归功于“无后顾之忧”，其次就是驱力：一方面这是儿时的梦想，本身就带有很大的兴趣；另一方面上半年的时候我还没有那么功利（或者说因为还在大一所以没有那么焦虑），愿意花时间“浪费”在一些可能没什么前途的领域上（scholar在拉丁语的来源中其实和 leisure 同源）。</li><li>除此之外，由于下半年回到了宿舍生活（这对我其实考验很大！），我的行动易受他人影响，这也是下半年一个很麻烦的阻力。</li></ol></li><li>如上所述，后半年不是太顺利，因此造成了专注力的一定丧失，这很悲哀，需要重新训练。</li></ol><p>好了，本着客观科学的态度，还是应该给个甜枣，但我实际上找不出这一年值得夸的地方，强行编造倒显得我心虚不足</p><ol type="1"><li>对大模型的工作流开发是比较完整的，虽然没有特别登峰造极但是起码达到了年初的预想。比如把单词视频用OpenAI whisper 转文本字幕然后找个小模型让它切成 Anki卡片算是比较天才的想法了（因为单词视频的大多数信息都在语言字幕上，板书和PPT几乎毫无意义，只能说什么都得弄个视频讲出来是教师病犯了，对学习而言视频几乎是最差的形式：没有目录，没法快速定位/随机访问，复习难度大）</li><li>虽然大多数时候无能为力，但是我基本是做到了所谓的吾日三省吾身。至少目前的生活中有什么问题正在发生，哪些比较严重我是心里有数的，总归不至于瞎着眼睛活着。但除了在考六级之前保护代码发力了迅速调整状态形成了良好的学习状态和规划之外，几乎没在这一年看到什么挽狂澜于既倒的出色应对，这是不应该的。</li><li>今年大概写了 22 篇技术类博客文章，其中有 4篇还未完工，<del>至于水的流水账日记更是数不胜数</del>。这个数量其实有点少的，念在一些文章字数和质量（自以为）还不错，姑且算作优点。</li></ol><p>搞了个新的博客主题，就叫Newspepper，因为审美上主要是模仿上世纪的报纸，然后把 paper 改成了pepper，我觉得这种把已有单词小小改一下作为项目名还是挺有趣的。Hexo Next真的很难说符合我的审美，正好是 1 月 1日弄上来的，蹭个辞旧迎新的彩头。但实际上我的博客根本没人看，自娱自乐罢了。</p>]]></content>
     
     
       
@@ -51,17 +51,13 @@
     <content type="html"><![CDATA[<p>上一篇博客: <ahref="https://zheya.cc/2025/12/16/db-15445-3-access/">数据库系统的访问方法| Amiriox’s Storage</a></p><p>一觉醒来发现自己变成反面教材了, 我是不是不该退役啊?</p><h2 id="查询计划">查询计划</h2><p>在关系型数据库中, 操作可以视为在可重集合上的关系代数运算的组合.在第一篇文章中介绍了一些最常见的关系代数运算和对应的 SQL 语句.关系代数的每个运算都根据其语义接受一个或多个关系, 并产出新的关系.将每个运算视作一个算子, 接受一个或多个表, 产出新的表.这个由<strong>算子(operator)</strong>组成的有向无环图(DAG)就是<strong>查询计划(QueryPlan)</strong>.</p><p>例如, 对于 SQL 语句</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name</span><br><span class="line"><span class="keyword">FROM</span> R <span class="keyword">JOIN</span> S <span class="keyword">ON</span> R.id <span class="operator">=</span> S.id</span><br><span class="line"><span class="keyword">WHERE</span> S.age <span class="operator">&gt;</span> <span class="number">18</span></span><br></pre></td></tr></table></figure><p>这其中包含 连接 <span class="math inline">\(\bowtie\)</span>、投影<span class="math inline">\(\pi\)</span>、选择 <spanclass="math inline">\(\sigma\)</span>. 从算子的角度来看, 首先是从关系<span class="math inline">\(R\)</span> 和 <spanclass="math inline">\(S\)</span> 中提取元组的 access method, 接着是对<span class="math inline">\(S\)</span> 中的元组进行选择的 operator:<span class="math inline">\(\sigma_{age&gt;18}(S)\)</span>,然后是将选择后的 <span class="math inline">\(S&#39;\)</span> 中的元组与<span class="math inline">\(R\)</span> 做连接的 operator: <spanclass="math inline">\(T = R \bowtie_{R.sid=S&#39;.sid} S&#39;\)</span>,最后对这个连接后的临时表的元组进行投影操作的 operator: <spanclass="math inline">\(\pi_{name}(T)\)</span>. (实际上不一定会成表,即不会在 Catalog 中有这个临时表的元数据, 不过无论是什么,在算子看来只是一堆元组而已)</p><p>而上一篇博客介绍了从表中提取元组、执行查询(包括高效的单点查询和范围查询)的Access Method, 本文主要介绍一些常见算子的实现方式, 如 <code>JOIN</code>,<code>ORDER BY</code>, <code>GROUP BY</code>. &lt;TODO: 查证一下<code>SELECT</code>, <code>WHERE</code> 等算子实现&gt;</p><p>总结来说: 数据在算子构成的逻辑管道中流通最终被塑造为查询结果.</p><p>在查询计划的有向无环图中,一个让元组能够连续流动而无需间接存储的过程就是一个 pipeline, 而阻碍某个pipeline (导致元组被迫”停下”被存储等待) 的运算符就是 pipeline break,例如 <code>JOIN</code>, <code>ORDER BY</code>. 对于 Hash Join,需要对其中一个表建立哈希表(Pipeline #1), 而另一个表则可以作为另一条Pipeline #2 在 #1 结束后启动, 则对于另一个表来说这条数据流动没有阻塞;对于 Sort-Merge Join, 则需要三条 pipeline: 两个表分别 sort 都是 breaker,最后再在 <code>JOIN</code> 那个算子节点上继续流动; 对于<code>ORDER BY</code>, 必须间接存储, 等所有元组都获取到后才能排序.</p><p>不过这是总体上的概念, 具体的实现上大致可分为三种模型,主要的区别在于获取元组的多少: 是”一次获取一个元组”(迭代器模型),还是”一次获取全部元组”(物化模型),还是”一次获取一部分元组”(向量批处理模型).</p><h2 id="三种算子执行模型">三种算子执行模型</h2><h3 id="迭代器模型">迭代器模型</h3><p>就像迭代器一样, 每个算子有一个 <code>Next()</code> 函数,负责计算并返回下一个元组, 通常是更高层的算子调用 <code>Next()</code>并且进一步导致其子节点调用 <code>Next()</code>, 直到最底层的<code>FROM</code> 负责 <strong>emit</strong> 出表中的原始元组,整体就像从顶层往上拉数据一样, 所以称作 Top-to-Bottom Pull-based.</p><p>利于, 对于一个最简单的 <code>FROM S</code>:</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> S:</span><br><span class="line">    emit(t)</span><br></pre></td></tr></table></figure><p>而选择则是:</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> child.Next():</span><br><span class="line">    <span class="keyword">if</span> predicate(t): emit(t)</span><br></pre></td></tr></table></figure><p>Hash Join:</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> t1 <span class="keyword">in</span> left.Next():</span><br><span class="line">    buildHashTable(t1)</span><br><span class="line"><span class="keyword">for</span> t2 <span class="keyword">in</span> right.Next():</span><br><span class="line">    <span class="keyword">if</span> Some(t1) = probe(t2):</span><br><span class="line">        emit(t1 ⨝ t2)</span><br></pre></td></tr></table></figure><h3 id="物化模型">物化模型</h3><h3 id="和向量批处理模型">和向量批处理模型</h3><h2 id="两种方向">两种方向</h2><p>自底向上推, 自顶向下拉</p><p>概念, 优势</p><h2 id="具体的算子执行">具体的算子执行</h2><h3 id="提供数据">提供数据</h3><p>Sequential Scan 的优化</p><h3 id="更新">更新</h3><h3 id="表达式求值和-jit">表达式求值和 JIT</h3><h3 id="sorting">Sorting</h3><p>意义, 外部归并, Clustered B+ Tree 索引</p><h3 id="aggregation">Aggregation</h3><p>排序, 外部哈希</p><h3 id="join">Join</h3><p>意义, Sort-Merge Join 和 Hash Join</p>]]></content>
     
     
-    <summary type="html">&lt;p&gt;上一篇博客: &lt;a href=&quot;https://zheya.cc/2025/12/16/db-15445-3-access/&quot;&gt;数据库系统的访问方法
-| Amiriox’s Storage&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;一觉醒来发现自己变成反面教材了, 我是不是不该退役啊?&lt;/p&gt;
-&lt;h2 id=&quot;查询计划&quot;&gt;查询计划&lt;/h2&gt;
-&lt;p&gt;在关系型数据库中, 操作可以视为在可重集合上的关系代数运算的组合.
-在第一篇文章中介绍了一些最常见的关系代数运算和对应的 SQL 语句.
-关系代数的每个运算都根据其语义接受一个或多个关系, 并产出新的关系.
-将每个运算视作一个算子, 接受一个或多个表, 产出新的表.
-这个由&lt;strong&gt;算子(operator)&lt;/strong&gt;组成的有向无环图(DAG)就是&lt;strong&gt;查询计划(Query
-Plan)&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;例如, 对于 SQL 语句&lt;/p&gt;</summary>
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
     
     
     
