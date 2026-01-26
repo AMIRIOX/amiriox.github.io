@@ -54,7 +54,7 @@
     <header class="newspaper-header">
   <div class="header-top">
     <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期五, 一月 2, 2026</div>
+    <div class="header-date">星期一, 一月 26, 2026</div>
     <button class="theme-toggle" aria-label="Toggle dark mode">
       <span class="toggle-sun">☀</span>
       <span class="toggle-moon">☾</span>
@@ -106,6 +106,51 @@
       
         
         <article class="article-card article-featured">
+  <header class="article-header">
+    <div class="article-meta-top">
+      
+        <span class="article-category">年终总结</span>
+      
+      <time datetime="2022-01-27T17:05:00.000Z" class="article-date">
+        一月 28, 2022
+      </time>
+    </div>
+    
+    <h2 class="article-title">
+      <a href="/2022/01/28/2021_face_up_to_calamities/">直面灾厄 -- 2021 年终总结</a>
+    </h2>
+    
+    
+  </header>
+  
+  <div class="article-excerpt">
+    
+      <h1 id="直面灾厄-2021-年终总结">“直面灾厄” —— 2021 年终总结。</h1>
+<p>本篇系笔者 2021年年终总结 / 初中毕业总结 / 高一(上)学年生活总结。</p>
+    
+  </div>
+  
+  <footer class="article-footer">
+    <a href="/2022/01/28/2021_face_up_to_calamities/" class="read-more-btn">
+      <span class="btn-text">Continue Reading →</span>
+      <span class="btn-arrow">→</span>
+    </a>
+    
+    
+      <div class="article-tags">
+        
+          <a href="/tags/%E8%BF%81%E7%A7%BB/" class="tag">#迁移</a>
+        
+      </div>
+    
+  </footer>
+</article>
+
+      
+    
+      
+        
+        <article class="article-card ">
   <header class="article-header">
     <div class="article-meta-top">
       
@@ -368,139 +413,6 @@
   
   <footer class="article-footer">
     <a href="/2020/12/06/CSAPP-2020-12-06/" class="read-more-btn">
-      <span class="btn-text">Continue Reading →</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    
-    
-      <div class="article-tags">
-        
-          <a href="/tags/%E8%BF%81%E7%A7%BB/" class="tag">#迁移</a>
-        
-          <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" class="tag">#计算机科学</a>
-        
-      </div>
-    
-  </footer>
-</article>
-
-      
-    
-      
-        
-        <article class="article-card ">
-  <header class="article-header">
-    <div class="article-meta-top">
-      
-        <span class="article-category">组成原理</span>
-      
-      <time datetime="2020-11-19T16:00:00.000Z" class="article-date">
-        十一月 20, 2020
-      </time>
-    </div>
-    
-    <h2 class="article-title">
-      <a href="/2020/11/20/CSAPP-2020-11-20/">CSAPP 2020-11-20</a>
-    </h2>
-    
-    
-  </header>
-  
-  <div class="article-excerpt">
-    
-      <blockquote>
-<p>此文章的 <em>撰写时间</em> 可能有误</p>
-</blockquote>
-<p><del>又到了开心的周末!</del></p>
-<p>CSAPP Today:</p>
-<ol type="1">
-<li><p>Amdahl’s law</p>
-<ul>
-<li><span class="math inline">\(Amdahl\)</span> 定律: 设一个操作原来需要
-<span class="math inline">\(T_{old}\)</span> 的时间执行,
-现在我们对其<span class="math inline">\(a\)</span>的部分(即 <span class="math inline">\(\text{总部分}\times\text{a}\)</span>
-这部分进行<span class="math inline">\(1/k\)</span>的优化(原来这部分
-<span class="math inline">\(T\)</span> 时间可以执行完, 现在加速到了
-<span class="math inline">\(T/k\)</span> ), 则
-<ul>
-<li>没有加速的部分所需时间: <span class="math inline">\((1-a)\times
-T_{old}\)</span></li>
-<li>加速的部分所需时间: <span class="math inline">\((a\times
-T_{old})/k\)</span></li>
-</ul></li>
-</ul>
-<p>所以总体加速后的时间为 <span class="math display">\[T_{new}=(1-a)\times T_{old} + (a\times
-T_{old})/k\]</span> 所以加速比<span class="math inline">\(S=T_{old}/T_{new}\)</span>就是</p>
-<p><span class="math display">\[S=\frac{T_{old}}{T_{new}}=\frac{T_{old}}{(1-a)\times
-T_{old} + (a\times T_{old})/k}=\frac{1}{(1-a)+a/k}\]</span></p>
-<p>常见的表示方法是用算出的加速比后加上一个”<span class="math inline">\(\times\)</span>“,我们对 <span class="math inline">\(60\%\)</span> 的部分进行优化,
-这部分执行时间到了原来的 <span class="math inline">\(1/3\)</span> , 则
-<span class="math inline">\(a=0.6, k=3\)</span> ,带入公式得出 <span class="math inline">\(S=1.67\)</span> , 则加速比就是<span class="math inline">\(1.67 \times\)</span>, 读做”1.67倍”.</p>
-<ul>
-<li>当 <span class="math inline">\(k\)</span> 趋向于 <span class="math inline">\(\infty\)</span> 时, 这部分时间可以忽略不计,
-于是就有 <span class="math display">\[S_{\infty}=\frac{1}{(1-a)}\]</span> 即使 <span class="math inline">\(60\%\)</span> 的系统可以加速到可以忽略时间的程度,
-总体加速比也只有 <span class="math inline">\(2.5 \times\)</span>,
-这体现了amdahl定律的一个重要思想: &gt; 只有提升了系统的大部分,
-才能更好的提升整个系统</li>
-</ul>
-<p>待更新, 先吃个饭</p></li>
-<li><p>并行/并发</p>
-<ul>
-<li>并发是指同时处理多个活动</li>
-<li>并行是指通过并发来加速系统
-<ol type="1">
-<li>线程级并发
-<ul>
-<li>最初的系统并不是完全意义上的同时操作, 而是反复切换上下文(<del>反 复
-横 跳</del> 上一篇有说上下文, 主要是指当前进程的主存/寄存器文件),
-后来多核和超线程出现才有了真正的并发</li>
-<li>多核是指把多个CPU搞到一个集成电路板上,
-每个CPU叫一个<em>核心(core)</em> 比如我的dell-inspiron 5590是4核心,
-就是四个倒霉鬼被焊在电路板上了 (逃, 据工厂主 <del>资本家</del>
-说未来他们可以焊接几百的核心到一块板子上</li>
-<li>超线程指的是一个核心执行多个线程, 主要也是线程切换实现的,
-但是比普通的CPU横跳地更科学, 所以速度也更快,
-比如如果这个线程需要一些时间加载一个数据, 那我就切走了 你自己玩,
-我去干别的</li>
-<li>这就很好解释了为什么我的PC叫”四核心八线程”, 表示有四个核心,
-每个核心是一个可以同时执行两个线程(<del>跳板</del>)的超线程核心</li>
-<li>现代CPU大多数都是多核多线程核心,
-一般他们的结构都是<strong>每个核心分别</strong>有一个寄存器,
-两个L1高速缓存(详见上一篇)和两个L1共用的L2高速缓存,
-然后总体上有一个所有核心共用的高速缓存L3, 然后接到总线和主存,
-其中每个核心中的两个L1高速缓存分别是数据和指令缓存.
-所以4核心8线程的CPU一般来讲有 <span class="math inline">\(4 \times 3 + 1
-= 13\)</span>个高速缓存和<span class="math inline">\(4 \times
-1=4\)</span>个寄存器</li>
-</ul></li>
-<li>指令级并发
-<ul>
-<li>指同时执行多个指令, 这是个比较nb的概念,
-之前可能一个指令执行很多个(3~10)时钟周期,
-现在通过一个叫”流水线”的东西实现指令级并发,
-可以一个时钟周期内执行<strong>上百个</strong>指令</li>
-<li>像上面那样,
-一个时钟周期可以处理<strong>不止一个</strong>指令叫<strong>超标量</strong>,
-大多数PC的CPU都支持这个
-<del>不会吧不会吧不会都0202年了还有人的电脑不支持超标量吧</del></li>
-</ul></li>
-<li>单指令多数据
-<ul>
-<li>比如处理单精度浮点数(float)加法是一个指令, 这叫单指令</li>
-<li>同时处理8对float加法, 这叫多数据</li>
-<li>这是同时执行的, 也叫SIMD, 不知道具体叫什么, 我猜<span class="math inline">\(Single\ Instruction\ Multi\ Data\)</span></li>
-<li>有时候cpu会对一些程序自动处理SIMD, 但更好的办法是编译器来解决这些,
-比如GCC就支持向量变量</li>
-</ul></li>
-</ol></li>
-</ul></li>
-</ol>
-<p>为什么我用中文输入法打出来<code>cpu</code>第一个是<code>川普</code>啊</p>
-    
-  </div>
-  
-  <footer class="article-footer">
-    <a href="/2020/11/20/CSAPP-2020-11-20/" class="read-more-btn">
       <span class="btn-text">Continue Reading →</span>
       <span class="btn-arrow">→</span>
     </a>

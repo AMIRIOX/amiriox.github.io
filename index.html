@@ -54,7 +54,7 @@
     <header class="newspaper-header">
   <div class="header-top">
     <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期五, 一月 2, 2026</div>
+    <div class="header-date">星期一, 一月 26, 2026</div>
     <button class="theme-toggle" aria-label="Toggle dark mode">
       <span class="toggle-sun">☀</span>
       <span class="toggle-moon">☾</span>
@@ -102,6 +102,74 @@
       
 <div class="front-page">
   <div class="articles-grid">
+    
+      
+        
+        <article class="article-card article-featured">
+  <header class="article-header">
+    <div class="article-meta-top">
+      
+        <span class="article-category">学术</span>
+      
+      <time datetime="2026-01-23T16:26:06.000Z" class="article-date">
+        一月 24, 2026
+      </time>
+    </div>
+    
+    <h2 class="article-title">
+      <a href="/2026/01/24/paper_NOVA/">【论文阅读】NOVA: A Log-structured File System for Hybrid Volatile/Non-volatile Main Memories</a>
+    </h2>
+    
+    
+  </header>
+  
+  <div class="article-excerpt">
+    
+      <h2 id="一-核心内容">一 核心内容</h2>
+<p>论文作者提出了一种名为 NOn- Volatile memory Accelerated (NOVA)
+的日志结构文件系统 (log- structured file system, LFS), 以最大化 NVMM 和
+DRAM 同时存在的混合存储系统的效率。</p>
+<ul>
+<li>NOVA 充分利用 NVMM 的随机访问特性，从传统 LFS
+中放宽了局部性限制，从而实现了日志数据分离、日志链表来避免传统 LFS
+的垃圾回收开销</li>
+<li>NOVA 通过将空闲链表索引建立在 DRAM 中，规避了在 NVMM
+中由于一致性难以保证造成的数据结构难以实现的问题</li>
+<li>除了本身是 log-structured 之外，NOVA 还在需要同时修改多个 inode
+的操作(如对路径相关的操作)中采用了 journaling 技术，同时依赖 VFS
+的目录锁，规避了影子分页系统的级联开销和因此强顺序数据依赖造成的性能损失</li>
+</ul>
+<p>NOVA 适配了 NVMM 以及 NVMM + DRAM 混合存储系统的特点，解决了传统 LFS
+中 GC 开销大的痛点，尤其在写密集的场景下表现极其优秀。</p>
+<h2 id="二-研究动机">二 研究动机</h2>
+    
+  </div>
+  
+  <footer class="article-footer">
+    <a href="/2026/01/24/paper_NOVA/" class="read-more-btn">
+      <span class="btn-text">Continue Reading →</span>
+      <span class="btn-arrow">→</span>
+    </a>
+    
+    
+      <div class="article-tags">
+        
+          <a href="/tags/%E6%96%87%E7%8C%AE/" class="tag">#文献</a>
+        
+          <a href="/tags/NVMM%E9%9D%9E%E6%98%93%E5%A4%B1%E6%80%A7%E4%B8%BB%E5%AD%98/" class="tag">#NVMM非易失性主存</a>
+        
+          <a href="/tags/%E6%B7%B7%E5%90%88%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/" class="tag">#混合存储系统</a>
+        
+          <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" class="tag">#文件系统</a>
+        
+          <a href="/tags/FAST/" class="tag">#FAST</a>
+        
+      </div>
+    
+  </footer>
+</article>
+
+      
     
       
     
@@ -359,8 +427,6 @@ b 格高一点的如 <code>gitlet</code>
   </footer>
 </article>
 
-      
-    
       
     
       
