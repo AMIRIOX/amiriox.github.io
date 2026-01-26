@@ -223,7 +223,7 @@ NOVA 分离日志和数据使得数据在通常情况下物理地址固定，为
 为了避免在访存时的空等待，有时会重排一些看上去没有相关性的指令。但是在我们的例子中，log
 的 tail pointer
 必须在所有操作确实完成后进行，否则就失去了其事务提交和回滚的意义。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">new_tail = append_to_log(inode-&gt;tail, entry); <span class="comment">// writes back the log entry</span></span><br><span class="line">cachelines <span class="title function_">clwb</span><span class="params">(inode-&gt;tail, entry-&gt;length)</span>;  </span><br><span class="line">sfence(); <span class="comment">// orders subsequent</span></span><br><span class="line">PCOMMIT <span class="title function_">PCOMMIT</span><span class="params">()</span>; <span class="comment">// commits entry to NVMM</span></span><br><span class="line">sfence(); <span class="comment">// orders subsequent store inode-&gt;tail = new_tail;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">new_tail = append_to_log(inode-&gt;tail, entry); <span class="comment">// writes back the log entry</span></span><br><span class="line">cachelines <span class="title function_">clwb</span><span class="params">(inode-&gt;tail, entry-&gt;length)</span>;  </span><br><span class="line">sfence(); <span class="comment">// orders subsequent</span></span><br><span class="line">PCOMMIT <span class="title function_">PCOMMIT</span><span class="params">()</span>; <span class="comment">// commits entry to NVMM</span></span><br><span class="line">sfence(); <span class="comment">// orders subsequent store</span></span><br><span class="line">inode-&gt;tail = new_tail;</span><br></pre></td></tr></table></figure>
 <p>其中 <code>clwb</code> 用于把数据从 CPU 缓存写回到内存控制器；
 <code>sfence()</code>
 用于保证其前面的指令一定比其后面的指令先可见（防止重排或乱序执行）；<code>PCOMMIT()</code>
@@ -265,15 +265,20 @@ NVMM 的区域被标记为只读，在需要操作时临时禁用 CPU 的 Write 
 <p>对于微基准测试，作者测试了简单的 <code>create</code>
 <code>append</code> 和 <code>delete</code> 操作在 STT-RAM 和
 PCM（相变内存，二者均为 NVMM）上，其中 <code>create</code> 和
-<code>append</code> 操作，NOVA 本身的逻辑只占总 latency 的 21%-28%，而
-<code>delete</code> 稍慢由于释放数据和日志需要读取 Inode
-日志。对于宏基准测试，作则测试了文件服务器、Web
+<code>append</code> 操作，NOVA 本身的逻辑仅占总 latency 的 21%-28%，而
+<code>delete</code> 操作中 NOVA 逻辑的 latency
+占比较大由于释放数据和日志需要读取 Inode 日志。</p>
+<p><img src="/images/Pasted%20image%2020260126223410.png" /></p>
+<p>对于宏基准测试，作则测试了文件服务器、Web
 代理、Web服务器、邮件服务器四种情况，NOVA
 在文件服务器和邮件服务器这样写密集业务上的吞吐量均领先（NVMM
 的特性规避了写放大），而在 Web Server 和 Web Proxy
 这样读密集的业务上表现一般。</p>
+<p><img src="/images/Pasted%20image%2020260126223518.png" /></p>
 <p>作者还通过高负载写入测试 GC 压力，发现 NOVA 吞吐量平稳，几乎不受 GC
-影响。同样，恢复速度也在毫秒级别。</p>
+影响。同样，恢复速度也在毫秒甚至微秒级别。</p>
+<p><img src="images/Pasted%20image%2020260126223649.png" /></p>
+<p><img src="images/Pasted%20image%2020260126223710.png" /></p>
 <h2 id="总结">总结</h2>
 <p><del>导师让我读的，说是让我实现文件系统</del> NOVA
 似乎目前只在学术界地位很高， 没有被 Linux
