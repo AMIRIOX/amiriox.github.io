@@ -216,9 +216,12 @@ NOVA 分离日志和数据使得数据在通常情况下物理地址固定，为
 的一条记录通常包含多次修改，如
 <code>(Inode A: DEL file, Inode B: ADD file)</code>,
 并且记录旧数据以用于恢复。</p>
-<p>综合以上，NOVA 有三种原子性保证： - CPU 的 8
-字节（64位）指令原子性保证 - 日志结构（log-structured）实现的单个 Inode
-原子性保证 - Journaling 技术实现的多个 Inode 原子性保证</p>
+<p>综合以上，NOVA 有三种原子性保证：</p>
+<ul>
+<li>CPU 的 8 字节（64位）指令原子性保证</li>
+<li>日志结构（log-structured）实现的单个 Inode 原子性保证</li>
+<li>Journaling 技术实现的多个 Inode 原子性保证</li>
+</ul>
 <h3 id="如何应对内存重排">如何应对内存重排</h3>
 <p>CPU
 为了避免在访存时的空等待，有时会重排一些看上去没有相关性的指令。但是在我们的例子中，log

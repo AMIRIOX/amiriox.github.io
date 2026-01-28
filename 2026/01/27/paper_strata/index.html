@@ -193,23 +193,28 @@ Area，形成实际的、读优化形式（Read-optimized）的文件数据。Ke
 会进行页对齐，从而利用 MMU 的页级别访问控制权限。 SSD 的 Kernel Bypass
 安全控制是利用硬件功能如 NVMe Namespace，HDD 则是软件模拟。</p>
 <p>Shared Area 保留了传统文件系统的 Superblock、Bitmap、Inode、Blocks
-，但是提出了一定的优化： * 传统的文件系统分配空闲块需要获取 Bitmap
-锁并且扫描空闲位，造成对 Bitmap 的竞争。而 Strata 的 Free block bitmap
-一次抓取一个 Erasure Block 的大小（与 SSD 有关，包含多个空闲块），在这个
-EB 中为每个请求顺序地分配空闲块。当 KernelFS
+，但是提出了一定的优化：</p>
+<ul>
+<li>传统的文件系统分配空闲块需要获取 Bitmap 锁并且扫描空闲位，造成对
+Bitmap 的竞争。而 Strata 的 Free block bitmap 一次抓取一个 Erasure Block
+的大小（与 SSD 有关，包含多个空闲块），在这个 EB
+中为每个请求顺序地分配空闲块。当 KernelFS
 的多个线程同时申请空闲块，他们并不会申请这个 EB
 的整体锁，而是用无锁操作抢到 <code>[offset, offset+N)</code>
 的一系列空闲块，没抢到的继续无锁重试。由于每个线程拿到的都是不同的空闲块位置，所以直接翻转对应
 bit 就好，无需加锁。当 <code>offset</code> 超出了一个 EB
 大小，就从空闲池中找一个新的 EB。当一个 EB 中的空间都被回收，则这个 EB
-本身进入空闲池等待下一次被复用。 * Strata 将 Inode 当做一个普通的
-File，使得 Strata 可以支持热点文件的 Inode 存在于较快存储器层次的 Shared
-Area 上。由于 Inode 本身也是一个 File，找这个 File 需要找这个 Inode File
-的 Inode，但是这个 Inode of Inode File 也需要找 Inode File。为避免 Inode
-File 本身的 Inode 只存在于 Inode File 上， Inode File 本身的 Inode
-被硬编码存放在 Superblock 中。 * Strata 会为文件数据块和 Inode 块建立
-Extent Tree 索引，每一存储层次的 Shared Area 都有自己的 Extent Tree
-Root，NVM/SSD/HDD 共三个 Root。</p>
+本身进入空闲池等待下一次被复用。</li>
+<li>Strata 将 Inode 当做一个普通的 File，使得 Strata 可以支持热点文件的
+Inode 存在于较快存储器层次的 Shared Area 上。由于 Inode 本身也是一个
+File，找这个 File 需要找这个 Inode File 的 Inode，但是这个 Inode of
+Inode File 也需要找 Inode File。为避免 Inode File 本身的 Inode 只存在于
+Inode File 上， Inode File 本身的 Inode 被硬编码存放在 Superblock
+中。</li>
+<li>Strata 会为文件数据块和 Inode 块建立 Extent Tree
+索引，每一存储层次的 Shared Area 都有自己的 Extent Tree
+Root，NVM/SSD/HDD 共三个 Root。</li>
+</ul>
 <h2 id="三-strata-实现机制">三 Strata 实现机制</h2>
 <h3 id="读写操作">读写操作</h3>
 <p>对于读操作，LibFS 会先在 DRAM 中的 File data cache 寻找，若 cache
@@ -265,11 +270,11 @@ NOVA, SSD 层的 F2FS, HDD 层的 EXT4.</p>
 分布的随机写入(一小部分热点被反复写，占比越大的部分写入越少，符合实际需求场景)，比较写入效率（写放大的倒数），在较小数据规模下，Strata
 的写放大极小，因为这种大量 small write 正是 LibFS Update log
 用武之地</p>
-<p><img src="images/Pasted%20image%2020260128205310.png" /></p>
+<p><img src="/images/Pasted%20image%2020260128205310.png" /></p>
 <p>NVM 上的平均 IO 延迟，依然是在 small write 上有优势，因为 LibFS
 的部分是零拷贝的，Digest 是后台任务。其他情况大部分持平。Error Bar
 代表的是 P99 Latency，Strata 的稳定性也优于对比对象。</p>
-<p><img src="images/Pasted%20image%2020260128205428.png" /></p>
+<p><img src="/images/Pasted%20image%2020260128205428.png" /></p>
 <p>NVM 多线程吞吐量扩展性测试，在随机写的情况下 8 线程时 Strata
 的吞吐量比 NOVA 高出 28%（这个图太难绷了，看着都在 2.0
 附近，但其实其一单位是 GB/s,
@@ -279,23 +284,23 @@ NOVA, SSD 层的 F2FS, HDD 层的 EXT4.</p>
 要更线性更好一些。毕竟 NOVA 是 per-inode
 的锁，粒度比较小，并发性很好。不过 NVM
 本来也比较快，依然拉不开差距。</p>
-<p><img src="images/Pasted%20image%2020260128210120.png" /></p>
+<p><img src="/images/Pasted%20image%2020260128210120.png" /></p>
 <p>SSD 多线程吞吐量扩展性测试。在写入场景下 Strata
 无疑最出色，几乎是顶着 SSD 带宽来的，通过 log
 把随机写转换为顺序写非常成功。但是读操作表现比较一般。随机读的那张图没什么意义，因为这里测的
 Strata
 是单线程的。其实我觉得有一点“懒加载”写操作，把写操作的负载均摊一些到读上了</p>
-<p><img src="images/Pasted%20image%2020260128210820.png" /> ###
+<p><img src="/images/Pasted%20image%2020260128210820.png" /> ###
 Macrobenchmark</p>
 <p>宏基准测试成绩比微基准测试好很多，在 Varmail, Fileserver
 上吞吐量领先。邮件服务器产生临时文件，先创建后删除，这些临时文件产生的
 log 都在 NVM 的 Update log 里被抵消了，无需 Digest.</p>
-<p><img src="images/Pasted%20image%2020260128212212.png" /></p>
+<p><img src="/images/Pasted%20image%2020260128212212.png" /></p>
 <p>在 LevelDB Benchmark 的写操作上 Strata
 也领先（尤其在数据较小时），主要是同步 write 带来的好处，不用每次都
 <code>fsync()</code></p>
 <p>在 Redis SET 测试上吞吐量领先但差距不大。</p>
-<p><img src="images/Pasted%20image%2020260128212410.png" /></p>
+<p><img src="/images/Pasted%20image%2020260128212410.png" /></p>
 <h2 id="五-阅读总结">五 阅读总结</h2>
 <p>看力竭了，比 NOVA
 复杂很多，很多机制的意义和目的要想一会才能明白，不像 NOVA
