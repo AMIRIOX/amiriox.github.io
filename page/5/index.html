@@ -54,7 +54,7 @@
     <header class="newspaper-header">
   <div class="header-top">
     <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期一, 一月 26, 2026</div>
+    <div class="header-date">星期三, 一月 28, 2026</div>
     <button class="theme-toggle" aria-label="Toggle dark mode">
       <span class="toggle-sun">☀</span>
       <span class="toggle-moon">☾</span>
@@ -106,6 +106,69 @@
       
         
         <article class="article-card article-featured">
+  <header class="article-header">
+    <div class="article-meta-top">
+      
+        <span class="article-category">组成原理</span>
+      
+      <time datetime="2024-12-14T11:58:00.000Z" class="article-date">
+        十二月 14, 2024
+      </time>
+    </div>
+    
+    <h2 class="article-title">
+      <a href="/2024/12/14/CSAPP-Lab-Bomb/">CSAPP Bomb Lab 达成</a>
+    </h2>
+    
+    
+  </header>
+  
+  <div class="article-excerpt">
+    
+      <p>这是我第一个完成的 lab, 这篇博客其实是边做边记的解决过程改的,
+所以比较简略, 其他 Lab 的记录博客会详细一点,
+这篇博客以后有时间也会补充</p>
+<h2 id="phase-0x1">Phase 0x1</h2>
+<p><code>Border relations with Canada have never been better.</code>
+根据调用约定, gdb 直接读 <code>phase_1()</code> 的 <code>$rdi</code>
+即可.</p>
+<h2 id="phase-0x2">Phase 0x2</h2>
+<p><code>1 2 4 8 16 32</code> 利用断点跳到 <code>read_six_number</code>
+后, 发现核心代码 <code>add %eax %eax</code>, 即不断 <span
+class="math inline">\(\times 2\)</span></p>
+<h2 id="phase-0x3">Phase 0x3</h2>
+<p><code>5 206</code> <code>rsp+8</code>, <code>rsp+12</code>
+分别是输入的两个数, <code>int</code> 占四字节.</p>
+<p>发现一堆 <code>mov</code>, <code>jmp</code>, 里只有第五个的差能整除
+<span class="math inline">\(8\)</span> 并且 <code>mov</code> 过去的值是
+<code>206</code></p>
+<p>(最后几行是核心代码 <code>cmp 0xc(%rsp), %eax</code>)</p>
+    
+  </div>
+  
+  <footer class="article-footer">
+    <a href="/2024/12/14/CSAPP-Lab-Bomb/" class="read-more-btn">
+      <span class="btn-text">Continue Reading →</span>
+      <span class="btn-arrow">→</span>
+    </a>
+    
+    
+      <div class="article-tags">
+        
+          <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" class="tag">#计算机科学</a>
+        
+          <a href="/tags/CSAPP-cmu15213/" class="tag">#CSAPP/cmu15213</a>
+        
+      </div>
+    
+  </footer>
+</article>
+
+      
+    
+      
+        
+        <article class="article-card ">
   <header class="article-header">
     <div class="article-meta-top">
       
@@ -366,63 +429,6 @@
       <div class="article-tags">
         
           <a href="/tags/%E8%BF%81%E7%A7%BB/" class="tag">#迁移</a>
-        
-      </div>
-    
-  </footer>
-</article>
-
-      
-    
-      
-        
-        <article class="article-card ">
-  <header class="article-header">
-    <div class="article-meta-top">
-      
-        <span class="article-category">组成原理</span>
-      
-      <time datetime="2020-12-05T16:00:00.000Z" class="article-date">
-        十二月 6, 2020
-      </time>
-    </div>
-    
-    <h2 class="article-title">
-      <a href="/2020/12/06/CSAPP-2020-12-06/">CSAPP 2020-12-06</a>
-    </h2>
-    
-    
-  </header>
-  
-  <div class="article-excerpt">
-    
-      <blockquote>
-<p>此文章的 <em>撰写时间</em> 可能有误</p>
-</blockquote>
-<p><del>这周比较烦, 详见随笔</del></p>
-<p>CSAPP Today:</p>
-<blockquote>
-<p>主要是一些oier们几乎人均知道的进制内容, 还有一些关于信息储存方式</p>
-</blockquote>
-<ol type="1">
-<li>十六进制的表示方法, 与二进制的转换
-<code>0x173A4C</code>转换成二进制, 每位的二进制组合起来</li>
-</ol>
-    
-  </div>
-  
-  <footer class="article-footer">
-    <a href="/2020/12/06/CSAPP-2020-12-06/" class="read-more-btn">
-      <span class="btn-text">Continue Reading →</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    
-    
-      <div class="article-tags">
-        
-          <a href="/tags/%E8%BF%81%E7%A7%BB/" class="tag">#迁移</a>
-        
-          <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" class="tag">#计算机科学</a>
         
       </div>
     

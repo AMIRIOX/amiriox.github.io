@@ -54,7 +54,7 @@
     <header class="newspaper-header">
   <div class="header-top">
     <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期一, 一月 26, 2026</div>
+    <div class="header-date">星期三, 一月 28, 2026</div>
     <button class="theme-toggle" aria-label="Toggle dark mode">
       <span class="toggle-sun">☀</span>
       <span class="toggle-moon">☾</span>
@@ -120,7 +120,7 @@
           <span class="post-author">By 折鸦夜明け前</span>
         
         
-          <span class="post-updated">Updated 一月 26, 2026</span>
+          <span class="post-updated">Updated 一月 28, 2026</span>
         
       </div>
     </header>
@@ -130,7 +130,7 @@
     <div class="post-content">
       <h2 id="一-核心内容">一 核心内容</h2>
 <p>论文作者提出了一种名为 NOn- Volatile memory Accelerated (NOVA)
-的日志结构文件系统 (log- structured file system, LFS), 以最大化 NVMM 和
+的日志结构文件系统 (log- structured file system, LFS) 以最大化 NVMM 和
 DRAM 同时存在的混合存储系统的效率。</p>
 <ul>
 <li>NOVA 充分利用 NVMM 的随机访问特性，从传统 LFS
@@ -200,7 +200,8 @@ pool，将索引数据结构（通常是内存友好的数据结构）存在 DRA
 的 <code>Head</code>, <code>Tail</code> 指针分别指向 log
 链表的第一页首地址和最后一页已提交的地址，在 <code>Tail</code>
 指针之后的均为无效数据，等待被原子地 commit，即 <code>Tail</code>
-向后移动。</p>
+向后移动。一个文件的 Inode 仅仅存在于一个 CPU 核心的 Inode Table
+中，因此所有修改都是共享的，靠 CAS 的 log tail 更新处理并发问题。</p>
 <p>NOVA 将 Inode table 设计为初始 2MB，128 字节对齐的块数组。每个 CPU
 有独立的 Inode 分配器，它们可以自由无锁地分配 Inode
 空间并填充数据，然后再获取 Inode 锁把刚分配空间的地址信息记入 Inode
@@ -229,8 +230,8 @@ NOVA 分离日志和数据使得数据在通常情况下物理地址固定，为
 用于保证其前面的指令一定比其后面的指令先可见（防止重排或乱序执行）；<code>PCOMMIT()</code>
 用于清空内存控制器写队列保证数据被写入 NVMM 芯片上。</p>
 <h3 id="读写操作">读写操作</h3>
-<p>对于 <code>write</code> 操作，NOVA 沿袭传统 LFS 的 Copy-on-Write
-(CoW) 方案，先在空闲页写入更改后的数据，再追加 log entry
+<p>对于 <code>write</code> 操作，NOVA 绕过 DAX，沿袭传统 LFS 的
+Copy-on-Write (CoW) 方案，先在空闲页写入更改后的数据，再追加 log entry
 并原子更改元数据指向的位置，旧页变为垃圾等待回收（或被作为一个版本的快照管理）。</p>
 <p>回顾经典的
 <code>mmap</code>：最初，操作系统只是在虚拟内存区域中分配一片地址并标记为属于对应的文件，但不分配物理地址更不加载数据。当访问到这片地址时触发内核
@@ -261,7 +262,7 @@ NVMM 的区域被标记为只读，在需要操作时临时禁用 CPU 的 Write 
 被访问）才对其进行懒加载建立索引；同时由于每个 Inode
 日志有独立的锁，NOVA 允许并行读取所有 Inode 日志进行恢复。
 而对于前者，则必须进行恢复，否则懒加载会导致页分配器没有足够的信息。</p>
-<h2 id="性能评估">性能评估</h2>
+<h2 id="五-性能评估">五 性能评估</h2>
 <p>对于微基准测试，作者测试了简单的 <code>create</code>
 <code>append</code> 和 <code>delete</code> 操作在 STT-RAM 和
 PCM（相变内存，二者均为 NVMM）上，其中 <code>create</code> 和
@@ -277,9 +278,9 @@ PCM（相变内存，二者均为 NVMM）上，其中 <code>create</code> 和
 <p><img src="/images/Pasted%20image%2020260126223518.png" /></p>
 <p>作者还通过高负载写入测试 GC 压力，发现 NOVA 吞吐量平稳，几乎不受 GC
 影响。同样，恢复速度也在毫秒甚至微秒级别。</p>
-<p><img src="images/Pasted%20image%2020260126223649.png" /></p>
-<p><img src="images/Pasted%20image%2020260126223710.png" /></p>
-<h2 id="总结">总结</h2>
+<p><img src="/images/Pasted%20image%2020260126223649.png" /></p>
+<p><img src="/images/Pasted%20image%2020260126223710.png" /></p>
+<h2 id="六-阅读总结">六 阅读总结</h2>
 <p><del>导师让我读的，说是让我实现文件系统</del> NOVA
 似乎目前只在学术界地位很高， 没有被 Linux
 内核合并。我之前在初学的时候就有在想是否存在可持久化内存之类的东西，后来了解到好像被
@@ -309,6 +310,11 @@ Intel 玩崩了，这么看 NOVA 也是生不逢时了。不过似乎后面还�
     
     <div class="post-nav">
       
+        <a href="/2026/01/27/paper_strata/" class="post-nav-prev">
+          <span class="nav-label">← Previous Story</span>
+          <span class="nav-title">【论文阅读】Strata: A Cross Media File System</span>
+        </a>
+      
       
       
         <a href="/2025/12/31/2025_first_failed_resistance/" class="post-nav-next">
@@ -325,7 +331,7 @@ Intel 玩崩了，这么看 NOVA 也是生不逢时了。不过似乎后面还�
     <div class="sidebar-toc">
       <h3 class="sidebar-title">Table of Contents</h3>
       <div class="toc-content">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-%E6%A0%B8%E5%BF%83%E5%86%85%E5%AE%B9"><span class="toc-number">1.</span> <span class="toc-text">一 核心内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-%E7%A0%94%E7%A9%B6%E5%8A%A8%E6%9C%BA"><span class="toc-number">2.</span> <span class="toc-text">二 研究动机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89-nova-%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.</span> <span class="toc-text">三 NOVA 系统设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B-nova-%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="toc-number">4.</span> <span class="toc-text">四 NOVA 实现细节</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E4%BF%9D%E8%AF%81"><span class="toc-number">4.1.</span> <span class="toc-text">一致性保证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%BA%94%E5%AF%B9%E5%86%85%E5%AD%98%E9%87%8D%E6%8E%92"><span class="toc-number">4.2.</span> <span class="toc-text">如何应对内存重排</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E5%86%99%E6%93%8D%E4%BD%9C"><span class="toc-number">4.3.</span> <span class="toc-text">读写操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E5%86%85%E5%AD%98%E4%BF%9D%E6%8A%A4%E6%81%A2%E5%A4%8D%E6%97%B6%E6%87%92%E5%8A%A0%E8%BD%BD%E4%B8%8E%E5%B9%B6%E8%A1%8C"><span class="toc-number">4.4.</span> <span class="toc-text">初始化内存保护、恢复时懒加载与并行</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E8%AF%84%E4%BC%B0"><span class="toc-number">5.</span> <span class="toc-text">性能评估</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-%E6%A0%B8%E5%BF%83%E5%86%85%E5%AE%B9"><span class="toc-number">1.</span> <span class="toc-text">一 核心内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-%E7%A0%94%E7%A9%B6%E5%8A%A8%E6%9C%BA"><span class="toc-number">2.</span> <span class="toc-text">二 研究动机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89-nova-%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.</span> <span class="toc-text">三 NOVA 系统设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B-nova-%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="toc-number">4.</span> <span class="toc-text">四 NOVA 实现细节</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E4%BF%9D%E8%AF%81"><span class="toc-number">4.1.</span> <span class="toc-text">一致性保证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%BA%94%E5%AF%B9%E5%86%85%E5%AD%98%E9%87%8D%E6%8E%92"><span class="toc-number">4.2.</span> <span class="toc-text">如何应对内存重排</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E5%86%99%E6%93%8D%E4%BD%9C"><span class="toc-number">4.3.</span> <span class="toc-text">读写操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E5%86%85%E5%AD%98%E4%BF%9D%E6%8A%A4%E6%81%A2%E5%A4%8D%E6%97%B6%E6%87%92%E5%8A%A0%E8%BD%BD%E4%B8%8E%E5%B9%B6%E8%A1%8C"><span class="toc-number">4.4.</span> <span class="toc-text">初始化内存保护、恢复时懒加载与并行</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94-%E6%80%A7%E8%83%BD%E8%AF%84%E4%BC%B0"><span class="toc-number">5.</span> <span class="toc-text">五 性能评估</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD-%E9%98%85%E8%AF%BB%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">六 阅读总结</span></a></li></ol>
       </div>
     </div>
   

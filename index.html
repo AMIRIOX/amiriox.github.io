@@ -54,7 +54,7 @@
     <header class="newspaper-header">
   <div class="header-top">
     <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期一, 一月 26, 2026</div>
+    <div class="header-date">星期三, 一月 28, 2026</div>
     <button class="theme-toggle" aria-label="Toggle dark mode">
       <span class="toggle-sun">☀</span>
       <span class="toggle-moon">☾</span>
@@ -111,6 +111,71 @@
       
         <span class="article-category">学术</span>
       
+      <time datetime="2026-01-27T00:00:00.000Z" class="article-date">
+        一月 27, 2026
+      </time>
+    </div>
+    
+    <h2 class="article-title">
+      <a href="/2026/01/27/paper_strata/">【论文阅读】Strata: A Cross Media File System</a>
+    </h2>
+    
+    
+  </header>
+  
+  <div class="article-excerpt">
+    
+      <p>本文中的 NVM (Non-Volatile Memory) 和 上一篇 NOVA 中的 NVMM
+(Non-Volatile Main Memory) 是相同的概念。</p>
+<h2 id="一-核心内容">一 核心内容</h2>
+<p>论文作者提出了一种名为 Strata 的多层次文件系统，同时管理 NVM/SSD/HDD
+等多种存储系统结构层次。Strata
+为用户态、内核态、存储层次进行了职责划分，进一步为 NVM/SSD/HDD
+的多层存储系统上的应用程序降低延迟、提高吞吐量。</p>
+<p>Strata 主要分为用户态的 LibFS 和内核态的 KernelFS。LibFS 负责记录
+per-process 的 Update log 以及进行热点数据缓存，KernelFS 主要负责 Digest
+操作。NVM 中的 Update log 能够保证写入的同步语义；Digesting
+通过日志合并将随机写转化为顺序写，契合 SSD 的硬件特性。</p>
+<p>为了保证 LibFS 的 Kernel Bypass
+不会导致并发安全问题且避免大量轻度写操作的大量锁开销，Strata
+采用租约（Lease）操作防止两个线程绕过内核同时修改同一个文件。</p>
+    
+  </div>
+  
+  <footer class="article-footer">
+    <a href="/2026/01/27/paper_strata/" class="read-more-btn">
+      <span class="btn-text">Continue Reading →</span>
+      <span class="btn-arrow">→</span>
+    </a>
+    
+    
+      <div class="article-tags">
+        
+          <a href="/tags/%E6%96%87%E7%8C%AE/" class="tag">#文献</a>
+        
+          <a href="/tags/NVMM%E9%9D%9E%E6%98%93%E5%A4%B1%E6%80%A7%E4%B8%BB%E5%AD%98/" class="tag">#NVMM非易失性主存</a>
+        
+          <a href="/tags/%E6%B7%B7%E5%90%88%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/" class="tag">#混合存储系统</a>
+        
+          <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" class="tag">#文件系统</a>
+        
+          <a href="/tags/SOSP/" class="tag">#SOSP</a>
+        
+      </div>
+    
+  </footer>
+</article>
+
+      
+    
+      
+        
+        <article class="article-card ">
+  <header class="article-header">
+    <div class="article-meta-top">
+      
+        <span class="article-category">学术</span>
+      
       <time datetime="2026-01-23T16:26:06.000Z" class="article-date">
         一月 24, 2026
       </time>
@@ -127,7 +192,7 @@
     
       <h2 id="一-核心内容">一 核心内容</h2>
 <p>论文作者提出了一种名为 NOn- Volatile memory Accelerated (NOVA)
-的日志结构文件系统 (log- structured file system, LFS), 以最大化 NVMM 和
+的日志结构文件系统 (log- structured file system, LFS) 以最大化 NVMM 和
 DRAM 同时存在的混合存储系统的效率。</p>
 <ul>
 <li>NOVA 充分利用 NVMM 的随机访问特性，从传统 LFS
@@ -339,78 +404,6 @@ class="math inline">\(\text{page_id}\)</span> 的页时, BPM
   
   <footer class="article-footer">
     <a href="/2025/10/19/db-15445-2-storage/" class="read-more-btn">
-      <span class="btn-text">Continue Reading →</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    
-    
-      <div class="article-tags">
-        
-          <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" class="tag">#计算机科学</a>
-        
-          <a href="/tags/cmu15445/" class="tag">#cmu15445</a>
-        
-      </div>
-    
-  </footer>
-</article>
-
-      
-    
-      
-        
-        <article class="article-card ">
-  <header class="article-header">
-    <div class="article-meta-top">
-      
-        <span class="article-category">数据库</span>
-      
-      <time datetime="2025-09-23T05:31:30.000Z" class="article-date">
-        九月 23, 2025
-      </time>
-    </div>
-    
-    <h2 class="article-title">
-      <a href="/2025/09/23/db-15445-1-intro/"><未完成>数据库系统的基本概念</a>
-    </h2>
-    
-    
-  </header>
-  
-  <div class="article-excerpt">
-    
-      <h2
-id="数据的可持久化需求的抽象层次矛盾">数据的可持久化需求的抽象层次矛盾</h2>
-<p>为什么需要数据库?</p>
-<p>绝大多数学校的程序设计课节课时或开课期间的实验课都会有一个工程实践,
-一般是 XX 管理系统,
-向刚刚学习程序设计的学生浅显地介绍实际工程中的一些应用(输入输出交互/控制流/数据处理/可持久化),
-b 格高一点的如 <code>gitlet</code>
-针对可持久化还会有对象的序列化/反序列化等介绍,
-建立起对于可持久化数据的基本认知.</p>
-<p>一个运行中的程序的实例(进程以及其中可能存在的多个线程)
-实质上是一段内存中的数据(代码区/数据区, 堆/栈, 环境和参数),
-例如局部变量或者动态分配的内存,
-而这些都是<strong>不可持久化的数据</strong>,
-在程序关闭后大部分数据会被操作系统清理.
-此时如果想可持久化某些数据使得下次程序启动仍然可以打开,
-就需要将数据可持久化到磁盘上(更现代来说是闪存). 例如, 在 XX
-管理系统中会通过语言标准库提供的文件输出接口把用户数据或日志逐行存在文件中,
-在 <code>gitlet</code> 项目中会把 Commit 的对象等序列化后写入文件.</p>
-<p>当然, 这些看似朴素的做法也并不是错误的,
-事实上早期的数据库就是这种数据的结构和存储方式耦合度较高的做法(直到关系型数据库的提出),
-而直到现在许多数据库(某些 NoSQL)也使用 JSON
-等文件格式来表达一个对象的方式来存储数据. 然而, 这样的方式存在许多问题.
-其中的主要矛盾是, 现实工程中的数据和数据间关系是复杂的,
-而计算机科学中处理复杂问题的最主要手段(可能是唯一的手段)就是<strong>抽象</strong>.</p>
-<blockquote>
-<p>“对复杂性管理的关键是<strong>抽象</strong>这个概念.”</p>
-</blockquote>
-    
-  </div>
-  
-  <footer class="article-footer">
-    <a href="/2025/09/23/db-15445-1-intro/" class="read-more-btn">
       <span class="btn-text">Continue Reading →</span>
       <span class="btn-arrow">→</span>
     </a>

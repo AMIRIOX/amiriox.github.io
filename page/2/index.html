@@ -54,7 +54,7 @@
     <header class="newspaper-header">
   <div class="header-top">
     <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期一, 一月 26, 2026</div>
+    <div class="header-date">星期三, 一月 28, 2026</div>
     <button class="theme-toggle" aria-label="Toggle dark mode">
       <span class="toggle-sun">☀</span>
       <span class="toggle-moon">☾</span>
@@ -106,6 +106,70 @@
       
         
         <article class="article-card article-featured">
+  <header class="article-header">
+    <div class="article-meta-top">
+      
+        <span class="article-category">组成原理</span>
+      
+      <time datetime="2025-08-19T05:21:00.000Z" class="article-date">
+        八月 19, 2025
+      </time>
+    </div>
+    
+    <h2 class="article-title">
+      <a href="/2025/08/19/CSAPP-Lab-Cache/">CSAPP Cache Lab 笔记</a>
+    </h2>
+    
+    
+  </header>
+  
+  <div class="article-excerpt">
+    
+      <p>现代计算机通过每一层都是下一层的缓存的抽象构建出存储器的层次结构,
+依据程序的局部性原理巧妙解决了存取信息的速度远小于 CPU
+处理速度的问题.</p>
+<p>前置知识可看: <a target="_blank" rel="noopener" href="https://zheya.cc/2025/02/19/CSAPP-2025-02-20/">CSAPP3e第六章(存储器层次结构)
+| Amiriox’s Storage</a></p>
+<p>Cache lab 分为两个部分:</p>
+<ol type="1">
+<li>第一部分写一个模拟程序, 模拟缓存的行为;
+如果对缓存的原理和行为理解透了难度不高, <del>主要难点是必须用 C
+写</del></li>
+<li>第二部分是优化一个矩阵转置的函数,
+转置有着鲜明的”两个数组访问模式相反”的特点,
+导致必然有一个数组的访问模式缓存不友好.
+要理解分块技术和缓存冲突不命中的常见情况及调整措施. 这个 lab
+要求比较极端, 给定的缓存组关联度是 <span class="math inline">\(1\)</span>,
+也就是说只要是同一组的就会冲突不命中抢夺缓存行.</li>
+</ol>
+<p>这是我做起来体感最痛苦的一个, 很多人也有相同的感受. 不过 lab
+本身是没什么问题的, <del>CMU 是一款我的问题</del></p>
+    
+  </div>
+  
+  <footer class="article-footer">
+    <a href="/2025/08/19/CSAPP-Lab-Cache/" class="read-more-btn">
+      <span class="btn-text">Continue Reading →</span>
+      <span class="btn-arrow">→</span>
+    </a>
+    
+    
+      <div class="article-tags">
+        
+          <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" class="tag">#计算机科学</a>
+        
+          <a href="/tags/CSAPP-cmu15213/" class="tag">#CSAPP/cmu15213</a>
+        
+      </div>
+    
+  </footer>
+</article>
+
+      
+    
+      
+        
+        <article class="article-card ">
   <header class="article-header">
     <div class="article-meta-top">
       
@@ -343,58 +407,6 @@ target="_blank" rel="noopener" href="https://zheya.cc/2025/02/19/CSAPP-2025-02-2
       <div class="article-tags">
         
           <a href="/tags/%E6%97%A5%E8%AE%B0/" class="tag">#日记</a>
-        
-      </div>
-    
-  </footer>
-</article>
-
-      
-    
-      
-        
-        <article class="article-card ">
-  <header class="article-header">
-    <div class="article-meta-top">
-      
-        <span class="article-category">有价值的计划</span>
-      
-      <time datetime="2025-06-24T15:45:00.000Z" class="article-date">
-        六月 24, 2025
-      </time>
-    </div>
-    
-    <h2 class="article-title">
-      <a href="/2025/06/24/free_time_schedule_1/">假期计划(0x1)</a>
-    </h2>
-    
-    
-  </header>
-  
-  <div class="article-excerpt">
-    
-      <p>…以下计划仅供参考, 不必全部完成,
-<del>我估计这计划我得弄到大三结束才能弄完来着</del> 更不要因此有压力</p>
-<p>你更应关注的是 current state 的稳定性与质量, 而非整体的计划与进度</p>
-<p>无论是学习计划还是玩的计划均不以完成为目的,
-以尽可能多地体验和接触为目的, 同时训练和适应学习状态</p>
-<p>事实上, <strong>唯一必要的反而是”不以计划完成为目的,
-尽可能体验当下”这一点的训练.</strong></p>
-<p>从另一个角度来讲,
-进度上的最优解也是”不以进度为目的”的心态才能达到的方案.</p>
-    
-  </div>
-  
-  <footer class="article-footer">
-    <a href="/2025/06/24/free_time_schedule_1/" class="read-more-btn">
-      <span class="btn-text">Continue Reading →</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    
-    
-      <div class="article-tags">
-        
-          <a href="/tags/%E8%AE%A1%E5%88%92/" class="tag">#计划</a>
         
       </div>
     
