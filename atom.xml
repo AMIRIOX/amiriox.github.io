@@ -6,7 +6,7 @@
   <link href="https://amiriox.github.io/atom.xml" rel="self"/>
   
   <link href="https://amiriox.github.io/"/>
-  <updated>2026-01-28T14:07:37.042Z</updated>
+  <updated>2026-01-31T17:48:16.369Z</updated>
   <id>https://amiriox.github.io/</id>
   
   <author>
@@ -17,22 +17,74 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>【论文速读】CtXnL: A Software-Hardware Co-designed Solution  for Efficient CXL-Based Transaction Processing</title>
+    <link href="https://amiriox.github.io/2026/01/29/paper_CxTnL/"/>
+    <id>https://amiriox.github.io/2026/01/29/paper_CxTnL/</id>
+    <published>2026-01-29T00:00:00.000Z</published>
+    <updated>2026-01-31T17:48:16.369Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="一-核心内容">一 核心内容</h2><p>论文作者提出了一种名为 CtXnL的软硬件协同方案，通过区分元数据与记录数据不同程度的缓存一致性要求，降低了分布式处理系统中的开销。</p><p>CtXnL 主要包括软件层面的用户态库CTLib（以及相应内核驱动）和硬件层面的 CTHW 硬件控制器。其中 CTLib绕过页缓存（DAX），同时为应用程序提供特殊的 allocator用于显示区分元数据的分配和记录数据的分配，从而区分两者的一致性语义；CTHW拦截 CXL总线上的读写操作，用于在一定情况下避免昂贵的节点间数据同步（ViewShim）。</p><p>CtXnL 将内存分为公共可见的 EMS 和私有可见的VMS，后者是当前计算节点的缓存无法容纳修改（写操作）的数据时用于存放这些数据。</p><p>CtXnL 还将 HPA（主机物理地址，即操作系统中 VA 映射到的 PA<spanclass="math inline">\(^{[1]}\)</span>）分为三部分：CXL Vanilla, CtXnLPrimitive 和配置空间，分别用于强一致性元数据、弱一致性记录数据、CXLib自身的数据结构。CtXnL 中的数据是 L-Ld 和 L-St语义（即读写只对当前节点私有可见），内容在当前节点缓存或 VMS 中（由 VAT哈希表管理映射），在 GSync 操作提交后才会公共可见。</p><blockquote><p><span class="math inline">\([1]：\)</span> VA 也可能映射到虚拟机的GPA，再映射到 HPA，HPA 是 CPU 发往总线的地址，最后是设备上的地址 DPA</p></blockquote><h2 id="二-研究背景">二 研究背景</h2><p>CXL 是一种总线协议，采用了 PCIe的物理结构，但是其目的是为了达成一个逻辑上的共享内存池，CPU和外设设备都能认识到这片共享内存上的地址和数据，并且对地址和数据的理解是统一的。外设设备可能包括通过PCIe 连接的 DRAM，GPU （VRAM）等。</p><ul><li>为了发现不同设备，设计了 CXL.io 协议</li><li>为了允许 CPU 能以可缓存的字节级寻址方式访问远端内存或 GPUVRAM，设计了 CXL.mem</li><li>为了解决由共享内存带来的缓存不一致问题，设计了 CXL.cache 当 GPU想找数据时可以去和 CPU Cache 沟通，如果最新数据在 CPU Cache 里，GPU就直接把数据从 CPU Cache 放到自己的 GPU Cache里，从而保持了强缓存一致性；CXL 硬件会设置一个 Snoop Filter监听过滤器，记录哪些缓存行被哪些 CXL设备缓存了，从而避免询问其他设备缓存中是否有修改过的数据时向所有设备进行广播。SnoopFilter 通常在 G-FAM（远端内存）上，并在地址被初次访问时记录某个主机独占了这一地址上的数据，其他主机在访问这一地址上的数据时可以直接从独占这个地址的主机缓存中拿数据。</li></ul><p>然而，在不同节点间相互通信的开销较大，同时论文作者敏锐地发现软件层面的应用程序通常用一系列原语手动控制了一致性（如两阶段锁、MVCC等），因此硬件层面的强一致性往往是冗余的。因此，硬件完全可以只保证关键元数据（如锁等）的强一致性，允许记录数据在事务提交前是不一致、私有的。</p><h2 id="三-ctxnl-方案设计">三 CtXnL 方案设计</h2><p>EMS 存放元数据和已提交的记录数据，即真实一致的数据。VMS存放私有不一致的数据，等待同步。</p><h3 id="写操作-一致写或-l-st">写操作： 一致写或 L-St</h3><p>用户程序通过 CTLib 提供的 allocator将元数据和记录数据分配在不同的语义段，即 CTL Vanilla 或 CxTnL Primitive.如果是前者则读写 EMS，正常广播或 Snoop Filter;如果是后者则保持写入的数据私有，只在当前节点可见，避免污染公共区域，即保持在当前节点缓存或者写入VMS 并在视图地址表 VAT （一个哈希表）中记录。</p><h3 id="读操作一致读或-l-ld">读操作：一致读或 L-Ld</h3><p>当一个读请求通过 CXL 总线达到 CTHW 时，CTHW 会检查这个地址在 CTLVanilla 还是 CxTnL Primitive 段上，如果是前者则正常走 CXL 的 SnoopFilter 正常缓存同步；如果是后者说明是需要绕过 CXL强一致性语义的数据，则拦截下来，查阅 VAT 表，如果有记录说明 VMS中有这个数据，重定向到 VMS 中的地址；如果没有记录则映射到EMS，不过完全绕过了广播或者 Snoop Filter.</p><h3 id="提交操作-gsync">提交操作： GSync</h3><p>在 GSync 之前，节点自身缓存和 VMS都是本节点私有、内部可见的，为了提交这些数据到 EMS，GSync 首先通知除本Requester 节点以外的所有 Peer 节点作废这些数据的缓存、删除 VAT中这些数据的记录；然后 Requester 节点把这些数据写入 EMS.如果在缓存中就直接写回 EMS，如果在 VMS 中则直接 <code>memcpy</code>并删除 VAT 项。</p><h2 id="四-性能评估">四 性能评估</h2><p>// TODO(amiriox):</p><h2 id="五-阅读总结">五 阅读总结</h2><p>// TODO(amiriox):</p>]]></content>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;一-核心内容&quot;&gt;一 核心内容&lt;/h2&gt;
+&lt;p&gt;论文作者提出了一种名为 CtXnL
+的软硬件协同方案，通过区分元数据与记录数据不同程度的缓存一致性要求，降低了分布式处理系统中的开销。&lt;/p&gt;
+&lt;p&gt;CtXnL 主要包括软件层面的用户态库
+CTLib（以及相应内核驱动）和硬件层面的 CTHW 硬件控制器。其中 CTLib
+绕过页缓存（DAX），同时为应用程序提供特殊的 allocator
+用于显示区分元数据的分配和记录数据的分配，从而区分两者的一致性语义；CTHW
+拦截 CXL
+总线上的读写操作，用于在一定情况下避免昂贵的节点间数据同步（View
+Shim）。&lt;/p&gt;
+&lt;p&gt;CtXnL 将内存分为公共可见的 EMS 和私有可见的
+VMS，后者是当前计算节点的缓存无法容纳修改（写操作）的数据时用于存放这些数据。&lt;/p&gt;
+&lt;p&gt;CtXnL 还将 HPA（主机物理地址，即操作系统中 VA 映射到的 PA&lt;span class=&quot;math inline&quot;&gt;&#92;(^{[1]}&#92;)&lt;/span&gt;）分为三部分：CXL Vanilla, CtXnL
+Primitive 和配置空间，分别用于强一致性元数据、弱一致性记录数据、CXLib
+自身的数据结构。CtXnL 中的数据是 L-Ld 和 L-St
+语义（即读写只对当前节点私有可见），内容在当前节点缓存或 VMS 中（由 VAT
+哈希表管理映射），在 GSync 操作提交后才会公共可见。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="学术" scheme="https://amiriox.github.io/categories/%E5%AD%A6%E6%9C%AF/"/>
+    
+    
+    <category term="文献" scheme="https://amiriox.github.io/tags/%E6%96%87%E7%8C%AE/"/>
+    
+    <category term="ASPLOS" scheme="https://amiriox.github.io/tags/ASPLOS/"/>
+    
+    <category term="分布式事务处理系统" scheme="https://amiriox.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F/"/>
+    
+    <category term="CXL" scheme="https://amiriox.github.io/tags/CXL/"/>
+    
+    <category term="速读" scheme="https://amiriox.github.io/tags/%E9%80%9F%E8%AF%BB/"/>
+    
+  </entry>
+  
+  <entry>
     <title>【论文阅读】Strata: A Cross Media File System</title>
     <link href="https://amiriox.github.io/2026/01/27/paper_strata/"/>
     <id>https://amiriox.github.io/2026/01/27/paper_strata/</id>
     <published>2026-01-27T00:00:00.000Z</published>
-    <updated>2026-01-28T14:07:37.042Z</updated>
+    <updated>2026-01-31T17:15:51.029Z</updated>
     
     <content type="html"><![CDATA[<p>本文中的 NVM (Non-Volatile Memory) 和 上一篇 NOVA 中的 NVMM(Non-Volatile Main Memory) 是相同的概念。</p><h2 id="一-核心内容">一 核心内容</h2><p>论文作者提出了一种名为 Strata 的多层次文件系统，同时管理 NVM/SSD/HDD等多种存储系统结构层次。Strata为用户态、内核态、存储层次进行了职责划分，进一步为 NVM/SSD/HDD的多层存储系统上的应用程序降低延迟、提高吞吐量。</p><p>Strata 主要分为用户态的 LibFS 和内核态的 KernelFS。LibFS 负责记录per-process 的 Update log 以及进行热点数据缓存，KernelFS 主要负责 Digest操作。NVM 中的 Update log 能够保证写入的同步语义；Digesting通过日志合并将随机写转化为顺序写，契合 SSD 的硬件特性。</p><p>为了保证 LibFS 的 Kernel Bypass不会导致并发安全问题且避免大量轻度写操作的大量锁开销，Strata采用租约（Lease）操作防止两个线程绕过内核同时修改同一个文件。</p><p>Strata还提供了对程序员更友好的同步写入、顺序可持久化语义，并且通过合并 log改善了传统 LFS 的写放大。</p><h2 id="二-研究背景">二 研究背景</h2><p>大部分传统文件系统只针对特定存储设备，面对复杂的存储设备层次结构时不能充分利用其硬件特性降低开销。另外，现代应用的性能瓶颈逐步由计算转移到I/O上，因此对现代应用（如键值存储、数据库）对性能和功能的需求远超传统文件系统的舒适区：</p><ul><li>一些程序的业务场景需要大量的小型分散式更新，反复进内核<code>copy_from_user</code>拷贝数据开销太大，需要常态内核旁路来实现盲写的零拷贝</li><li>RPC Server 必须在响应前持久化数据，异步的 <code>write()</code>会在写入 DRAM 页缓存后就返回，需要手动调用<code>fsync()</code>，对编程不友好。开发者倾向于有符合直觉的同步顺序写入语义</li><li>部分文件系统牺牲强一致性保证性能，或为了保证性能牺牲了强一致性。应用程序需要高效可靠的崩溃一致性</li></ul><h2 id="三-strata-系统设计">三 Strata 系统设计</h2><p><img src="/images/Pasted%20image%2020260128172402.png" /></p><p>为了减少内核中介的开销，如上文所言，Strata将文件系统的职责在用户态和内核态之间进行了拆分，划分为用户态的 LibFS和内核态的 KernelFS。</p><h3 id="libfs-update-log">LibFS: Update Log</h3><p>LibFS 层面为每个线程设计用户态的私有的 NVM Updatelog。对于写操作，LibFS 将写入操作和数据同步地记录在 NVM 中的 Update log中。由于 NVM 支持字节寻址，可以直接通过 MMU 把 NVM 物理页映射到 LibFS虚拟地址空间，从而绕过内核，实现零拷贝。由于 Update log 在 NVM中，这意味着写入是直接同步可持久化的，而传统的 write通常是先写入易失性的 DRAM 缓存就直接返回（write 的持久化是异步的），在<code>fsync()</code> 被显示调用时写回脏页。Strata的这一同步可持久化特性满足了现代 RPC应用在响应前必须已经快速持久化了数据的需求，尤其能够降低大量 small write的延迟。</p><p>与 NOVA 相比，NOVA 的 Inode log 是真正的数据形式，而 Strata 的 Updatelog 是等待被 KernelFS 通过 Digesting操作消费掉的中间形式。之所以要有这个中间形式，是为了大量 small write的低延迟以及高效的崩溃一致性。</p><h3 id="kernelfs-shared-area">KernelFS: Shared Area</h3><p>Strata 是一种跨介质的文件系统，提供了统一的接口管理不同的存储介质。Update log 在达到一定大小后会由 KernelFS 异步地 <strong>Digest</strong>到 SharedArea，形成实际的、读优化形式（Read-optimized）的文件数据。KernelFS合并日志中的操作，将随机访问合并为顺序写入。由于 Digesting是异步的，所以 KernelFS 可以批量处理 Strata事务。（如果是同步的，那只有到一个事务处理完一个事务然后才能接下一个事务）</p><p>NVM/SSD/HDD 分别有各自的 Shared Area，文件数据块和 Inode数据块根据热度存放在不同层次结构，充分利用了不同层次结构的速度/容量特点和时间局部性。</p><p>Shared Area 对用户态 LibFS 是可读且只读的，可读是为了 LibFS能快速读取数据，只读是防止多线程写冲突。NVM 中的 Shared Area会进行页对齐，从而利用 MMU 的页级别访问控制权限。 SSD 的 Kernel Bypass安全控制是利用硬件功能如 NVMe Namespace，HDD 则是软件模拟。</p><p>Shared Area 保留了传统文件系统的 Superblock、Bitmap、Inode、Blocks，但是提出了一定的优化：</p><ul><li>传统的文件系统分配空闲块需要获取 Bitmap 锁并且扫描空闲位，造成对Bitmap 的竞争。而 Strata 的 Free block bitmap 一次抓取一个 Erasure Block的大小（与 SSD 有关，包含多个空闲块），在这个 EB中为每个请求顺序地分配空闲块。当 KernelFS的多个线程同时申请空闲块，他们并不会申请这个 EB的整体锁，而是用无锁操作抢到 <code>[offset, offset+N)</code>的一系列空闲块，没抢到的继续无锁重试。由于每个线程拿到的都是不同的空闲块位置，所以直接翻转对应bit 就好，无需加锁。当 <code>offset</code> 超出了一个 EB大小，就从空闲池中找一个新的 EB。当一个 EB 中的空间都被回收，则这个 EB本身进入空闲池等待下一次被复用。</li><li>Strata 将 Inode 当做一个普通的 File，使得 Strata 可以支持热点文件的Inode 存在于较快存储器层次的 Shared Area 上。由于 Inode 本身也是一个File，找这个 File 需要找这个 Inode File 的 Inode，但是这个 Inode ofInode File 也需要找 Inode File。为避免 Inode File 本身的 Inode 只存在于Inode File 上， Inode File 本身的 Inode 被硬编码存放在 Superblock中。</li><li>Strata 会为文件数据块和 Inode 块建立 Extent Tree索引，每一存储层次的 Shared Area 都有自己的 Extent TreeRoot，NVM/SSD/HDD 共三个 Root。</li></ul><h2 id="三-strata-实现机制">三 Strata 实现机制</h2><h3 id="读写操作">读写操作</h3><p>对于读操作，LibFS 会先在 DRAM 中的 File data cache 寻找，若 cachemiss 则查看 Update log pointer。Update log pointer记录了每个文件上一次被更改的位置，从而使得“先写了一点然后读取”的操作更简短迅速。若Update log pointer 中也不存在，则依次查找每个 layer 的 ExtentTree，同时更新缓存。</p><p>对于写操作，则是上述 LibFS 获取租约、记录 Update log 到 KernelFS 启动Digest，Free block bitmap 分配空闲块并更新 Extent Tree 索引的过程。</p><h3 id="strata-事务">Strata 事务</h3><p>LibFS 的持久化单元是事务（Transaction）。Strata 事务提供 ACID语义，对最大达到 Update log大小的写入提供原子化保障。若写入数据过多，则拆分为多个 Strata 事务。一个Strata 事务包括：Header, Update log, Commit Record.</p><p>执行（或者说记录） Strata 事务时，先使用 CAS 操作分配 log 空间，写入Header 和 Update log，等写入持久化完毕后最后持久化写入 Commit Record. 以Commit Record 结尾的日志才算有效。事务 log 头部包含指向下一个事务 log的指针，所以 Strata LibFS 的 Update log 实际上是一个事务的链表。</p><p>对比 NOVA 的 log 链表，NOVA 的 log 是每个文件的 Inode里都有一个针对本文件的 4KB 页日志链表，修改或恢复时不冲突；而 Strata是对所有文件更新事务的链表，需要异步 Digesting 操作来把它们改为读优化的Blocks + Extent Tree 视图。</p><h3 id="租约机制">租约机制</h3><p>当两个线程都想写一个文件时，Strata设计了租约机制（Lease）。租约的语义类似于读写锁，但略有不同。相似点在于，当一个线程试图读写一个文件时，若当前文件没有被其他线程持有租约则直接获取到租约（获取租约的线程可以不经过内核就对该文件进行可持久化写入，即Updatelog），其他线程再想写入这个文件不能直接写入，但多个线程可共享读取租约；区别点在于，当线程想写入一个已被其他线程持有租约的文件，必须通知那个线程（在本论文中是Socket 实现），当前持有租约的线程收到解约通知后会触发 KernelFSDigesting，待 Update log 全部被 Digest后，原线程正式解约，新线程获取到这个文件的租约。同时，若原线程超时，也会被直接解约，由于LibFS 的 Update log 通过 Strata 事务保证 ACID 语义，Strata可以在必要时因租约而撤销任何进行中的读写操作。</p><p>传统的锁是锁临界区，每次 write 都需要加锁解锁，如果有 1000 次连续的write，就需要 1000 次获取锁和释放锁。租约是锁对象（文件）所有权，只要这1000 次都是同一线程write，那就只有一次租约申请。二者区别在于何时获取和何时释放，至于读共享写互斥的语义是一样的。</p><p>租约机制仍然存在性能瓶颈，但这基于 Strata认为大部分文件不会被共享访问的设计哲学。</p><h3 id="数据转移">数据转移</h3><p>Strata 同时管理 NVM/SSD/HDD 三层的 Shared Area，KernelFS 会根据 LibFS提供 LRU信息以根据热度决定哪些数据被放在哪一个层次上，即热度更高的数据放在更快的存储层级上。同时，一个layer 达到 95% 的容量后就会触发 KernelFS 将其 Digest 到下一层级。对于SSD 而言，KernelFS 采用 Erasure Block 的大小迁移数据以达到最大效率。</p><h2 id="四-性能评估">四 性能评估</h2><p>测试环境上，NVM 依然是模拟的。论文作者在 DRAM上用软件增加延迟并限制带宽（NVM 比 DRAM 慢），其他层次采用 Intel 750PCIe SSD 和 Seagate 1TB HDD. 对比对象选取了 NVM 层的 EXT4-DAX, PMFS,以及<a href="https://zheya.cc/2026/01/24/paper_NOVA/">上一篇</a>读的NOVA, SSD 层的 F2FS, HDD 层的 EXT4.</p><h3 id="microbenchmark">Microbenchmark</h3><p>Zipfian分布的随机写入(一小部分热点被反复写，占比越大的部分写入越少，符合实际需求场景)，比较写入效率（写放大的倒数），在较小数据规模下，Strata的写放大极小，因为这种大量 small write 正是 LibFS Update log用武之地</p><p><img src="/images/Pasted%20image%2020260128205310.png" /></p><p>NVM 上的平均 IO 延迟，依然是在 small write 上有优势，因为 LibFS的部分是零拷贝的，Digest 是后台任务。其他情况大部分持平。Error Bar代表的是 P99 Latency，Strata 的稳定性也优于对比对象。</p><p><img src="/images/Pasted%20image%2020260128205428.png" /></p><p>NVM 多线程吞吐量扩展性测试，在随机写的情况下 8 线程时 Strata的吞吐量比 NOVA 高出 28%（这个图太难绷了，看着都在 2.0附近，但其实其一单位是 GB/s,其二这个图的纵轴比例很有误导性，实际上确实有 28%的吞吐量提升，我不知道为什么图 2 为什么还守着那个 0 2 5 7的纵轴，就为了塞个图例进去吗），但看上去 NOVA 的 throughput scalability要更线性更好一些。毕竟 NOVA 是 per-inode的锁，粒度比较小，并发性很好。不过 NVM本来也比较快，依然拉不开差距。</p><p><img src="/images/Pasted%20image%2020260128210120.png" /></p><p>SSD 多线程吞吐量扩展性测试。在写入场景下 Strata无疑最出色，几乎是顶着 SSD 带宽来的，通过 log把随机写转换为顺序写非常成功。但是读操作表现比较一般。随机读的那张图没什么意义，因为这里测的Strata是单线程的。其实我觉得有一点“懒加载”写操作，把写操作的负载均摊一些到读上了</p><p><img src="/images/Pasted%20image%2020260128210820.png" /> ###Macrobenchmark</p><p>宏基准测试成绩比微基准测试好很多，在 Varmail, Fileserver上吞吐量领先。邮件服务器产生临时文件，先创建后删除，这些临时文件产生的log 都在 NVM 的 Update log 里被抵消了，无需 Digest.</p><p><img src="/images/Pasted%20image%2020260128212212.png" /></p><p>在 LevelDB Benchmark 的写操作上 Strata也领先（尤其在数据较小时），主要是同步 write 带来的好处，不用每次都<code>fsync()</code></p><p>在 Redis SET 测试上吞吐量领先但差距不大。</p><p><img src="/images/Pasted%20image%2020260128212410.png" /></p><h2 id="五-阅读总结">五 阅读总结</h2><p>看力竭了，比 NOVA复杂很多，很多机制的意义和目的要想一会才能明白，不像 NOVA那样很明显就能联系起来。</p>]]></content>
     
     
-      
-      
-        
-        
-    <summary type="html"></summary>
-        
-      
+    <summary type="html">&lt;p&gt;本文中的 NVM (Non-Volatile Memory) 和 上一篇 NOVA 中的 NVMM
+(Non-Volatile Main Memory) 是相同的概念。&lt;/p&gt;
+&lt;h2 id=&quot;一-核心内容&quot;&gt;一 核心内容&lt;/h2&gt;
+&lt;p&gt;论文作者提出了一种名为 Strata 的多层次文件系统，同时管理 NVM/SSD/HDD
+等多种存储系统结构层次。Strata
+为用户态、内核态、存储层次进行了职责划分，进一步为 NVM/SSD/HDD
+的多层存储系统上的应用程序降低延迟、提高吞吐量。&lt;/p&gt;
+&lt;p&gt;Strata 主要分为用户态的 LibFS 和内核态的 KernelFS。LibFS 负责记录
+per-process 的 Update log 以及进行热点数据缓存，KernelFS 主要负责 Digest
+操作。NVM 中的 Update log 能够保证写入的同步语义；Digesting
+通过日志合并将随机写转化为顺序写，契合 SSD 的硬件特性。&lt;/p&gt;
+&lt;p&gt;为了保证 LibFS 的 Kernel Bypass
+不会导致并发安全问题且避免大量轻度写操作的大量锁开销，Strata
+采用租约（Lease）操作防止两个线程绕过内核同时修改同一个文件。&lt;/p&gt;</summary>
     
     
     
@@ -49,6 +101,8 @@
     
     <category term="SOSP" scheme="https://amiriox.github.io/tags/SOSP/"/>
     
+    <category term="精读" scheme="https://amiriox.github.io/tags/%E7%B2%BE%E8%AF%BB/"/>
+    
   </entry>
   
   <entry>
@@ -56,18 +110,28 @@
     <link href="https://amiriox.github.io/2026/01/24/paper_NOVA/"/>
     <id>https://amiriox.github.io/2026/01/24/paper_NOVA/</id>
     <published>2026-01-23T16:26:06.000Z</published>
-    <updated>2026-01-28T14:08:21.227Z</updated>
+    <updated>2026-01-31T17:15:16.780Z</updated>
     
     <content type="html"><![CDATA[<h2 id="一-核心内容">一 核心内容</h2><p>论文作者提出了一种名为 NOn- Volatile memory Accelerated (NOVA)的日志结构文件系统 (log- structured file system, LFS) 以最大化 NVMM 和DRAM 同时存在的混合存储系统的效率。</p><ul><li>NOVA 充分利用 NVMM 的随机访问特性，从传统 LFS中放宽了局部性限制，从而实现了日志数据分离、日志链表来避免传统 LFS的垃圾回收开销</li><li>NOVA 通过将空闲链表索引建立在 DRAM 中，规避了在 NVMM中由于一致性难以保证造成的数据结构难以实现的问题</li><li>除了本身是 log-structured 之外，NOVA 还在需要同时修改多个 inode的操作(如对路径相关的操作)中采用了 journaling 技术，同时依赖 VFS的目录锁，规避了影子分页系统的级联开销和因此强顺序数据依赖造成的性能损失</li></ul><p>NOVA 适配了 NVMM 以及 NVMM + DRAM 混合存储系统的特点，解决了传统 LFS中 GC 开销大的痛点，尤其在写密集的场景下表现极其优秀。</p><h2 id="二-研究动机">二 研究动机</h2><p>2016 年恰恰是 NVMM 较为火热的一年，但纯 NVMM的存储系统也有一些弊端。现有的软件技术栈几乎都是为了慢速磁盘设计的，对于几乎所有传统计算机科学学者而言，文件I/O要比内存访存慢几个数量级几乎是常识。此时 NVMM的出现就显得不合时宜，需要绕过内核(如 Direct Access, DAX模式来绕过操作系统的 Page Cache)，重写数据结构等</p><ul><li>优势未利用：为传统文件系统而生的软件技术栈如驱动程序并不能很好地利用NVMM 支持按字节寻址的特性，仍然读 4KB 修改再写回。此外，NVMM还有更好的随机访问性能，不必太过纠结空间局部性，这也为 NOVA 对传统 LFS的改造奠定了基础</li><li>假设不成立：从访存上来看，NVMM 更类似 DRAM，硬件层面只支持到 8 Byte的原子读写（CPU指令决定的)，而传统存储设备能保持扇区或闪存块的原子性的假设是不成立的</li><li>此外，内存重排也会影响 NVMM 的数据一致性</li></ul><p>一些相关研究在 NVMM上颇有局限性。影子分页在处理文件系统的树形结构时需要从叶子级联影子到根，这是强顺序要求的，导致CPU 无法进行乱序执行等优化降低并行度。传统 LFS则基于传统存储器的局部性，在尾部追加日志和数据，导致垃圾回收操作开销太大。</p><h2 id="三-nova-系统设计">三 NOVA 系统设计</h2><p>日志和文件数据分离。首先，NOVA 本身是 log-structure的，这意味着它需要 1存放实际数据 2记录日志。传统 LFS 会将日志和数据放在一起直接追加到已用空间尾部，这是基于空间局部性考虑的。而NOVA 考虑到 NVMM可以放宽局部性限制，几乎想跳到哪个地址就跳到哪个地址，所以分离了日志和实际文件数据。这样，可以实现数据的copy-on-write (COW),在更改数据时可以找个空闲页写入，然后原子单纯追加日志记录那个空闲页的地址。</p><p>数据和索引分离。无论日志还是数据都有可持久化需求，必须在非易失性存储器上，但是索引很多时候是可以用完就丢的，反正重建速度也快。基于这一点，NOVA将空闲页索引 (RB Tree) 和 Inode 索引 (Radix Tree) 放在 DRAM 上。DRAM还是要比 NVMM快一些的，无论是数据结构实现还是效率上都比较有优势。此外，NOVA 还有 PerCPU 的空闲列表作为每个 CPU独立的页分配器以防止对全局空闲页索引的锁竞争。</p><p>日志链表。日志被实现为作为一个 4KB页的链表，在某个页都是无效日志（如都是“删除xxx”的记录）时，可以单纯只进行链表删除(Unlink), 指针操作效率极高，不需要像传统 LFS那样读取实际数据并且移动。</p><p>Journaling 技术。在面对多个 inode 的更改操作时，需要用到每个 CPU独立的 journal。若要进行 <code>mv A/file.txt B/file.txt</code>，首先对 A和 B 的 inode log 进行追加 <code>ADD file.txt</code> 和<code>DEL file.txt</code>，但此时还没有更新 log tail指针，此时这两条数据都是对文件系统不可见的。随后在 journaling 中记录“我要原子性地同时把 A inode log 的 tail pointer 向后移动一条记录，Binode log 的 tail pointer 向后移动一条记录”，若操作成功则<code>mv</code> 顺利完成，若断电故障失败则查 journaling 恢复。</p><p>细粒度锁。由于每个 inode 都有单独的 log，这允许 NOVA 为每个 inode上单独的锁，从而支持并发修改。</p><h2 id="四-nova-实现细节">四 NOVA 实现细节</h2><p><img src="/images/2026-01-25_11-37-35.png" /></p><h3 id="一致性保证">一致性保证</h3><p>将 NVMM 为每个 CPU 划分一个池 (pool)。对于每个pool，将索引数据结构（通常是内存友好的数据结构）存在 DRAM 中，而 Journal和 Inode table 存在 NVMM 中，其中每个 Inode 有自己的锁和 log 指针。Inode的 <code>Head</code>, <code>Tail</code> 指针分别指向 log链表的第一页首地址和最后一页已提交的地址，在 <code>Tail</code>指针之后的均为无效数据，等待被原子地 commit，即 <code>Tail</code>向后移动。一个文件的 Inode 仅仅存在于一个 CPU 核心的 Inode Table中，因此所有修改都是共享的，靠 CAS 的 log tail 更新处理并发问题。</p><p>NOVA 将 Inode table 设计为初始 2MB，128 字节对齐的块数组。每个 CPU有独立的 Inode 分配器，它们可以自由无锁地分配 Inode空间并填充数据，然后再获取 Inode 锁把刚分配空间的地址信息记入 Inode日志。Again，这里又是随机访问的优势。如果 NVMM的随机访问很糟糕，那任意分配 Inode显然会造成很差的空间局部性。值得注意的是，传统 LFS由于垃圾回收，除了带来开销之外还会导致数据的位置（地址）被频繁移动，而NOVA 分离日志和数据使得数据在通常情况下物理地址固定，为之后的<code>mmap</code> 语义打下基础。</p><p>Journal 被设计为 4KB的环形缓冲区，由队首和队尾指针控制，在其之间的就是还未被提交的事务。Journal的一条记录通常包含多次修改，如<code>(Inode A: DEL file, Inode B: ADD file)</code>,并且记录旧数据以用于恢复。</p><p>综合以上，NOVA 有三种原子性保证：</p><ul><li>CPU 的 8 字节（64位）指令原子性保证</li><li>日志结构（log-structured）实现的单个 Inode 原子性保证</li><li>Journaling 技术实现的多个 Inode 原子性保证</li></ul><h3 id="如何应对内存重排">如何应对内存重排</h3><p>CPU为了避免在访存时的空等待，有时会重排一些看上去没有相关性的指令。但是在我们的例子中，log的 tail pointer必须在所有操作确实完成后进行，否则就失去了其事务提交和回滚的意义。</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">new_tail = append_to_log(inode-&gt;tail, entry); <span class="comment">// writes back the log entry</span></span><br><span class="line">cachelines <span class="title function_">clwb</span><span class="params">(inode-&gt;tail, entry-&gt;length)</span>;  </span><br><span class="line">sfence(); <span class="comment">// orders subsequent</span></span><br><span class="line">PCOMMIT <span class="title function_">PCOMMIT</span><span class="params">()</span>; <span class="comment">// commits entry to NVMM</span></span><br><span class="line">sfence(); <span class="comment">// orders subsequent store</span></span><br><span class="line">inode-&gt;tail = new_tail;</span><br></pre></td></tr></table></figure><p>其中 <code>clwb</code> 用于把数据从 CPU 缓存写回到内存控制器；<code>sfence()</code>用于保证其前面的指令一定比其后面的指令先可见（防止重排或乱序执行）；<code>PCOMMIT()</code>用于清空内存控制器写队列保证数据被写入 NVMM 芯片上。</p><h3 id="读写操作">读写操作</h3><p>对于 <code>write</code> 操作，NOVA 绕过 DAX，沿袭传统 LFS 的Copy-on-Write (CoW) 方案，先在空闲页写入更改后的数据，再追加 log entry并原子更改元数据指向的位置，旧页变为垃圾等待回收（或被作为一个版本的快照管理）。</p><p>回顾经典的<code>mmap</code>：最初，操作系统只是在虚拟内存区域中分配一片地址并标记为属于对应的文件，但不分配物理地址更不加载数据。当访问到这片地址时触发内核Page Fault，内核检查对应文件数据是否在页缓存中，如果不在就将文件数据写入DRAM页缓存并更改页表映射把相应物理地址映射到之前的虚拟地址上。此后的读写都只操作内存里这片页缓存，内核会异步地将脏页写回磁盘。</p><p>而在 NVMM 中，Page Cache 多此一举，因为 NVMM本来就能够作为内存使用，所以 NOVA 是 Direct Access (DAX) 模式。NOVA 对<code>mmap</code> 采用原地更新而不是像 <code>write()</code> 或传统 LFS那样先写空闲页再添加日志的 CoW 方案，这使得 NOVA 的文件数据不像传统 LFS那样频繁变动位置（NOVA 的垃圾回收只需要单纯 Unlink 掉日志链表节点并修改bitmap），NOVA 的 <code>mmap</code> 不必频繁修改页表的 VPN 到 PPN映射，提高了性能。当然，原地写入并不是原子的，但 <code>mmap</code>本身也不保证原子性，要保持强一致性的话，仍然需要 CoW，并且在<code>msync()</code> 时才会更改日志指针。</p><p>另外，在需要快照时，由于必须分为多个版本的页面快照、不能原地更新，也仍然需要CoW 的方案。</p><h3id="初始化内存保护恢复时懒加载与并行">初始化内存保护、恢复时懒加载与并行</h3><p>野指针对 DRAM危害较小，易失性存储器重启后就是新数据了；而一旦在野指针访问到了 NVMM中的地址（NVMM同样会在内核地址空间中！），可能会对本应持久化的数据造成破坏，所以通常在初始化阶段NVMM 的区域被标记为只读，在需要操作时临时禁用 CPU 的 Write Protect,看上去并非特别优雅的方案。</p><p>在重启恢复时，主要恢复空闲页索引和 Inode 索引。对于后者，NOVA只会在有需要时（如某个目录或文件的 Inode被访问）才对其进行懒加载建立索引；同时由于每个 Inode日志有独立的锁，NOVA 允许并行读取所有 Inode 日志进行恢复。而对于前者，则必须进行恢复，否则懒加载会导致页分配器没有足够的信息。</p><h2 id="五-性能评估">五 性能评估</h2><p>对于微基准测试，作者测试了简单的 <code>create</code><code>append</code> 和 <code>delete</code> 操作在 STT-RAM 和PCM（相变内存，二者均为 NVMM）上，其中 <code>create</code> 和<code>append</code> 操作，NOVA 本身的逻辑仅占总 latency 的 21%-28%，而<code>delete</code> 操作中 NOVA 逻辑的 latency占比较大由于释放数据和日志需要读取 Inode 日志。</p><p><img src="/images/Pasted%20image%2020260126223410.png" /></p><p>对于宏基准测试，作则测试了文件服务器、Web代理、Web服务器、邮件服务器四种情况，NOVA在文件服务器和邮件服务器这样写密集业务上的吞吐量均领先（NVMM的特性规避了写放大），而在 Web Server 和 Web Proxy这样读密集的业务上表现一般。</p><p><img src="/images/Pasted%20image%2020260126223518.png" /></p><p>作者还通过高负载写入测试 GC 压力，发现 NOVA 吞吐量平稳，几乎不受 GC影响。同样，恢复速度也在毫秒甚至微秒级别。</p><p><img src="/images/Pasted%20image%2020260126223649.png" /></p><p><img src="/images/Pasted%20image%2020260126223710.png" /></p><h2 id="六-阅读总结">六 阅读总结</h2><p><del>导师让我读的，说是让我实现文件系统</del> NOVA似乎目前只在学术界地位很高， 没有被 Linux内核合并。我之前在初学的时候就有在想是否存在可持久化内存之类的东西，后来了解到好像被Intel 玩崩了，这么看 NOVA 也是生不逢时了。不过似乎后面还有非易失性的 CXL内存，待我往下读。<del>为什么三天只读了一篇啊。</del></p>]]></content>
     
     
-      
-      
-        
-        
-    <summary type="html"></summary>
-        
-      
+    <summary type="html">&lt;h2 id=&quot;一-核心内容&quot;&gt;一 核心内容&lt;/h2&gt;
+&lt;p&gt;论文作者提出了一种名为 NOn- Volatile memory Accelerated (NOVA)
+的日志结构文件系统 (log- structured file system, LFS) 以最大化 NVMM 和
+DRAM 同时存在的混合存储系统的效率。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;NOVA 充分利用 NVMM 的随机访问特性，从传统 LFS
+中放宽了局部性限制，从而实现了日志数据分离、日志链表来避免传统 LFS
+的垃圾回收开销&lt;/li&gt;
+&lt;li&gt;NOVA 通过将空闲链表索引建立在 DRAM 中，规避了在 NVMM
+中由于一致性难以保证造成的数据结构难以实现的问题&lt;/li&gt;
+&lt;li&gt;除了本身是 log-structured 之外，NOVA 还在需要同时修改多个 inode
+的操作(如对路径相关的操作)中采用了 journaling 技术，同时依赖 VFS
+的目录锁，规避了影子分页系统的级联开销和因此强顺序数据依赖造成的性能损失&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;NOVA 适配了 NVMM 以及 NVMM + DRAM 混合存储系统的特点，解决了传统 LFS
+中 GC 开销大的痛点，尤其在写密集的场景下表现极其优秀。&lt;/p&gt;
+&lt;h2 id=&quot;二-研究动机&quot;&gt;二 研究动机&lt;/h2&gt;</summary>
     
     
     
@@ -84,6 +148,8 @@
     
     <category term="FAST" scheme="https://amiriox.github.io/tags/FAST/"/>
     
+    <category term="精读" scheme="https://amiriox.github.io/tags/%E7%B2%BE%E8%AF%BB/"/>
+    
   </entry>
   
   <entry>
@@ -96,13 +162,12 @@
     <content type="html"><![CDATA[<p>该写点什么呢？退役，折腾lecture，迷茫，比较，怀念，自我批判，一些微妙的改变</p><p>等期末周过去，放假再写吧。毕竟传统是在除夕前后去写年终总结。</p><p>以下是草稿，</p><hr /><p>记录一些问题:</p><ol type="1"><li>学习上应该适度调整战略。在过去的几年中，尽可能涉猎更多领域来增加对计算机科学了解的广度是合理的，但是时候选择一个方向来深入下去了。如你所见，我不是很乐于承担这份选择的责任，尤其是可能带来的后果：我选错了方向怎么办？在【进一步的学习方案】和【更多的实践拷打】上要多下功夫。幸运的是，我大概只用了不到半年就及时发现了路线错误，这是好的。</li><li>后半年的任务调度存在严重的问题，而任务调度的实质是精力管理、心情管理和驱力管理。<ol type="1"><li>精力管理：今年一整年的作息、饮食都相当错乱，久坐、缺乏运动等对身体伤害极大。可以说，今年的问题是六分心理四分身体。这是好事啊！起码还有四分是能控制得了的。另一方面，后半年急于求成、过于冒进，贪心地安排了一堆任务，反而造成护航效应，使得在做一件事时不能够心无旁骛。所谓“无后顾之忧”，如果只需要考虑这一件事并且这件事足够“正统”，那么事情就简单很多。</li><li>心情管理：这是个伪命题，我实际上不太明白心情怎么会能够被管理的。但是由于本人的性格缺陷，倒有些成事不足败事有余：很多时候我面对逆境是“伸头是一刀缩头也是一刀”的态度，导致很多时候放任情绪恶化仍然强迫自己干活，比如国庆假期期间调一个bug连续调了十小时还是通宵然后顶不住自动睡着了的迷惑操作，典型的意气用事，极其低效，还影响驱力和身体状态。<del>但这个很难改啊</del></li><li>驱力管理：上半年做了很好的榜样。虽然退役是我极不愿意看到的事情，但是在退役后的自救几乎是无可指摘的（迅速转换学习方向，聚焦到一个任务上不断收获反馈，虽然本质上是逃跑——战略转移——但谁管那是黑猫白猫呢）。操作系统夏令营的第二阶段是本年度学习状态最稳定最充实的时间，这首先要归功于“无后顾之忧”，其次就是驱力：一方面这是儿时的梦想，本身就带有很大的兴趣；另一方面上半年的时候我还没有那么功利（或者说因为还在大一所以没有那么焦虑），愿意花时间“浪费”在一些可能没什么前途的领域上（scholar在拉丁语的来源中其实和 leisure 同源）。</li><li>除此之外，由于下半年回到了宿舍生活（这对我其实考验很大！），我的行动易受他人影响，这也是下半年一个很麻烦的阻力。</li></ol></li><li>如上所述，后半年不是太顺利，因此造成了专注力的一定丧失，这很悲哀，需要重新训练。</li></ol><p>好了，本着客观科学的态度，还是应该给个甜枣，但我实际上找不出这一年值得夸的地方，强行编造倒显得我心虚不足</p><ol type="1"><li>对大模型的工作流开发是比较完整的，虽然没有特别登峰造极但是起码达到了年初的预想。比如把单词视频用OpenAI whisper 转文本字幕然后找个小模型让它切成 Anki卡片算是比较天才的想法了（因为单词视频的大多数信息都在语言字幕上，板书和PPT几乎毫无意义，只能说什么都得弄个视频讲出来是教师病犯了，对学习而言视频几乎是最差的形式：没有目录，没法快速定位/随机访问，复习难度大）</li><li>虽然大多数时候无能为力，但是我基本是做到了所谓的吾日三省吾身。至少目前的生活中有什么问题正在发生，哪些比较严重我是心里有数的，总归不至于瞎着眼睛活着。但除了在考六级之前保护代码发力了迅速调整状态形成了良好的学习状态和规划之外，几乎没在这一年看到什么挽狂澜于既倒的出色应对，这是不应该的。</li><li>今年大概写了 22 篇技术类博客文章，其中有 4篇还未完工，<del>至于水的流水账日记更是数不胜数</del>。这个数量其实有点少的，念在一些文章字数和质量（自以为）还不错，姑且算作优点。</li></ol><p>搞了个新的博客主题，就叫Newspepper，因为审美上主要是模仿上世纪的报纸，然后把 paper 改成了pepper，我觉得这种把已有单词小小改一下作为项目名还是挺有趣的。Hexo Next真的很难说符合我的审美，正好是 1 月 1日弄上来的，蹭个辞旧迎新的彩头。但实际上我的博客根本没人看，自娱自乐罢了。</p>]]></content>
     
     
-      
-      
-        
-        
-    <summary type="html"></summary>
-        
-      
+    <summary type="html">&lt;p&gt;该写点什么呢？退役，折腾
+lecture，迷茫，比较，怀念，自我批判，一些微妙的改变&lt;/p&gt;
+&lt;p&gt;等期末周过去，放假再写吧。毕竟传统是在除夕前后去写年终总结。&lt;/p&gt;
+&lt;p&gt;以下是草稿，&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;记录一些问题:&lt;/p&gt;</summary>
     
     
     
@@ -121,88 +186,17 @@
     <content type="html"><![CDATA[<p>上一篇博客: <ahref="https://zheya.cc/2025/12/16/db-15445-3-access/">数据库系统的访问方法| Amiriox’s Storage</a></p><p>一觉醒来发现自己变成反面教材了, 我是不是不该退役啊?</p><h2 id="查询计划">查询计划</h2><p>在关系型数据库中, 操作可以视为在可重集合上的关系代数运算的组合.在第一篇文章中介绍了一些最常见的关系代数运算和对应的 SQL 语句.关系代数的每个运算都根据其语义接受一个或多个关系, 并产出新的关系.将每个运算视作一个算子, 接受一个或多个表, 产出新的表.这个由<strong>算子(operator)</strong>组成的有向无环图(DAG)就是<strong>查询计划(QueryPlan)</strong>.</p><p>例如, 对于 SQL 语句</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name</span><br><span class="line"><span class="keyword">FROM</span> R <span class="keyword">JOIN</span> S <span class="keyword">ON</span> R.id <span class="operator">=</span> S.id</span><br><span class="line"><span class="keyword">WHERE</span> S.age <span class="operator">&gt;</span> <span class="number">18</span></span><br></pre></td></tr></table></figure><p>这其中包含 连接 <span class="math inline">\(\bowtie\)</span>、投影<span class="math inline">\(\pi\)</span>、选择 <spanclass="math inline">\(\sigma\)</span>. 从算子的角度来看, 首先是从关系<span class="math inline">\(R\)</span> 和 <spanclass="math inline">\(S\)</span> 中提取元组的 access method, 接着是对<span class="math inline">\(S\)</span> 中的元组进行选择的 operator:<span class="math inline">\(\sigma_{age&gt;18}(S)\)</span>,然后是将选择后的 <span class="math inline">\(S&#39;\)</span> 中的元组与<span class="math inline">\(R\)</span> 做连接的 operator: <spanclass="math inline">\(T = R \bowtie_{R.sid=S&#39;.sid} S&#39;\)</span>,最后对这个连接后的临时表的元组进行投影操作的 operator: <spanclass="math inline">\(\pi_{name}(T)\)</span>. (实际上不一定会成表,即不会在 Catalog 中有这个临时表的元数据, 不过无论是什么,在算子看来只是一堆元组而已)</p><p>而上一篇博客介绍了从表中提取元组、执行查询(包括高效的单点查询和范围查询)的Access Method, 本文主要介绍一些常见算子的实现方式, 如 <code>JOIN</code>,<code>ORDER BY</code>, <code>GROUP BY</code>. &lt;TODO: 查证一下<code>SELECT</code>, <code>WHERE</code> 等算子实现&gt;</p><p>总结来说: 数据在算子构成的逻辑管道中流通最终被塑造为查询结果.</p><p>在查询计划的有向无环图中,一个让元组能够连续流动而无需间接存储的过程就是一个 pipeline, 而阻碍某个pipeline (导致元组被迫”停下”被存储等待) 的运算符就是 pipeline break,例如 <code>JOIN</code>, <code>ORDER BY</code>. 对于 Hash Join,需要对其中一个表建立哈希表(Pipeline #1), 而另一个表则可以作为另一条Pipeline #2 在 #1 结束后启动, 则对于另一个表来说这条数据流动没有阻塞;对于 Sort-Merge Join, 则需要三条 pipeline: 两个表分别 sort 都是 breaker,最后再在 <code>JOIN</code> 那个算子节点上继续流动; 对于<code>ORDER BY</code>, 必须间接存储, 等所有元组都获取到后才能排序.</p><p>不过这是总体上的概念, 具体的实现上大致可分为三种模型,主要的区别在于获取元组的多少: 是”一次获取一个元组”(迭代器模型),还是”一次获取全部元组”(物化模型),还是”一次获取一部分元组”(向量批处理模型).</p><h2 id="三种算子执行模型">三种算子执行模型</h2><h3 id="迭代器模型">迭代器模型</h3><p>就像迭代器一样, 每个算子有一个 <code>Next()</code> 函数,负责计算并返回下一个元组, 通常是更高层的算子调用 <code>Next()</code>并且进一步导致其子节点调用 <code>Next()</code>, 直到最底层的<code>FROM</code> 负责 <strong>emit</strong> 出表中的原始元组,整体就像从顶层往上拉数据一样, 所以称作 Top-to-Bottom Pull-based.</p><p>利于, 对于一个最简单的 <code>FROM S</code>:</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> S:</span><br><span class="line">    emit(t)</span><br></pre></td></tr></table></figure><p>而选择则是:</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> child.Next():</span><br><span class="line">    <span class="keyword">if</span> predicate(t): emit(t)</span><br></pre></td></tr></table></figure><p>Hash Join:</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> t1 <span class="keyword">in</span> left.Next():</span><br><span class="line">    buildHashTable(t1)</span><br><span class="line"><span class="keyword">for</span> t2 <span class="keyword">in</span> right.Next():</span><br><span class="line">    <span class="keyword">if</span> Some(t1) = probe(t2):</span><br><span class="line">        emit(t1 ⨝ t2)</span><br></pre></td></tr></table></figure><h3 id="物化模型">物化模型</h3><h3 id="和向量批处理模型">和向量批处理模型</h3><h2 id="两种方向">两种方向</h2><p>自底向上推, 自顶向下拉</p><p>概念, 优势</p><h2 id="具体的算子执行">具体的算子执行</h2><h3 id="提供数据">提供数据</h3><p>Sequential Scan 的优化</p><h3 id="更新">更新</h3><h3 id="表达式求值和-jit">表达式求值和 JIT</h3><h3 id="sorting">Sorting</h3><p>意义, 外部归并, Clustered B+ Tree 索引</p><h3 id="aggregation">Aggregation</h3><p>排序, 外部哈希</p><h3 id="join">Join</h3><p>意义, Sort-Merge Join 和 Hash Join</p>]]></content>
     
     
-      
-      
-        
-        
-    <summary type="html"></summary>
-        
-      
-    
-    
-    
-    <category term="数据库" scheme="https://amiriox.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
-    
-    
-    <category term="计算机科学" scheme="https://amiriox.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/"/>
-    
-    <category term="cmu15445" scheme="https://amiriox.github.io/tags/cmu15445/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>&lt;未完成&gt;数据库系统的访问方法</title>
-    <link href="https://amiriox.github.io/2025/12/16/db-15445-3-access/"/>
-    <id>https://amiriox.github.io/2025/12/16/db-15445-3-access/</id>
-    <published>2025-12-16T12:35:30.000Z</published>
-    <updated>2025-12-31T16:59:34.788Z</updated>
-    
-    <content type="html"><![CDATA[<p>上一篇博客: <ahref="https://zheya.cc/2025/10/19/db-15445-2-storage/">数据库系统的数据存储方式| Amiriox’s Storage</a></p><p>上次写博客是在一个多月前了, 最近比较忙, 博客只能抽空写.精神状态也不是很好, 得想想办法 ()</p><h2 id="数据库系统的访问方法">数据库系统的访问方法</h2><p>我们在这个系列的第一篇文章(<ahref="https://zheya.cc/2025/09/23/db-15445-1-intro/">数据库系统的基本概念| Amiriox’s Storage</a>)中就介绍了数据库的架构分层, 但没能真正展开.</p><table><thead><tr><th style="text-align: center;">典型关系型数据库的架构分层</th></tr></thead><tbody><tr><td style="text-align: center;">查询优化(Query Planning)</td></tr><tr><td style="text-align: center;">算子执行(Operator Execution)</td></tr><tr><td style="text-align: center;">访问方法(Access Method) &lt;-</td></tr><tr><td style="text-align: center;">缓冲池管理器(Buffer Pool Manager)</td></tr><tr><td style="text-align: center;">磁盘管理器(Disk Manager)</td></tr></tbody></table><p>具体来说:</p><ul><li>磁盘管理器单纯用来和磁盘进行交互,不过通常实现一些异步方案进行优化(Bustub 就利用了<code>std::promise</code>)</li><li>缓冲池在上一篇文章(<ahref="https://zheya.cc/2025/10/19/db-15445-2-storage/">数据库系统的数据存储方式| Amiriox’s Storage</a>)中介绍了, 为防止磁盘 I/O 成为性能瓶颈,有计划地(一些页驱逐策略)将磁盘中的页加载到内存中作为内存中的一个页帧<spanclass="math inline">\(^{[*]}\)</span></li><li>访问方法通过特定的数据结构从页中找到上层算子执行所需要的信息,本文将详细解释这些数据结构</li><li>算子是关系代数中的具体操作实现(当然, 事实上是基于可重集合,甚至有序可重集合的特殊关系代数), 这在后面的文章中会详细介绍,例如数据和逻辑是如何在这些算子间流动最终得出查询结果的,算子的执行体现了程序究竟在做什么:“用逻辑塑造一个管道让数据在其中塑形”。</li><li>查询优化, 面对一个已知的 SQL 语句, 预估大概的执行成本,选择采用什么索引, 某些算子的执行顺序交换, 以形成相对更优的执行计划</li></ul><span id="more"></span><h2 id="页中的数据如何被解释">页中的数据如何被解释</h2><p>上一篇文章中介绍了各种数据存储模型。将各种数据模型联系到一起, 并向Access Method 负责的就是 Record ID,即包含了一个元组存储位置的元组唯一标识,对列存就是对齐的列位置(详见上一篇文章).</p><p>那么, 具体来说, 这些访问方法就是用一些数据结构找这些 Record ID,从而访问到数据库中一行又一行元组.</p><p>最简单的方法自然是全表扫描线性查找, 通过全局的 Catalog(这个目录中包含表的各种元数据) 找到表数据的第一个页面(例如, 这个表的Page Directory, 对于 Heap File 存储), 然后由 Page Directory中的数据找到某个页的位置(文件+偏移量), 由 Disk Manager 和 BPM管理读进内存, 然后按照约定的页面结构(比如之前介绍过的槽页面)解析,顺序扫描.</p><p>需要注意的是, 数据库系统的规模可能非常大(后面我们会看到,将数据存在磁盘上除了可持久化需求, 另一个原因是内存是存不下了),例如对一条在几亿条记录的表中查找某个 id 的记录,线性查找除了时间复杂度问题, 还会造成大量的磁盘 I/O.因此我们需要找到时间复杂度更优、磁盘 I/O 较少(或尽可能保证顺序磁盘I/O)的办法来获取 Record ID.</p><h2 id="数据结构">数据结构</h2><p>重复一下我们的需求: 维护一个可重复的集合,尽可能地支持高效插入、删除、查找(尤其对于 OLAP workload)</p><p>其次, 对于查找(或者说数据库的查询), 存在单点查找、范围查找等不同情况,而通常是具有查询的具体类型的,所以我们可以对不同查询采取不同的数据结构。</p><p>最后, 我们还希望数据结构的磁盘 I/O 能尽可能少, 或者尽可能是顺序 I/O而不是随机 I/O</p><h3 id="单点查询">单点查询</h3><p>从复杂度上来讲, 毫无疑问是哈希表的 <spanclass="math inline">\(O(1)\)</span> 查询在一众数据结构中最亮眼。Yes, butat what cost? 哈希表基本都是随机 I/O, 但这毕竟是单点查询,相对于”在可能规模极大的数据中 O(1) 查找的优势”,在单点查询中造成一次或几次随机磁盘 I/O 并非无法接受。(No free lunchhere)</p><p>这里哈希表的键可以是主键, 或某一属性; 值可以是元组(剩余元素)本身,或是 Record ID(常见).</p><h4 id="静态哈希">静态哈希</h4><p>对于键个数已知的 scenario,可以采用静态哈希。静态哈希解决冲突的手段通常是<strong>开放定址</strong>:</p><ol type="1"><li><p>探测: 线性探测/平方探测</p><p>插入 <span class="math inline">\(k_2\)</span> 时若 <spanclass="math inline">\(H(k_2) = H(k_1)\)</span>,进而尝试其他位置(所谓”开放定址”), 对于线性探测来说可能是 <spanclass="math inline">\(H(k_2) + f(i), f(i) = c i, i=1,2,3,...\)</span>如果觉得线性探测可能造成堆积现象, 也可以采用 <spanclass="math inline">\(f(i)=c i^2\)</span> 进一步避免冲突的键堆积在一起.查找时也按相同规则找位置即可. 但要注意删除不能直接删除, 而是要 rehash或标记墓碑(通常采用后者): 在被删除元素的位置上打上特殊标记,让查找操作并不在此处终止而是继续向下寻找,直到在某次新的插入操作中复用这个墓碑的位置。</p></li><li><p>Cuckoo Hashing</p><p>非常古怪的名字.杜鹃这种生物会把自己的蛋下到别人窝里然后把别人的蛋挤走, Cuckoo Hash也是类似的策略:<br />在 <span class="math inline">\(H_1(k_2) = H_1(k_1)\)</span> 即新插入的<span class="math inline">\(k_2\)</span> 和先前的 <spanclass="math inline">\(k_1\)</span> 发生冲突时,</p><ul><li>先使用另一个哈希函数计算 <spanclass="math inline">\(H_2(k_2)\)</span>,如果那个位置恰好空缺则插入成功</li><li>如果仍然不成功(存在 <span class="math inline">\(H_2(k_0) =H_2(k_2)\)</span>) 就只好把那里的冲突键 <spanclass="math inline">\(k_0\)</span> 踢掉, 把 <spanclass="math inline">\(k_2\)</span> 放进去</li><li>当然, 我们决不会对还未出生的鸟宝宝坐视不管: 继续执行将被抢走位置的键<span class="math inline">\(k_0\)</span> 插回去的操作,同样可能涉及到其他无辜键被踢出然后重新插入(谁还不是一只杜鹃了呢?).由于我们有两个哈希函数 <span class="math inline">\(H_1(x)\)</span> 和<span class="math inline">\(H_2(x)\)</span>, 通常我们都能找到某个在<span class="math inline">\(H_1(k_i)\)</span> 位置的 <spanclass="math inline">\(k_i\)</span> 并且其备选位置 <spanclass="math inline">\(H_2(k_i)\)</span> 为空的键.如果不存在就只能自认倒霉(这可能造成死循环, 通常需要终止操作, 扩容哈希表,然后重新 rehash 所有元素)</li></ul><p>Cuckoo Hashing 的优点在于绝对的最坏 <spanclass="math inline">\(O(1)\)</span> 查询复杂度(探测法在极端数据下可能因为需要不断向下探测找下一个位置导致 O(n)的查询复杂度), 但代价就是插入操作复杂, 同时可能触发扩容.</p></li></ol><p>静态哈希仅仅适用于我们(大致)知道有多少键需要维护的情况,否则就需要重建整个哈希表并且 rehash.</p><h4 id="动态哈希">动态哈希</h4><p>最令人熟知的应该是 Chained Hashing,也就是国内常叫的拉链法(为什么你们总喜欢这么弱智的翻译? “拉链”? “主码”?).通常的实现是, 每个 <span class="math inline">\(H(x)\)</span>值域对应的位置上是一个链表的表头,每次冲突时只需要头插法(同样弱智的翻译)插在这个链表头即可. 然而,拉链法同样可能像探测法一样造成查询的退化(你可能会说这主要是哈希函数太烂导致多个键冲突在一起,但是总有这种情况发生, 对吧?<span class="math inline">\(^{[*]}\)</span>),以下是一些优化:</p><ol type="1"><li><p>Extendible Hashing</p><p>设立一些桶和桶对应的局部计数器 <spanclass="math inline">\(d_i\)</span>, 其意义是: 在桶 <spanclass="math inline">\(i\)</span> 容纳的键值对中, 最少需要查看 <spanclass="math inline">\(d_i\)</span>个键的哈希值的二进制位才能区分开桶里的这些键值对 (例如 <code>010</code>和 <code>110</code> 只需要 <span class="math inline">\(1\)</span>位区分, 而 <code>010111</code> 和 <code>011111</code> 需要至少两位 <spanclass="math inline">\(2\)</span> 位才能区分)</p><p>维护一个全局计数器 <span class="math inline">\(d\)</span>,其意义是对当前哈希表中所有键值对的键的哈希值, 最少需要 <spanclass="math inline">\(d\)</span> 个二进制位才能进行区分.以及配套的一个长为 <span class="math inline">\(2^d\)</span> 的目录,这个目录记录了对一个哈希值应该去哪个桶来找 (例如, <spanclass="math inline">\(d=3, H(k) = 0b0110010\)</span>, 则在前三位<code>011</code> 对应的目录指向的桶中查找/插入/删除这个键值对)</p><p>一条<strong>不变量</strong>是: 局部计数器 <spanclass="math inline">\(d_i\)</span> 永远小于全局计数器 <spanclass="math inline">\(d\)</span>. (否则目录项一定会是错的,导致查找到的桶无法正确离散不同键的哈希值)</p><p>对于查找操作, 计算哈希值, 取哈希值的前 <spanclass="math inline">\(d\)</span> 位二进制, 通过目录中这 <spanclass="math inline">\(d\)</span> 位二进制对应的目录项指针找到对应的桶,最多查找 <span class="math inline">\(2^d\)</span> 次就能找到(更确切来说,只需要查找 <span class="math inline">\(2^{d_i}\)</span>即局部计数器即可)</p><p>对于插入操作, 定位过程类似, 但是若插入导致桶满了需要分裂,则存在以下情况:</p><ul><li><span class="math inline">\(d_i + 1 \leq d\)</span>: 创建新桶,并且修改新旧两个桶的局部计数器为 <spanclass="math inline">\(d_i+1\)</span>, 因为超出 <spanclass="math inline">\(2^{d_i}\)</span> 个(不重复的)键意味着仅靠 <spanclass="math inline">\(d_i\)</span> 位无法区分这 <spanclass="math inline">\(\gt 2^{d_i}\)</span> 个(不重复的)键的哈希值了.不过此时局部计数器较小仍不需要动全局计数器</li><li><span class="math inline">\(d_i + 1 \gt d\)</span>: 准确来说是 <spanclass="math inline">\(d_i = d\)</span>.此时强行扩展局部计数器会导致一个目录项必须指向两个桶(这显然是不符合规则的).所以要扩展全局计数器, 将目录从 <span class="math inline">\(2^d\)</span>扩展为 <span class="math inline">\(2^{d+1}\)</span> 项,此时两个目录项会指向同一个桶(对于未分裂的桶),或是两个目录项分别指向分裂操作造成的两个桶, 桶分裂的过程和上面一样.</li></ul><p>是靠”哈希值的二进制位”对哈希表中的位置进行了一次离散化,然后在这个离散化精度不够高的时候在(惰性地)增加精度(<spanclass="math inline">\(d\)</span> 位到 <spanclass="math inline">\(d+1\)</span> 位)</p></li><li><p>Linear Hashing</p><p>&lt;TODO: 也是个很有想法的哈希, 但是解释起来有点麻烦,先鸽一下&gt;</p></li></ol><h3 id="范围查找">范围查找</h3><p>范围查找通常是基于索引的, 而提到数据库的索引就不得不提到 B+ Tree,时间复杂度和体系结构友好的完美权衡.</p><p>从需求下手,我们需要一个能够以优良时间复杂度维护元素有序性质的、磁盘随机 I/O次数较少的数据结构.</p><p>那么, 链表怎么样? 有序链表维护有序性代价太高了,插入等操作需要遍历定位(注意链表是不能二分查找的, 因为不具有 <spanclass="math inline">\(O(1)\)</span> 随机访问性质).</p><p>跳表(跳跃表, <code>SkipList</code>) 怎么样?跳表可以通过不同层数的节点巧妙界定范围, 并且依据随机性可以勉强维持 log的时间复杂度, 但是跳表的节点定位几乎都是随机磁盘 I/O, 因此也否决了.但跳表的确在数据库系统中得到了一些应用,主要是在纯内存数据结构上(不涉及磁盘 I/O)的情境下.</p><p>因为类似的原因, 平衡树也同样被否决了(而且常规平衡树也只能做单点查询,当然这不是主要问题, Splay, FHQ Treap,线段树这样的数据结构也能进行区间查询, 但是依然存在随机磁盘 I/O次数较多的问题).</p><p>那么有没有一种办法, 可以把跳表和平衡树的优势结合起来?</p><ol type="1"><li>跳表可以通过不同层次的节点确定查找范围,平衡树可以根据二叉查找树的节点性质和平衡树的平衡性质(防退化)以 <spanclass="math inline">\(O(\log n)\)</span> 的复杂度确定查找范围;但在这两个问题上两者的缺陷是一致的: 需要跳转太多次导致随机磁盘 I/O 太多,那么能不能通过添加分叉数的方式降低平衡树的树高,从而降低查找结点所需的跳转次数呢? 对于平衡树不能,因为平衡树几乎都是基于二叉搜索树添加了一系列平衡规则,但我们可以记着这一点, 称为 <em>性质1</em>.</li><li>在跳表中, 一旦达到最低层次, 就可以通过链表结点的连接指针向后遍历,这是常规平衡树所不具备的. 我们称之为 <em>性质2</em></li></ol><p>而 B+ Tree 就是具备 <em>性质1</em> 和 <em>性质2</em> 的数据结构.具体来说:</p><ul><li>只在叶子节点存储实际数据,且每个节点存储多个<strong>相邻且处于同一范围</strong>的(单调的)数据,相邻叶子节点通过 sibling pointer 连接, 形成一个链表,用于加速范围查询.</li><li>内部节点不存储实际数据, 而是发挥类似跳表上层的定位功能. 具体来说,内部节点存储一系列单调的元素(<span class="math inline">\(e_1 &lt; e_2&lt; e_3 &lt; ...\)</span>),而在每两个元素间存在一个指针指向下一层的节点,含义是这个指针指向的子树中的所有元素大小都在这两个元素之间 (例如 <spanclass="math inline">\(e_1\)</span> 和 <spanclass="math inline">\(e_2\)</span> 之间的指针指向的子树中所有的元素<span class="math inline">\(e\)</span> 都保证 <spanclass="math inline">\(e_1 \leq e \lt e_2\)</span>, 取等取决于具体实现).由于每个节点能够索引到的范围变多了(对平衡树来说,一个节点只能区分出两个范围: 大于这个节点值的子树,和小于这个节点值的元素), 树高可以明显降低,而在由于每个节点的元素都是单调的, 可以通过二分查找加速索引过程,依然可以保证 log 复杂度.</li><li>完美平衡, 节点平衡因子为0. 这一点保证了 log 级别的查找复杂度,实现上是通过保证每个节点内的元素个数大于半满小于全满从而防止太多范围聚集到一个节点上而很多节点几乎为空导致退化为链的情况.(取决于具体实现, 对于叶子节点和内部节点实际上要求略有不同,这一点后面会说)</li></ul><p>仅仅从数据结构的定义形态上来看, B+ Tree 是简洁自然的,然而为了保证这些性质, <del>可遭老罪了</del>, <code>Insert</code> 和<code>Remove</code> 操作真的要处理很多种 case:</p><ul><li>插入导致节点满了, 进行 split, 同时要保持上述性质</li><li>删除导致节点空了, 或者小于半满(这些约束称为”不变量约束”), 需要re-distribute 或者 merge</li></ul><p>而这些操作需要在 B+ Tree 复杂结构的条件下, 区分叶子节点和内部节点,还要对根节点特判, 同时数据库系统中通常还要保证并发安全… 没错, 这就是cmu15445 的 <ahref="https://15445.courses.cs.cmu.edu/fall2024/project2/">Project #2:Database Index</a>: 手写一个并发安全的 B+ Tree.</p><p>split, re-distribute 和 merge 操作, 以及兼顾并发安全和效率的 LatchCoupling 技术, 我会接着展开, 同时我还会介绍一些使用 <code>cgdb</code> 和<code>rr</code>, 包括使用自己的 <code>GTest</code> 测试进行调试的经验.&lt;TODO: 但因为太麻烦所以暂时先鸽着&gt;</p><p>此外, 对于倒排索引、Trie树等在数据库系统中广泛运用的数据结构这里不做展开.</p><h2 id="辅助优化">辅助优化</h2><p>&lt;TODO: 概率数据结构(如布隆过滤器)&gt;</p><hr /><p>下一篇博客: <ahref="https://zheya.cc/2025/12/19/db-15445-4-operator/">数据库系统的算子执行| Amiriox’s Storage</a></p>]]></content>
-    
-    
-    <summary type="html">&lt;p&gt;上一篇博客: &lt;a
-href=&quot;https://zheya.cc/2025/10/19/db-15445-2-storage/&quot;&gt;数据库系统的数据存储方式
+    <summary type="html">&lt;p&gt;上一篇博客: &lt;a href=&quot;https://zheya.cc/2025/12/16/db-15445-3-access/&quot;&gt;数据库系统的访问方法
 | Amiriox’s Storage&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;上次写博客是在一个多月前了, 最近比较忙, 博客只能抽空写.
-精神状态也不是很好, 得想想办法 ()&lt;/p&gt;
-&lt;h2 id=&quot;数据库系统的访问方法&quot;&gt;数据库系统的访问方法&lt;/h2&gt;
-&lt;p&gt;我们在这个系列的第一篇文章(&lt;a
-href=&quot;https://zheya.cc/2025/09/23/db-15445-1-intro/&quot;&gt;数据库系统的基本概念
-| Amiriox’s Storage&lt;/a&gt;)中就介绍了数据库的架构分层, 但没能真正展开.&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&quot;text-align: center;&quot;&gt;典型关系型数据库的架构分层&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align: center;&quot;&gt;查询优化(Query Planning)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align: center;&quot;&gt;算子执行(Operator Execution)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align: center;&quot;&gt;访问方法(Access Method) &amp;lt;-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align: center;&quot;&gt;缓冲池管理器(Buffer Pool Manager)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align: center;&quot;&gt;磁盘管理器(Disk Manager)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;具体来说:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;磁盘管理器单纯用来和磁盘进行交互,
-不过通常实现一些异步方案进行优化(Bustub 就利用了
-&lt;code&gt;std::promise&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;缓冲池在上一篇文章(&lt;a
-href=&quot;https://zheya.cc/2025/10/19/db-15445-2-storage/&quot;&gt;数据库系统的数据存储方式
-| Amiriox’s Storage&lt;/a&gt;)中介绍了, 为防止磁盘 I/O 成为性能瓶颈,
-有计划地(一些页驱逐策略)将磁盘中的页加载到内存中作为内存中的一个页帧&lt;span
-class=&quot;math inline&quot;&gt;&#92;(^{[*]}&#92;)&lt;/span&gt;&lt;/li&gt;
-&lt;li&gt;访问方法通过特定的数据结构从页中找到上层算子执行所需要的信息,
-本文将详细解释这些数据结构&lt;/li&gt;
-&lt;li&gt;算子是关系代数中的具体操作实现(当然, 事实上是基于可重集合,
-甚至有序可重集合的特殊关系代数), 这在后面的文章中会详细介绍,
-例如数据和逻辑是如何在这些算子间流动最终得出查询结果的,
-算子的执行体现了程序究竟在做什么:
-“用逻辑塑造一个管道让数据在其中塑形”。&lt;/li&gt;
-&lt;li&gt;查询优化, 面对一个已知的 SQL 语句, 预估大概的执行成本,
-选择采用什么索引, 某些算子的执行顺序交换, 以形成相对更优的执行计划&lt;/li&gt;
-&lt;/ul&gt;</summary>
+&lt;p&gt;一觉醒来发现自己变成反面教材了, 我是不是不该退役啊?&lt;/p&gt;
+&lt;h2 id=&quot;查询计划&quot;&gt;查询计划&lt;/h2&gt;
+&lt;p&gt;在关系型数据库中, 操作可以视为在可重集合上的关系代数运算的组合.
+在第一篇文章中介绍了一些最常见的关系代数运算和对应的 SQL 语句.
+关系代数的每个运算都根据其语义接受一个或多个关系, 并产出新的关系.
+将每个运算视作一个算子, 接受一个或多个表, 产出新的表.
+这个由&lt;strong&gt;算子(operator)&lt;/strong&gt;组成的有向无环图(DAG)就是&lt;strong&gt;查询计划(Query
+Plan)&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;例如, 对于 SQL 语句&lt;/p&gt;</summary>
     
     
     

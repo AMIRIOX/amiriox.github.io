@@ -54,7 +54,7 @@
     <header class="newspaper-header">
   <div class="header-top">
     <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期三, 一月 28, 2026</div>
+    <div class="header-date">星期日, 二月 1, 2026</div>
     <button class="theme-toggle" aria-label="Toggle dark mode">
       <span class="toggle-sun">☀</span>
       <span class="toggle-moon">☾</span>
@@ -106,6 +106,58 @@
       
         
         <article class="article-card article-featured">
+  <header class="article-header">
+    <div class="article-meta-top">
+      
+        <span class="article-category">组成原理</span>
+      
+      <time datetime="2024-12-29T13:53:00.000Z" class="article-date">
+        十二月 29, 2024
+      </time>
+    </div>
+    
+    <h2 class="article-title">
+      <a href="/2024/12/29/CSAPP-Lab-Attack/">CSAPP Attack Lab 笔记</a>
+    </h2>
+    
+    
+  </header>
+  
+  <div class="article-excerpt">
+    
+      <h2 id="phase-0x1">Phase 0x1</h2>
+<p>一个练手的，要求通过缓冲区栈溢出攻击来调用 touch1</p>
+<p><code>gdb ctarget</code> 然后 <code>set args -q</code>
+防止与不存在的服务器通信（<code>run -q</code> 也可以)
+<code>b Gets</code> <code>run -q</code></p>
+<p>看一下栈信息:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">────────────────────────[ STACK ]────────────────────────</span><br><span class="line">00:0000│ rsp 0x5561dc70 —▸ 0x4017b4 (getbuf+12) ◂— movl $1, %eax</span><br><span class="line">01:0008│ rdi 0x5561dc78 ◂— 0</span><br><span class="line">... ↓        3 skipped</span><br><span class="line">05:0028│     0x5561dc98 —▸ 0x55586000 ◂— 0</span><br><span class="line">06:0030│     0x5561dca0 —▸ 0x401976 (test+14) ◂— movl %eax, %edx</span><br><span class="line">07:0038│     0x5561dca8 —▸ 0x55685fe8 —▸ 0x402fa5 ◂— pushq $0x3a6971 /* &#x27;hqi:&#x27; */</span><br></pre></td></tr></table></figure>
+    
+  </div>
+  
+  <footer class="article-footer">
+    <a href="/2024/12/29/CSAPP-Lab-Attack/" class="read-more-btn">
+      <span class="btn-text">Continue Reading →</span>
+      <span class="btn-arrow">→</span>
+    </a>
+    
+    
+      <div class="article-tags">
+        
+          <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" class="tag">#计算机科学</a>
+        
+          <a href="/tags/CSAPP-cmu15213/" class="tag">#CSAPP/cmu15213</a>
+        
+      </div>
+    
+  </footer>
+</article>
+
+      
+    
+      
+        
+        <article class="article-card ">
   <header class="article-header">
     <div class="article-meta-top">
       
@@ -370,65 +422,6 @@ class="math inline">\(\times 2\)</span></p>
           <a href="/tags/%E8%BF%81%E7%A7%BB/" class="tag">#迁移</a>
         
           <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" class="tag">#计算机科学</a>
-        
-      </div>
-    
-  </footer>
-</article>
-
-      
-    
-      
-        
-        <article class="article-card ">
-  <header class="article-header">
-    <div class="article-meta-top">
-      
-        <span class="article-category">年终总结</span>
-      
-      <time datetime="2020-12-24T16:00:00.000Z" class="article-date">
-        十二月 25, 2020
-      </time>
-    </div>
-    
-    <h2 class="article-title">
-      <a href="/2020/12/25/2020_curtain_falls/">辉煌落幕 -- 2020 年终总结</a>
-    </h2>
-    
-    
-  </header>
-  
-  <div class="article-excerpt">
-    
-      <blockquote>
-<p>此文章的 <em>撰写时间</em> 可能有误</p>
-</blockquote>
-<p><strong>2020对我来说是极其重要的一年, 堪比2018年</strong></p>
-<h1 id="一-简述">一 简述</h1>
-<p>这一年乱七八糟的 想起来似乎没有记忆却又全是记忆</p>
-<p>由于疫情的原因 这一年变得很奇怪</p>
-<p>我的很多心理问题 从2019年的导火线开始 到网课期间完全引爆</p>
-<p>那时的恐怖 黑暗和痛苦我至今想起来还如同窒息</p>
-<p>当然 这一年也有感动, 进步, 创造, 成就…</p>
-<p>那些收获将和痛苦一起 伴随着我前进 成为我最宝贵的人生财富</p>
-<p>虽有黑色却又五彩缤纷的人生 总比一张白纸要好的多吧</p>
-<p>写这个的主要原因是现在2020快结束了(元旦就放寒假了
-因为<code>COVID-19</code>的关系)</p>
-<p>加上看到了很多人的年终总结 (OIer的 V站程序员的
-一起其他一些朋友的)</p>
-    
-  </div>
-  
-  <footer class="article-footer">
-    <a href="/2020/12/25/2020_curtain_falls/" class="read-more-btn">
-      <span class="btn-text">Continue Reading →</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    
-    
-      <div class="article-tags">
-        
-          <a href="/tags/%E8%BF%81%E7%A7%BB/" class="tag">#迁移</a>
         
       </div>
     

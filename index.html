@@ -54,7 +54,7 @@
     <header class="newspaper-header">
   <div class="header-top">
     <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期三, 一月 28, 2026</div>
+    <div class="header-date">星期日, 二月 1, 2026</div>
     <button class="theme-toggle" aria-label="Toggle dark mode">
       <span class="toggle-sun">☀</span>
       <span class="toggle-moon">☾</span>
@@ -111,6 +111,74 @@
       
         <span class="article-category">学术</span>
       
+      <time datetime="2026-01-29T00:00:00.000Z" class="article-date">
+        一月 29, 2026
+      </time>
+    </div>
+    
+    <h2 class="article-title">
+      <a href="/2026/01/29/paper_CxTnL/">【论文速读】CtXnL: A Software-Hardware Co-designed Solution  for Efficient CXL-Based Transaction Processing</a>
+    </h2>
+    
+    
+  </header>
+  
+  <div class="article-excerpt">
+    
+      <h2 id="一-核心内容">一 核心内容</h2>
+<p>论文作者提出了一种名为 CtXnL
+的软硬件协同方案，通过区分元数据与记录数据不同程度的缓存一致性要求，降低了分布式处理系统中的开销。</p>
+<p>CtXnL 主要包括软件层面的用户态库
+CTLib（以及相应内核驱动）和硬件层面的 CTHW 硬件控制器。其中 CTLib
+绕过页缓存（DAX），同时为应用程序提供特殊的 allocator
+用于显示区分元数据的分配和记录数据的分配，从而区分两者的一致性语义；CTHW
+拦截 CXL
+总线上的读写操作，用于在一定情况下避免昂贵的节点间数据同步（View
+Shim）。</p>
+<p>CtXnL 将内存分为公共可见的 EMS 和私有可见的
+VMS，后者是当前计算节点的缓存无法容纳修改（写操作）的数据时用于存放这些数据。</p>
+<p>CtXnL 还将 HPA（主机物理地址，即操作系统中 VA 映射到的 PA<span class="math inline">\(^{[1]}\)</span>）分为三部分：CXL Vanilla, CtXnL
+Primitive 和配置空间，分别用于强一致性元数据、弱一致性记录数据、CXLib
+自身的数据结构。CtXnL 中的数据是 L-Ld 和 L-St
+语义（即读写只对当前节点私有可见），内容在当前节点缓存或 VMS 中（由 VAT
+哈希表管理映射），在 GSync 操作提交后才会公共可见。</p>
+    
+  </div>
+  
+  <footer class="article-footer">
+    <a href="/2026/01/29/paper_CxTnL/" class="read-more-btn">
+      <span class="btn-text">Continue Reading →</span>
+      <span class="btn-arrow">→</span>
+    </a>
+    
+    
+      <div class="article-tags">
+        
+          <a href="/tags/%E6%96%87%E7%8C%AE/" class="tag">#文献</a>
+        
+          <a href="/tags/ASPLOS/" class="tag">#ASPLOS</a>
+        
+          <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F/" class="tag">#分布式事务处理系统</a>
+        
+          <a href="/tags/CXL/" class="tag">#CXL</a>
+        
+          <a href="/tags/%E9%80%9F%E8%AF%BB/" class="tag">#速读</a>
+        
+      </div>
+    
+  </footer>
+</article>
+
+      
+    
+      
+        
+        <article class="article-card ">
+  <header class="article-header">
+    <div class="article-meta-top">
+      
+        <span class="article-category">学术</span>
+      
       <time datetime="2026-01-27T00:00:00.000Z" class="article-date">
         一月 27, 2026
       </time>
@@ -160,6 +228,8 @@ per-process 的 Update log 以及进行热点数据缓存，KernelFS 主要负�
           <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" class="tag">#文件系统</a>
         
           <a href="/tags/SOSP/" class="tag">#SOSP</a>
+        
+          <a href="/tags/%E7%B2%BE%E8%AF%BB/" class="tag">#精读</a>
         
       </div>
     
@@ -228,6 +298,8 @@ DRAM 同时存在的混合存储系统的效率。</p>
           <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" class="tag">#文件系统</a>
         
           <a href="/tags/FAST/" class="tag">#FAST</a>
+        
+          <a href="/tags/%E7%B2%BE%E8%AF%BB/" class="tag">#精读</a>
         
       </div>
     
@@ -320,90 +392,6 @@ class="math inline">\(^{[*]}\)</span></li>
   
   <footer class="article-footer">
     <a href="/2025/12/16/db-15445-3-access/" class="read-more-btn">
-      <span class="btn-text">Continue Reading →</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    
-    
-      <div class="article-tags">
-        
-          <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" class="tag">#计算机科学</a>
-        
-          <a href="/tags/cmu15445/" class="tag">#cmu15445</a>
-        
-      </div>
-    
-  </footer>
-</article>
-
-      
-    
-      
-        
-        <article class="article-card ">
-  <header class="article-header">
-    <div class="article-meta-top">
-      
-        <span class="article-category">数据库</span>
-      
-      <time datetime="2025-10-19T10:07:30.000Z" class="article-date">
-        十月 19, 2025
-      </time>
-    </div>
-    
-    <h2 class="article-title">
-      <a href="/2025/10/19/db-15445-2-storage/"><未完成>数据库系统的数据存储方式</a>
-    </h2>
-    
-    
-  </header>
-  
-  <div class="article-excerpt">
-    
-      <p>上一篇博客: <a
-target="_blank" rel="noopener" href="https://zheya.cc/2025/09/23/db-15445-1-intro/">数据库系统的基本概念
-| Amiriox’s Storage</a></p>
-<h2 id="存储管理-数据存储模型">存储管理: 数据存储模型</h2>
-<p>上一篇博客提到了数据库管理系统本身的抽象层次, 其中就有 Disk Manager
-和 Buffer Pool Manager 作为数据库的存储管理器。</p>
-<p>提到”数据库的数据存储方式”时,
-(尽管有些早)一半涉及到三个层次的存储方式:
-文件的存储方式、页面内部的布局、元组的内部布局.
-其中为什么需要文件的存储方式与元组的内部布局较好理解,
-而数据库中页面的概念将会在下面说明, 为什么数据库需要实现自己的页面.</p>
-<h3 id="文件存储方式-heap-file">文件存储方式: Heap File</h3>
-<p>您可能需要阅读 <a
-target="_blank" rel="noopener" href="https://zheya.cc/2025/02/19/CSAPP-2025-02-20/">CSAPP3e第六章(存储器层次结构)
-| Amiriox’s Storage</a>
-来对计算机存储器的层次结构的意义有一定的认识.</p>
-<p>简单来说, 由于不同存储设备的访问速度不同,
-在冯诺依曼体系的计算机不可避免地数据传输中会拖慢更快速的存储设备的效率,
-所以按照存取效率进行排序, 利用时间/空间局部性,
-将更快的存储器作为次快的存储器的缓存, 最大化利用存储器的存取效率.</p>
-<p>很显然, 数据库的数据必须是可持久化的, 也就是最终要存在文件系统上, 而
-CPU 对磁盘的访问通常较慢(尽管有 DMA),
-<del>最主要的原因是某个公司曾推出的可持久化的快速主存没能发展起来(大雾)</del>
-所以我们需要将主存作为磁盘的缓存, 利用磁盘加载到内存中的页面,
-主要的数据操作在主存中进行, 最后将修改后的(脏页)写回磁盘.
-这些页面交由执行引擎使用, 而与 Disk Manager 交互,
-提供这个页面交换功能本身的组件叫 <strong>Buffer Pool Manager</strong>
-(BPM)</p>
-<p>具体来说, 数据库的一个文件分为若干个固定大小的连续空间, 称为页,
-这个文件称之为 Heap File, 也就是一堆无序的页面的集合;
-同时还会有一页称为页目录 (Page Directory), 记录某个页在哪个 Heap File
-上的哪个偏移量(位置).</p>
-<p>当执行引擎指明我需要页号为 <span
-class="math inline">\(\text{page_id}\)</span> 的页时, BPM
-负责从磁盘中先提取 Page Directory 所在页, 解析其中的布局,
-获取到一些元信息: <span class="math inline">\(\text{page_id}\)</span>
-这一页存在哪个文件里, 偏移量是多少; 然后通过文件和便宜量找到对应页,
-加载到内存(单纯的复制). 当然, BPM 还要负责标记脏页/驱逐页面/写回等任务.
-(当然, 实现上肯定会分为不同组件, 单一职责)</p>
-    
-  </div>
-  
-  <footer class="article-footer">
-    <a href="/2025/10/19/db-15445-2-storage/" class="read-more-btn">
       <span class="btn-text">Continue Reading →</span>
       <span class="btn-arrow">→</span>
     </a>

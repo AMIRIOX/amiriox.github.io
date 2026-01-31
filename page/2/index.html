@@ -54,7 +54,7 @@
     <header class="newspaper-header">
   <div class="header-top">
     <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期三, 一月 28, 2026</div>
+    <div class="header-date">星期日, 二月 1, 2026</div>
     <button class="theme-toggle" aria-label="Toggle dark mode">
       <span class="toggle-sun">☀</span>
       <span class="toggle-moon">☾</span>
@@ -104,8 +104,10 @@
   <div class="articles-grid">
     
       
+    
+      
         
-        <article class="article-card article-featured">
+        <article class="article-card ">
   <header class="article-header">
     <div class="article-meta-top">
       
@@ -342,71 +344,6 @@ target="_blank" rel="noopener" href="https://zheya.cc/2025/02/19/CSAPP-2025-02-2
           <a href="/tags/QEMU/" class="tag">#QEMU</a>
         
           <a href="/tags/%E8%8D%89%E7%A8%BF/" class="tag">#草稿</a>
-        
-      </div>
-    
-  </footer>
-</article>
-
-      
-    
-      
-        
-        <article class="article-card ">
-  <header class="article-header">
-    <div class="article-meta-top">
-      
-        <span class="article-category">杂谈</span>
-      
-      <time datetime="2025-07-13T12:55:00.000Z" class="article-date">
-        七月 13, 2025
-      </time>
-    </div>
-    
-    <h2 class="article-title">
-      <a href="/2025/07/13/freshman2_oscamp_proj_daily/">oscamp 暑期 proj 周纪要</a>
-    </h2>
-    
-    
-  </header>
-  
-  <div class="article-excerpt">
-    
-      <h2 id="六-7.13">(六) 7.13:</h2>
-<h3 id="回顾会议内容-总结任务目标">回顾会议内容, 总结任务目标:</h3>
-<ul>
-<li>为 <code>arceos/tour/*</code> 添加对其他架构
-(<code>aarch64</code>/<code>x86_64</code>/<code>loongarch</code>)
-的支持</li>
-<li>在 <code>arceos/tour</code> 下新增一些例子, 体现 ArceOS 特定功能,
-如图形显示功能/文件系统功能/新调度算法功能</li>
-</ul>
-<h3 id="把工具链换到最新的">把工具链换到最新的:</h3>
-<ul>
-<li><p><code>#[naked]</code> 更改为 <code>#[unsafe(naked)]</code>.
-裸函数使得编译器不会为函数生成序言和尾声代码(比如保存/恢复寄存器,
-设置栈帧等), 操作系统开发的部分场景要求完全控制寄存器细节</p></li>
-<li><p>同时将 <code>asm!</code> 改为 <code>naked_asm!</code>.
-裸函数内一般没有 Rust 代码, 因为会隐含地依赖序言和尾声,
-所以几乎都是内联汇编代码</p></li>
-<li><p><code>naked_asm!</code>
-不支持伪指令和宏(虽然我不知道为什么原来这里要写伪指令, 可能是和 arm
-统一?), 所以要把那一段全部改写成 RISC-V 汇编, 好在代码量比较少,
-如果多了我还真想不出什么方便的方法</p></li>
-</ul>
-    
-  </div>
-  
-  <footer class="article-footer">
-    <a href="/2025/07/13/freshman2_oscamp_proj_daily/" class="read-more-btn">
-      <span class="btn-text">Continue Reading →</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    
-    
-      <div class="article-tags">
-        
-          <a href="/tags/%E6%97%A5%E8%AE%B0/" class="tag">#日记</a>
         
       </div>
     
