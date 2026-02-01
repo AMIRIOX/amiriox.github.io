@@ -131,68 +131,131 @@
       <h2 id="一-核心内容">一 核心内容</h2>
 <p>论文作者提出了一种名为 CtXnL
 的软硬件协同方案，通过区分元数据与记录数据不同程度的缓存一致性要求，降低了分布式处理系统中的开销。</p>
+<p>CtXnL 通过 View Shim
+机制将同一份数据的副本安排在不同的地址，从而巧妙骗过 CXL 的 Snoop Filter
+避免其启动广播，再通过 GSync 一次性提交写回。同时，CtXnL 还设计了 VF/VBF
+过滤器来避免无谓的访存操作 CXL 链路通知。</p>
+<h2 id="二-研究背景">二 研究背景</h2>
+<p>CXL 是一种总线协议，采用了 PCIe
+的物理结构，但是其目的是为了达成一个逻辑上的共享内存池，CPU
+和外设设备都能通过 Load/Store（不经过 RDMA
+这种的数据搬运，相对更快）访问到这片共享内存上的数据。共享内存池通常通过接入
+CXL 总线的 CXL 内存设备（如 CXL Type-3）实现，在不同的节点中，HPA 到 CXL
+内存的 DPA 映射是一致的<span
+class="math inline">\(^{[2]}\)</span>。外设设备/节点如 GPU（带有缓存和
+VRAM）、CPU（带有缓存和 DRAM）等。</p>
+<ul>
+<li>为了发现不同设备，设计了 CXL.io 协议</li>
+<li>为了允许 CPU 能以可缓存的字节级寻址方式访问远端内存或 GPU
+VRAM，设计了 CXL.mem</li>
+<li>为了解决由共享内存带来的缓存不一致问题，设计了 CXL.cache<br />
+当 GPU 想在 G-FAM 这个共享内存池中找数据时可以去和 CPU Cache
+沟通，如果最新数据在 CPU Cache 里，GPU 就直接把数据从 CPU Cache
+放到自己的 GPU Cache 里，从而保持了强缓存一致性；CXL 硬件会设置一个
+Snoop Filter 监听过滤器，记录哪些缓存行被哪些 CXL
+设备缓存了，从而避免询问其他设备缓存中是否有修改过的数据时向所有设备进行广播。Snoop
+Filter 通常在 G-FAM
+（远端内存）上，并在地址被初次访问时记录某个主机独占了这一地址上的数据，其他主机在访问这一地址上的数据时可以直接从独占这个地址的主机缓存中拿数据。</li>
+</ul>
+<p>然而，为了保证 CXL
+的缓存一致性，读写时需要进行复杂的广播去通知其他节点，而多次节点间通信经过的
+CXL
+链路开销较大；同时论文作者敏锐地发现软件层面的应用程序通常用一系列原语手动控制了一致性（如两阶段锁、MVCC
+等），因此硬件层面的强一致性往往是冗余的。因此，硬件完全可以只保证关键元数据（如锁等）的强一致性，允许记录数据在事务提交前是不一致、私有的。</p>
+<blockquote>
+<p><span class="math inline">\([2]:\)</span>
+事实上由于不同节点的物理地址布局不同，在某一个节点上可行的地址在另一个节点上可能已经被占用了，所以通常会给每一个节点设置一个
+HPA Base，每个节点的 HPA 为 Base + Offset，是 CXL IP
+负责将不同节点不同的 HPA 减去 BaseHPA 得到偏移量作为统一的 DPA.</p>
+</blockquote>
+<h2 id="三-ctxnl-方案设计">三 CtXnL 方案设计</h2>
 <p>CtXnL 主要包括软件层面的用户态库
 CTLib（以及相应内核驱动）和硬件层面的 CTHW 硬件控制器。其中 CTLib
 绕过页缓存（DAX），同时为应用程序提供特殊的 allocator
 用于显示区分元数据的分配和记录数据的分配，从而区分两者的一致性语义；CTHW
 拦截 CXL
-总线上的读写操作，用于在一定情况下避免昂贵的节点间数据同步（View
-Shim）。</p>
-<p>CtXnL 将内存分为公共可见的 EMS 和私有可见的
-VMS，后者是当前计算节点的缓存无法容纳修改（写操作）的数据时用于存放这些数据。</p>
-<p>CtXnL 还将 HPA（主机物理地址，即操作系统中 VA 映射到的 PA<span
-class="math inline">\(^{[1]}\)</span>）分为三部分：CXL Vanilla, CtXnL
-Primitive 和配置空间，分别用于强一致性元数据、弱一致性记录数据、CXLib
-自身的数据结构。CtXnL 中的数据是 L-Ld 和 L-St
-语义（即读写只对当前节点私有可见），内容在当前节点缓存或 VMS 中（由 VAT
-哈希表管理映射），在 GSync 操作提交后才会公共可见。</p>
+总线上的读写操作，用于在一定情况下避免昂贵的节点间数据同步。</p>
+<p>CtXnL 所管理的内存是堆内存分配的，且都在 CXL G-FAM
+上（无论是下文将要提到的 EMS 还是 VMS），而 Local DRAM 仅用于存储 OS /
+私有栈等数据。</p>
+<h3 id="view-shim-机制">View Shim 机制</h3>
+<p>CtXnL 将内存分为公共可见的 EMS 和私有可见的 VMS.<br />
+EMS 存放元数据和已提交的记录数据，VMS
+是节点的缓存无法容纳修改（写操作）的数据时用于存放这些数据。</p>
+<p>为了实现灵活的地址段控制，CtXnL
+将每和节点的主机物理地址（HPA，即操作系统中 VA 映射到的 PA<span
+class="math inline">\(^{[1]}\)</span>）分为三部分逻辑地址空间：CXL
+Vanilla, CtXnL Primitive 和配置空间。</p>
+<ul>
+<li>CXL Vanilla
+的语义是缓存强一致性，元数据都会被分配在这个段。对这个地址段的访问直通
+EMS.</li>
+<li>CtXnL Primitive
+的语义是缓存松散一致性，记录数据会被分配在这个段。CtXnL 中的数据是 L-Ld
+和 L-St 语义（即读写只对当前节点私有可见），内容在当前节点缓存或 VMS
+中（由 VAT 哈希表管理映射），在 GSync
+操作提交后才会公共可见。对这个地址段进行访问时，如果这个地址上的数据未被当前节点修改过，则直通
+EMS；若已被当前节点修改过，则查找 VAT 并前往 VMS.</li>
+<li>配置空间用于直接访问 VMS 和 CXLib 自身的数据结构。</li>
+</ul>
+<p>虽然 VMS 仍然在 G-FAM 中，但 VMS
+中写入数据写入的是不同的数据地址（副本，其实有点类似 CoW 的原理），Snoop
+Filter
+认为没有节点缓存了这个地址的数据，因此不会触发广播。比起广播多次经过 CXL
+链路，GSync 的一次 memcpy 反而是延迟更低的。另外，虽然数据经过节点达到
+G-FAM 上的 VMS 区域这一过程依然经过 CXL 链路，但是大部分的数据其实都会在
+CPU 缓存中，根本不会溢出到 VMS.</p>
+<p>由于 VAT 在 G-FAM 上且需要记录不同节点的 VMS 写入，因此 VAT
+的查询也包含节点的 id. 在 CtXnL 的设计方案中，VAT 的数据结构采用 Cuckoo
+Hashing.</p>
 <blockquote>
 <p><span class="math inline">\([1]：\)</span> VA 也可能映射到虚拟机的
-GPA，再映射到 HPA，HPA 是 CPU 发往总线的地址，最后是设备上的地址 DPA</p>
+GPA，再映射到 HPA，HPA 是
+CPU（或其他主机）发往总线的地址，最后是设备上的地址 DPA</p>
 </blockquote>
-<h2 id="二-研究背景">二 研究背景</h2>
-<p>CXL 是一种总线协议，采用了 PCIe
-的物理结构，但是其目的是为了达成一个逻辑上的共享内存池，CPU
-和外设设备都能认识到这片共享内存上的地址和数据，并且对地址和数据的理解是统一的。外设设备可能包括通过
-PCIe 连接的 DRAM，GPU （VRAM）等。</p>
-<ul>
-<li>为了发现不同设备，设计了 CXL.io 协议</li>
-<li>为了允许 CPU 能以可缓存的字节级寻址方式访问远端内存或 GPU
-VRAM，设计了 CXL.mem</li>
-<li>为了解决由共享内存带来的缓存不一致问题，设计了 CXL.cache 当 GPU
-想找数据时可以去和 CPU Cache 沟通，如果最新数据在 CPU Cache 里，GPU
-就直接把数据从 CPU Cache 放到自己的 GPU Cache
-里，从而保持了强缓存一致性；CXL 硬件会设置一个 Snoop Filter
-监听过滤器，记录哪些缓存行被哪些 CXL
-设备缓存了，从而避免询问其他设备缓存中是否有修改过的数据时向所有设备进行广播。Snoop
-Filter 通常在 G-FAM
-（远端内存）上，并在地址被初次访问时记录某个主机独占了这一地址上的数据，其他主机在访问这一地址上的数据时可以直接从独占这个地址的主机缓存中拿数据。</li>
-</ul>
-<p>然而，在不同节点间相互通信的开销较大，同时论文作者敏锐地发现软件层面的应用程序通常用一系列原语手动控制了一致性（如两阶段锁、MVCC
-等），因此硬件层面的强一致性往往是冗余的。因此，硬件完全可以只保证关键元数据（如锁等）的强一致性，允许记录数据在事务提交前是不一致、私有的。</p>
-<h2 id="三-ctxnl-方案设计">三 CtXnL 方案设计</h2>
-<p>EMS 存放元数据和已提交的记录数据，即真实一致的数据。VMS
-存放私有不一致的数据，等待同步。</p>
 <h3 id="写操作-一致写或-l-st">写操作： 一致写或 L-St</h3>
 <p>用户程序通过 CTLib 提供的 allocator
-将元数据和记录数据分配在不同的语义段，即 CTL Vanilla 或 CxTnL Primitive.
-如果是前者则读写 EMS，正常广播或 Snoop Filter;
+将元数据和记录数据分配在不同的语义段，用户态虚拟地址经 MMU 映射为
+HPA，HPA 经 CXL IP 减去 Base 的到 DPA 后并不会直接进行硬件地址访问，CTHW
+会拦截并检查这个 DPA （或者说偏移量）对应在主机物理地址空间中的 CTL
+Vanilla 段还是 CxTnL Primitive段。 如果是前者则写到 EMS 区域，正常广播或
+Snoop Filter;
 如果是后者则保持写入的数据私有，只在当前节点可见，避免污染公共区域，即保持在当前节点缓存或者写入
-VMS 并在视图地址表 VAT （一个哈希表）中记录。</p>
+VMS 并在视图地址表 VAT 中记录。</p>
 <h3 id="读操作一致读或-l-ld">读操作：一致读或 L-Ld</h3>
-<p>当一个读请求通过 CXL 总线达到 CTHW 时，CTHW 会检查这个地址在 CTL
-Vanilla 还是 CxTnL Primitive 段上，如果是前者则正常走 CXL 的 Snoop
-Filter 正常缓存同步；如果是后者说明是需要绕过 CXL
+<p>当一个读请求通过 CXL 总线达到 CTHW 时，CTHW 会通过 DPA 判断在 CTL
+Vanilla 还是 CxTnL Primitive 段上，如果是前者则直通 EMS 并正常走 CXL 的
+Snoop Filter 正常缓存同步；如果是后者说明是需要绕过 CXL
 强一致性语义的数据，则拦截下来，查阅 VAT 表，如果有记录说明 VMS
 中有这个数据，重定向到 VMS 中的地址；如果没有记录则映射到
 EMS，不过完全绕过了广播或者 Snoop Filter.</p>
 <h3 id="提交操作-gsync">提交操作： GSync</h3>
 <p>在 GSync 之前，节点自身缓存和 VMS
-都是本节点私有、内部可见的，为了提交这些数据到 EMS，GSync 首先通知除本
-Requester 节点以外的所有 Peer 节点作废这些数据的缓存、删除 VAT
-中这些数据的记录；然后 Requester 节点把这些数据写入 EMS.
-如果在缓存中就直接写回 EMS，如果在 VMS 中则直接 <code>memcpy</code>
-并删除 VAT 项。</p>
+都是本节点私有、内部可见的，为了提交这些数据到 EMS，GSync
+操作首先通知除本 Requester 节点以外的所有 Peer
+节点作废这些数据的缓存、删除 VAT 中这些数据的记录；然后 Requester
+节点把这些数据写入 EMS. 如果在缓存中就直接写回 EMS，如果在 VMS 中则直接
+<code>memcpy</code> 并删除 VAT 项。</p>
+<p>在这个过程中其他节点对这个数据的修改会丢失，这是正常的，上层逻辑比如数据库应用程序会采用合适的类似无锁/乐观锁的方案检查元数据（如版本号）及时发现并重试。（因此，元数据本身必须在硬件层面保证强一致性）</p>
+<h3 id="vf-和-vbf">VF 和 VBF</h3>
+<p>由于 VAT 在配置空间里，同样存在于 G-FAM 上；每次对 Primitive
+段的读写都要查询 DRAM 中的 VAT，相当于双倍了内存 I/O 次数。由于 MMU 查
+DRAM 页表太慢所以设计出了 TLB，但是在 CXL
+的共享内存架构中增设额外的缓存依然会涉及一致性问题（而且缓存不一定够大），因此
+CtXnL 设计了 VMS Filter. VMS Filter
+是一个布隆过滤器，布隆过滤器的特点是假阳性，也就是真阴性——当 filter
+报告为“不存在”时一定不存在，报告“存在时”可能存在也可能不存在。由于大量访存可能都在缓存中或者没有被修改过（在
+EMS 中），因此 VF 可以过滤极大一部分无需查表的情况。</p>
+<p>VBF 则是对 SF
+的简洁优化，本身是计数布隆过滤器，对一系列哈希值计数，记录哈希值相同的一个桶中所有地址在缓存行中的个数。若某一地址哈希后到
+VBF 中查询计数为 0 则说明当前节点绝无可能包含这一地址的缓存，则 GSync 将
+VMS 的数据提交到 EMS 时就无须通知这个节点。因为 CXL
+系统中可能有较多节点，比如一个 CXL G-FAM 为共享存储中心，一个 CPU
+节点、一个 GPU 节点，所以 G-FAM 中为每个节点设立单独的 VBF，如
+<code>VBF_CPU0</code>, <code>VBF_GPU1</code>. 由于不像 SF
+是中心化的，CtXnL 的 VBF 完全可以并行地操作每个节点的独立 VBF. 另外，VBF
+的更新维护是由 CTHW 在 L-Ld/L-St 查询 VF 时同时旁路并行的，提前为 GSync
+做准备，因此并不在读写操作的关键路径上。</p>
 <h2 id="四-性能评估">四 性能评估</h2>
 <p>// TODO(amiriox):</p>
 <h2 id="五-阅读总结">五 阅读总结</h2>
@@ -237,7 +300,7 @@ Requester 节点以外的所有 Peer 节点作废这些数据的缓存、删除 
     <div class="sidebar-toc">
       <h3 class="sidebar-title">Table of Contents</h3>
       <div class="toc-content">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-%E6%A0%B8%E5%BF%83%E5%86%85%E5%AE%B9"><span class="toc-number">1.</span> <span class="toc-text">一 核心内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF"><span class="toc-number">2.</span> <span class="toc-text">二 研究背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89-ctxnl-%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.</span> <span class="toc-text">三 CtXnL 方案设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E6%93%8D%E4%BD%9C-%E4%B8%80%E8%87%B4%E5%86%99%E6%88%96-l-st"><span class="toc-number">3.1.</span> <span class="toc-text">写操作： 一致写或 L-St</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E6%93%8D%E4%BD%9C%E4%B8%80%E8%87%B4%E8%AF%BB%E6%88%96-l-ld"><span class="toc-number">3.2.</span> <span class="toc-text">读操作：一致读或 L-Ld</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E4%BA%A4%E6%93%8D%E4%BD%9C-gsync"><span class="toc-number">3.3.</span> <span class="toc-text">提交操作： GSync</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B-%E6%80%A7%E8%83%BD%E8%AF%84%E4%BC%B0"><span class="toc-number">4.</span> <span class="toc-text">四 性能评估</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94-%E9%98%85%E8%AF%BB%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">五 阅读总结</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-%E6%A0%B8%E5%BF%83%E5%86%85%E5%AE%B9"><span class="toc-number">1.</span> <span class="toc-text">一 核心内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF"><span class="toc-number">2.</span> <span class="toc-text">二 研究背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89-ctxnl-%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.</span> <span class="toc-text">三 CtXnL 方案设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#view-shim-%E6%9C%BA%E5%88%B6"><span class="toc-number">3.1.</span> <span class="toc-text">View Shim 机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E6%93%8D%E4%BD%9C-%E4%B8%80%E8%87%B4%E5%86%99%E6%88%96-l-st"><span class="toc-number">3.2.</span> <span class="toc-text">写操作： 一致写或 L-St</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E6%93%8D%E4%BD%9C%E4%B8%80%E8%87%B4%E8%AF%BB%E6%88%96-l-ld"><span class="toc-number">3.3.</span> <span class="toc-text">读操作：一致读或 L-Ld</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E4%BA%A4%E6%93%8D%E4%BD%9C-gsync"><span class="toc-number">3.4.</span> <span class="toc-text">提交操作： GSync</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vf-%E5%92%8C-vbf"><span class="toc-number">3.5.</span> <span class="toc-text">VF 和 VBF</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B-%E6%80%A7%E8%83%BD%E8%AF%84%E4%BC%B0"><span class="toc-number">4.</span> <span class="toc-text">四 性能评估</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94-%E9%98%85%E8%AF%BB%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">五 阅读总结</span></a></li></ol>
       </div>
     </div>
   
