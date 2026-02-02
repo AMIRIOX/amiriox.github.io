@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<title>【论文阅读】Tigon: A Distributed Database for a CXL Pod | Amiriox's Storage
+</title>
+
+
+  <meta name="description" content="世界再大 不过是些代价">
+
+
+
+  <link rel="icon" href="/images/favicon-32x32.ico">
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Lora:ital,wght@0,400;0,600;1,400&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      tags: 'ams'
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    svg: {
+      fontCache: 'global'
+    }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Amiriox's Storage" type="application/atom+xml">
+</head>
+<body>
+  <div class="newspaper-wrapper">
+    <header class="newspaper-header">
+  <div class="header-top">
+    <div class="header-edition">Morning Edition</div>
+    <div class="header-date">星期一, 二月 2, 2026</div>
+    <button class="theme-toggle" aria-label="Toggle dark mode">
+      <span class="toggle-sun">☀</span>
+      <span class="toggle-moon">☾</span>
+    </button>
+  </div>
+  
+  <div class="masthead">
+    <h1 class="newspaper-title">
+      <a href="/">折鸦夜明け前</a>
+    </h1>
+    <p class="newspaper-motto">我们的同志在困难的时候，要看到成绩，要看到光明，要提高我们的勇气。</p>
+  </div>
+  
+  <nav class="newspaper-nav">
+    <div class="nav-divider"></div>
+    <ul class="nav-menu">
+      
+        <li class="nav-item">
+          <a href="/" class="nav-link">Home</a>
+        </li>
+      
+        <li class="nav-item">
+          <a href="/archives" class="nav-link">Archives</a>
+        </li>
+      
+        <li class="nav-item">
+          <a href="/categories" class="nav-link">Categories</a>
+        </li>
+      
+        <li class="nav-item">
+          <a href="/tags" class="nav-link">Tags</a>
+        </li>
+      
+        <li class="nav-item">
+          <a href="/about" class="nav-link">About</a>
+        </li>
+      
+    </ul>
+    <div class="nav-divider"></div>
+  </nav>
+</header>
+
+    
+    <main class="newspaper-content">
+      
+<div class="post-container">
+  <article class="post-full">
+    <header class="post-header">
+      <div class="post-meta-top">
+        
+          <span class="post-category">学术</span>
+        
+        <time datetime="2026-02-01T00:00:00.000Z" class="post-date">
+          星期日, 二月 1, 2026</time>
+      </div>
+      
+      <h1 class="post-title">【论文阅读】Tigon: A Distributed Database for a CXL Pod</h1>
+      
+      
+      
+      <div class="post-byline">
+        
+          <span class="post-author">By 折鸦夜明け前</span>
+        
+        
+          <span class="post-updated">Updated 二月 2, 2026</span>
+        
+      </div>
+    </header>
+    
+    <div class="post-divider"></div>
+    
+    <div class="post-content">
+      <h2 id="一-核心内容">一 核心内容</h2>
+<p>本论文提出了名为 Tigon，一种基于 CXL Pod 的分布式内存数据库。</p>
+<p>论文作者注意到 CXL 标准在强缓存一致性实现上 Snoop Filter
+记录的缓存行信息过大、现有 CXL
+硬件实现通常仅仅支持一小部分内存的缓存一致性，充分利用这一点划分了 HWcc
+和 SWcc 区域，通过在 SWcc 中存储松散一致性的实际数据、在 HWcc
+中存储高频同步原语的方式，高效地在 CXL Pod
+架构下管理了跨机活跃元组（Cross-host Active Tuple,
+CAT）在不同主机间的迁移，利用 CLOCK 算法管理有限的 HWcc
+空间，驱逐非热点数据。</p>
+<p>在数据库本身的特性方面，Tigon 采用 2PL 两阶段锁（元数据保存在
+HWcc）策略，结合 CXL 共享内存的特点改进了 Next-Key Locking
+协议解决幻读问题，利用 CXL 共享内存的特性避免了 2PC 两阶段提交。</p>
+<h2 id="二-研究背景">二 研究背景</h2>
+<p>关于 CXL 可以看 <a
+target="_blank" rel="noopener" href="https://computeexpresslink.org">computeexpresslink.org</a> 或 <a
+target="_blank" rel="noopener" href="https://zheya.cc/2026/01/29/paper_CxTnL/">这篇论文笔记</a>
+的背景介绍.</p>
+<p>在本篇论文的语境下，将通过 CXL 总线共享 CXL 内存的机器集群称为 CXL
+Pod.</p>
+<p>传统的分布式数据库通过网络或者 RDMA
+支持超远距离的分布式计算节点之间的通信，但基于 TCP/IP
+的通信会产生较大的协议栈和上下文切换开销，RDMA
+也依然具有较大的延迟。基于 CXL
+链路的分布式节点虽然没有基于网络的分布式节点那么远的通信物理距离，但是
+CXL 相对前两者来说延迟更低、吞吐量更高。然而，CXL 链路和 DRAM
+的引脚相比依然延迟更高、带宽更低。DRAM 的顺序访问带宽可以达到 250GB/s
+左右，而 CXL 只有 50GB/s 左右。CXL 标准的缓存一致性代价也较高，Snoop
+Filter
+需要为每个缓存行维护元信息，导致当前许多硬件只实现了一小部分内存的缓存一致。</p>
+<p>另外，在分布式数据库中，尽管数据库本身的规模可能很大，但是在不同主机上运行的事务并发读写的数据元组集合规模可能很小：每个事务只包含较小数量的元组，而并发运行的事务一般与核心数相当。以论文中的
+TPC-C 为例，单个事务平均访问 39 个元组，总数据量约 7KB。假设系统配备1000
+个核心且每个核心执行一个事务，则系统至多存在 3.9 万个活跃元组，对应约
+7MB 数据。我们将此类元组集合称为”跨主机活跃元组”（简称
+CAT）。这启发了使用 CXL 共享内存只迁移和共享这些 CAT 的方法。</p>
+<h2 id="三-tigon-系统设计">三 Tigon 系统设计</h2>
+<h3 id="分区与共享内存">分区与共享内存</h3>
+<p>Tigon 采用 Pasha 架构。Pasha 架构将计算与存储解耦，由 CPU 计算节点和
+CXL 共享内存内存存储节点构成，将数据库索引（B+Tree等）存储在 CXL
+共享内存中。</p>
+<p><img src="/images/Pasted%20image%2020260202160531.png" /></p>
+<p>整体数据库中的数据先在不同的 CXL Pod
+节点中分区，初始阶段每个主机是其分区数据的所有者（Owner），数据最初在主机的
+Local DRAM 中，此时访问具有低延迟和高带宽。</p>
+<p>当节点需要操作远端节点中的数据时，该数据就由那个节点的 Local DRAM
+转移到 CXL 共享内存中，成为 CAT 的一部分。后续的跨主机同步操作都可以靠对
+CXL
+内存的原子操作实现，而无需昂贵的网络消息开销。当然，如果某个节点想要在远端节点的数据分区中插入数据，还是需要网络消息通知那个远端节点，但仅仅只是一个插入通知：远端节点将一个占位元组插入并转移到
+CXL 共享内存，由当前节点通过原子操作修改这个占位元组中的数据。</p>
+<p>传统的分布式数据库实现需要基于网络通信的两阶段提交，而 Tigon
+只需要基于 CXL 链路的 CXL 原子操作即可。由于涉及跨主机访问的元组都在 CXL
+内存中，单机就可以锁定所有资源、决定事务的提交与终止、写入日志等，极大便利了数据库实现，避免了
+2PC 的开销。</p>
+<h3 id="数据结构设计">数据结构设计</h3>
+<h4 id="cxl-共享内存中">CXL 共享内存中</h4>
+<p>Tigon 将高频同步元数据放在 HWcc 内存区域中，包括索引（CXL Index）和
+HWcc Record; 将实际元组数据以 SWcc Row 的形式放在 SWcc
+内存区域，包含用于判断是否已经成为墓碑（见下文）的 <code>is-valid</code>
+标记、用于判断何时能将墓碑空间释放的
+<code>epoch-version</code>、以及元组数据本身 <code>tuple</code>。</p>
+<p>HWcc Record 的主要字段以及用途如下：</p>
+<ul>
+<li><code>HWcc-latch</code>: 数据库中对元组数据的 latch <span
+class="math inline">\(^{[1]}\)</span>,
+防止多主机或多线程同时访问造成不一致性</li>
+<li><code>2pl-lock</code>: 用于记录两阶段锁状态</li>
+<li><code>has-next-key</code>: Next-Key Locking 的改进。由于 Next-Key
+Locking 需要锁住 next key 来避免幻读问题，而 CXL
+共享内存可能并未加载这个 next key，所以通过这个标志位记录当前 CXL Index
+的下一个 key 是不是在 Owner 那里时真实的下一个 key（因为 CXL 只加载
+CAT，很可能当前 key 在 CXL Index 里的下一个 key 是其他的
+CAT）。这个维护由 Owner 在获取 CXL Index B+ Tree
+锁后修改索引时顺手维护，在 Next-Key Locking 时需要检查。若
+<code>has-next-key</code> 为真则无需额外操作，否则需要从节点的 Local
+DRAM 里再加载到 CXL 内存中。</li>
+<li><code>is-dirty</code>: 用于记录 CXL 内存中的数据是否被修改过（是否和
+Owner Local DRAM 里的数据相同），如果未被修改则 Owner 访问时可以不读
+SWcc 中的数据而是在 Local DRAM 中访问，节省 CXL 带宽。</li>
+<li><code>clock-bit</code>: Tigon 采用 CLOCK 算法而不是 LRU 算法来管理
+HWcc 中数据的进出。</li>
+<li><code>SWcc-bitmap</code>: 缓存有效性位图，若当前主机对应的位是
+<code>1</code> 则说明本地 CPU 缓存有效，否则则需要 flush，强制从 CXL
+读取最新数据并重设位 1。当有主机需要更新 SWcc Row
+时会清零所有缓存有效位，通知它们主机的本地缓存已经无效了。</li>
+<li><code>SWcc-row-ptr</code>: 指向在 SWcc 中的 SWcc
+Row，这部分记录实际数据。</li>
+</ul>
+<blockquote>
+<p><span class="math inline">\([1]\)</span> :
+数据库的语境中将管理较高逻辑层次的事务的同步原语称作锁（lock），将保护数据库系统实现中本身对象的同步原语称为闩锁（latch）。区别主要在于，latch
+更接近 OS 语境下的锁，需要实现者手动控制、手动防止死锁；而 lock
+由事务管理器控制，有死锁也会有单独的方案自动恢复。</p>
+</blockquote>
+<h4 id="local-dram-中">Local DRAM 中</h4>
+<p>Local DRAM 中由 Local Index 索引的 Local Row
+同一般数据库中的元组及其元信息一致，如两阶段锁标记、epoch
+版本、实际元组数据。</p>
+<p>但除此之外还包含了一个 <code>shortcut-ptr</code> 指向 HWcc Record. 当
+Local DRAM 中的元组成为 CAT 并移动到 CXL 后，CXL
+共享内存中的这个元组才是真实最新的数据，本地只是一个即将被替换的副本，所以理论上即使是
+Owner 自己要访问时也必须要查 CXL Index 然后访问 CXL 中的数据，但这对于
+Owner 来说还要查一下 CXL Index 实在没有必要，因此 Tigon
+在这里做了一个小优化，通过 <code>shortcut-ptr</code> 直接记录本地元组在
+CXL 内存中的位置（HWcc Record），无需再查询 CXL Index.</p>
+<h3 id="并发与事务一致性管理">并发与事务一致性管理</h3>
+<h4 id="防止-use-after-free-is-valid">防止 Use After Free
+<code>is-valid</code></h4>
+<p><code>is-valid</code> 为 <code>false</code>
+的通常作为墓碑或占位符，其数据无意义，但能代表某些语义</p>
+<p><strong>占位符</strong>：当某个主机想在远端主机所拥有的分区插入数据时，需要让远端主机先插入一个
+<code>is-valid = false</code> 的占位符并加载到
+CXL，然后当前主机再抢锁并修改数据。</p>
+<p><strong>墓碑</strong>：CXL 中的某个元组被 CLOCK 算法判定应写回主机
+Local DRAM 后，这个元组在 CXL Index
+中被删除，但此时还不能直接释放空间，由于这里的设计必须是先获取 HWcc
+Record 的裸指针再通过原子操作 <code>HWcc-latch</code>
+获取锁，所以即便写回数据需要获取锁，也可能有一些主机提前拿到了裸指针，这里只是将其设置为
+<code>is-valid = false</code> 的墓碑，避免其他主机拿到裸指针后 CAT
+被写回原主机导致解引用时 Use After Free.
+当确认没有任何主机引用这个对象时，这个对象才能被安全释放空间。而判断是否还有主机引用这个对象则需要
+EBR.</p>
+<h4 id="版本标记-epoch-version">版本标记 <code>epoch-version</code></h4>
+<p>和传统数据库中的版本管理类似，epoch 类似一个主机的 timestamp (约 10ms
+更新一次，作为一个 epoch), 标志当前主机在运行哪个 epoch
+的代码。读操作只能读被标记为 <code>epoch &lt;= current_epoch</code>
+的元组，垃圾回收可以回收 <code>epoch &lt;= current_epoch</code>
+的旧版本快照。</p>
+<p>上文说到判断是否有主机引用等待释放的对象需要 EBR (Epoch-Based
+Reclamation), 如果某个墓碑的 epoch-version 在所有主机的 epoch
+之前，即它是在所有主机当前运行的版本之前被删除的，那么可以放心释放空间。换言之，即使存在一个主机运行在比墓碑更早的
+epoch 上，那这个元组也并不会被释放。</p>
+<h3 id="日志与恢复">日志与恢复</h3>
+<p>// TODO(amiriox):</p>
+<h2 id="四-性能评估">四 性能评估</h2>
+<p>// TODO(amiriox):</p>
+<h2 id="五-阅读总结">五 阅读总结</h2>
+<p>// TODO(amiriox):</p>
+
+    </div>
+    
+    
+      <footer class="post-footer">
+        <div class="post-tags">
+          <strong>Filed under:</strong>
+          
+            <a href="/tags/%E6%96%87%E7%8C%AE/" class="tag">#文献</a>
+          
+            <a href="/tags/CXL/" class="tag">#CXL</a>
+          
+            <a href="/tags/OSDI/" class="tag">#OSDI</a>
+          
+            <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%BA%93/" class="tag">#分布式数据库</a>
+          
+        </div>
+      </footer>
+    
+    
+    <div class="post-nav">
+      
+      
+      
+        <a href="/2026/01/29/paper_CxTnL/" class="post-nav-next">
+          <span class="nav-label">Next Story →</span>
+          <span class="nav-title">【论文速读】CtXnL: A Software-Hardware Co-designed Solution  for Efficient CXL-Based Transaction Processing</span>
+        </a>
+      
+    </div>
+  </article>
+  
+  
+    <aside class="post-sidebar">
+  
+    <div class="sidebar-toc">
+      <h3 class="sidebar-title">Table of Contents</h3>
+      <div class="toc-content">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-%E6%A0%B8%E5%BF%83%E5%86%85%E5%AE%B9"><span class="toc-number">1.</span> <span class="toc-text">一 核心内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF"><span class="toc-number">2.</span> <span class="toc-text">二 研究背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89-tigon-%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.</span> <span class="toc-text">三 Tigon 系统设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%8C%BA%E4%B8%8E%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98"><span class="toc-number">3.1.</span> <span class="toc-text">分区与共享内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.2.</span> <span class="toc-text">数据结构设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E4%B8%8E%E4%BA%8B%E5%8A%A1%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%A1%E7%90%86"><span class="toc-number">3.3.</span> <span class="toc-text">并发与事务一致性管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E4%B8%8E%E6%81%A2%E5%A4%8D"><span class="toc-number">3.4.</span> <span class="toc-text">日志与恢复</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B-%E6%80%A7%E8%83%BD%E8%AF%84%E4%BC%B0"><span class="toc-number">4.</span> <span class="toc-text">四 性能评估</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94-%E9%98%85%E8%AF%BB%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">五 阅读总结</span></a></li></ol>
+      </div>
+    </div>
+  
+  
+  
+    <div class="sidebar-author">
+      <div class="author-avatar avatar-rounded">
+        <img src="/images/icon.jpg" alt="Avatar">
+      </div>
+      <p class="author-name">折鸦夜明け前</p>
+    </div>
+  
+  
+  
+    <div class="sidebar-social">
+      <h3 class="sidebar-title">Follow</h3>
+      <ul class="social-links">
+        
+          <li>
+            <a href="https://github.com/amiriox" target="_blank" rel="noopener">GitHub</a>
+          </li>
+        
+          <li>
+            <a href="mailto:wumingyun2120@gmail.com" target="_blank" rel="noopener">E-Mail</a>
+          </li>
+        
+          <li>
+            <a href="https://www.zhihu.com/people/wu-ming-57-22-24" target="_blank" rel="noopener">Zhihu</a>
+          </li>
+        
+          <li>
+            <a href="https://space.bilibili.com/444947789" target="_blank" rel="noopener">Bilibili</a>
+          </li>
+        
+      </ul>
+    </div>
+  
+  
+  
+    <div class="sidebar-links">
+      <h3 class="sidebar-title">友情链接</h3>
+      <ul class="friend-links">
+        
+          <li>
+            <a href="https://kawayww.com/" target="_blank" rel="noopener">柳下川的博客</a>
+          </li>
+        
+          <li>
+            <a href="https://www.overturn.cn/" target="_blank" rel="noopener">远视台</a>
+          </li>
+        
+      </ul>
+    </div>
+  
+</aside>
+
+  
+</div>
+
+    </main>
+    
+    <footer class="newspaper-footer">
+  <div class="footer-divider"></div>
+  
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>折鸦夜明け前</h3>
+      <p>Est. 2020</p>
+      
+        <p class="footer-since">Since 2023</p>
+      
+    </div>
+    
+    
+    <div class="footer-section">
+      <h3>Follow Us</h3>
+      <ul class="social-links">
+        
+          <li><a href="https://github.com/amiriox" target="_blank" rel="noopener">GitHub</a></li>
+        
+          <li><a href="mailto:wumingyun2120@gmail.com" target="_blank" rel="noopener">E-Mail</a></li>
+        
+          <li><a href="https://www.zhihu.com/people/wu-ming-57-22-24" target="_blank" rel="noopener">Zhihu</a></li>
+        
+          <li><a href="https://space.bilibili.com/444947789" target="_blank" rel="noopener">Bilibili</a></li>
+        
+      </ul>
+    </div>
+    
+    
+    
+    <div class="footer-section">
+      <h3>友情链接</h3>
+      <ul class="footer-links">
+        
+          <li><a href="https://kawayww.com/" target="_blank" rel="noopener">柳下川的博客</a></li>
+        
+          <li><a href="https://www.overturn.cn/" target="_blank" rel="noopener">远视台</a></li>
+        
+      </ul>
+    </div>
+    
+    
+    <div class="footer-section">
+      <h3>Navigation</h3>
+      <ul class="footer-nav">
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/archives">Archives</a></li>
+        
+          <li><a href="/categories">Categories</a></li>
+        
+          <li><a href="/tags">Tags</a></li>
+        
+          <li><a href="/about">About</a></li>
+        
+      </ul>
+    </div>
+  </div>
+  
+  <div class="footer-bottom">
+    <p>© 2025 The Daily Amiriox Makinohara. All Rights Reserved.</p>
+    <p>
+      
+        Made with <span class="footer-icon icon-animated" style="color: #8b0000">⚂</span> · 
+      
+      Powered by <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> · Theme Newspepper
+    </p>
+  </div>
+</footer>
+
+  </div>
+  
+  <script src="/js/script.js"></script>
+
+</body>
+</html>

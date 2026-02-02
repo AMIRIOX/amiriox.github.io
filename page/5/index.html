@@ -54,7 +54,7 @@
     <header class="newspaper-header">
   <div class="header-top">
     <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期日, 二月 1, 2026</div>
+    <div class="header-date">星期一, 二月 2, 2026</div>
     <button class="theme-toggle" aria-label="Toggle dark mode">
       <span class="toggle-sun">☀</span>
       <span class="toggle-moon">☾</span>
@@ -106,6 +106,70 @@
       
         
         <article class="article-card article-featured">
+  <header class="article-header">
+    <div class="article-meta-top">
+      
+        <span class="article-category">组成原理</span>
+      
+      <time datetime="2025-01-19T02:43:30.000Z" class="article-date">
+        一月 19, 2025
+      </time>
+    </div>
+    
+    <h2 class="article-title">
+      <a href="/2025/01/19/CSAPP-2025-01-19/">CSAPP3e第二章(整数的表示)</a>
+    </h2>
+    
+    
+  </header>
+  
+  <div class="article-excerpt">
+    
+      <h1 id="整数的表示第二章-part1">整数的表示(第二章 Part1)</h1>
+<p><del>博客还没装 Mathjax 插件，所以下面的 <span
+class="math inline">\(\LaTeX\)</span> 应该都是乱的</del> 已修</p>
+<h2 id="整数表示">整数表示</h2>
+<p>这一段如果没有目的和顺序地硬看会觉得关系很多很复杂，但其实只要按照一定的目的和顺序结构就会很清晰。</p>
+<h3 id="以设计者的视角思考如何设计">以设计者的视角思考如何设计</h3>
+<p>如果我们是设计用二进制表示整数的人，我们需要如何表示二进制？</p>
+<p>利用 <span class="math inline">\(w\)</span> 位二进制的最高位 $
+x_{w-1} $ 为 <span class="math inline">\(1\)</span>
+代表这个数是负数，剩下的部分正常用二进制表示即 <span
+class="math inline">\(\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i\)</span></p>
+<p>但显然光表示是完全不够的，我们还需要运算，<strong>而符号位由于不对具体数值做贡献，会导致运算错误。</strong>
+因此我们需要让符号位也代表数值，用另一种映射方式计算，于是我们令最高位的符号位具有负的权重
+<span class="math inline">\(-x_{w-1} \cdot
+2^{w-1}\)</span>，这样符号位也参与了计算。但是这样数值又对不上了，因此我们需要把后面的位也变一下。由于我们不是真的设计师，所以我们直接看答案：取反后面的每一位后再
++1。例如<code>10010</code><strong>除符号位</strong>取反后变为<code>11101</code>，
++1后是<code>11110</code>。这样的表示方法计算出的数值是 <span
+class="math inline">\(-x_{w-1}\cdot2^{w-1}+\displaystyle\sum_{i=0}^{w-2}x_i\cdot2^i\)</span>
+如何论证这样的数值是”对”的呢？</p>
+    
+  </div>
+  
+  <footer class="article-footer">
+    <a href="/2025/01/19/CSAPP-2025-01-19/" class="read-more-btn">
+      <span class="btn-text">Continue Reading →</span>
+      <span class="btn-arrow">→</span>
+    </a>
+    
+    
+      <div class="article-tags">
+        
+          <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" class="tag">#计算机科学</a>
+        
+          <a href="/tags/CSAPP-cmu15213/" class="tag">#CSAPP/cmu15213</a>
+        
+      </div>
+    
+  </footer>
+</article>
+
+      
+    
+      
+        
+        <article class="article-card ">
   <header class="article-header">
     <div class="article-meta-top">
       
@@ -366,62 +430,6 @@ class="math inline">\(\times 2\)</span></p>
           <a href="/tags/%E8%BF%81%E7%A7%BB/" class="tag">#迁移</a>
         
           <a href="/tags/Linux/" class="tag">#Linux</a>
-        
-      </div>
-    
-  </footer>
-</article>
-
-      
-    
-      
-        
-        <article class="article-card ">
-  <header class="article-header">
-    <div class="article-meta-top">
-      
-        <span class="article-category">组成原理</span>
-      
-      <time datetime="2021-01-17T16:00:00.000Z" class="article-date">
-        一月 18, 2021
-      </time>
-    </div>
-    
-    <h2 class="article-title">
-      <a href="/2021/01/18/CSAPP-2021-01-28/">CSAPP 2021-01-18</a>
-    </h2>
-    
-    
-  </header>
-  
-  <div class="article-excerpt">
-    
-      <blockquote>
-<p>此文章的 <em>撰写时间</em> 可能有误</p>
-</blockquote>
-<h1 id="csapp-today-2021-01-18">CSAPP Today 2021-01-18</h1>
-<h2 id="一-左移和右移">一 左移和右移</h2>
-<p>对于<code>x&lt;&lt;k</code>称为将 <span class="math inline">\(x\)</span> 左移 <span class="math inline">\(k\)</span> 位。 对于一个位向量表示为 <span class="math inline">\([x_{w-1}, x_{w-2}, ..., x_0]\)</span> 的操作数
-<span class="math inline">\(x\)</span>, <code>x&lt;&lt;k</code>的结果是$
-[x_{w-k-1}, x_{w-k-2}, …, x_0, 0, …, 0] $ 也就是向左移动 <span class="math inline">\(k\)</span> 位, 右侧空缺用0补齐。
-在C中，左移运算符从左至右结合。即<code>x&lt;&lt;i&lt;&lt;j</code>相当于<code>(x&lt;&lt;j)&lt;&lt;k</code></p>
-<p>对于<code>x&gt;&gt;k</code>成为将 <span class="math inline">\(x\)</span> 右移 <span class="math inline">\(k\)</span> 位。
-不同的是，<strong>右移有两种形势，算术右移和逻辑右移</strong>。</p>
-    
-  </div>
-  
-  <footer class="article-footer">
-    <a href="/2021/01/18/CSAPP-2021-01-28/" class="read-more-btn">
-      <span class="btn-text">Continue Reading →</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    
-    
-      <div class="article-tags">
-        
-          <a href="/tags/%E8%BF%81%E7%A7%BB/" class="tag">#迁移</a>
-        
-          <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" class="tag">#计算机科学</a>
         
       </div>
     

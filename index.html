@@ -54,7 +54,7 @@
     <header class="newspaper-header">
   <div class="header-top">
     <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期日, 二月 1, 2026</div>
+    <div class="header-date">星期一, 二月 2, 2026</div>
     <button class="theme-toggle" aria-label="Toggle dark mode">
       <span class="toggle-sun">☀</span>
       <span class="toggle-moon">☾</span>
@@ -111,6 +111,69 @@
       
         <span class="article-category">学术</span>
       
+      <time datetime="2026-02-01T00:00:00.000Z" class="article-date">
+        二月 1, 2026
+      </time>
+    </div>
+    
+    <h2 class="article-title">
+      <a href="/2026/02/01/paper_tigon/">【论文阅读】Tigon: A Distributed Database for a CXL Pod</a>
+    </h2>
+    
+    
+  </header>
+  
+  <div class="article-excerpt">
+    
+      <h2 id="一-核心内容">一 核心内容</h2>
+<p>本论文提出了名为 Tigon，一种基于 CXL Pod 的分布式内存数据库。</p>
+<p>论文作者注意到 CXL 标准在强缓存一致性实现上 Snoop Filter
+记录的缓存行信息过大、现有 CXL
+硬件实现通常仅仅支持一小部分内存的缓存一致性，充分利用这一点划分了 HWcc
+和 SWcc 区域，通过在 SWcc 中存储松散一致性的实际数据、在 HWcc
+中存储高频同步原语的方式，高效地在 CXL Pod
+架构下管理了跨机活跃元组（Cross-host Active Tuple,
+CAT）在不同主机间的迁移，利用 CLOCK 算法管理有限的 HWcc
+空间，驱逐非热点数据。</p>
+<p>在数据库本身的特性方面，Tigon 采用 2PL 两阶段锁（元数据保存在
+HWcc）策略，结合 CXL 共享内存的特点改进了 Next-Key Locking
+协议解决幻读问题，利用 CXL 共享内存的特性避免了 2PC 两阶段提交。</p>
+<h2 id="二-研究背景">二 研究背景</h2>
+    
+  </div>
+  
+  <footer class="article-footer">
+    <a href="/2026/02/01/paper_tigon/" class="read-more-btn">
+      <span class="btn-text">Continue Reading →</span>
+      <span class="btn-arrow">→</span>
+    </a>
+    
+    
+      <div class="article-tags">
+        
+          <a href="/tags/%E6%96%87%E7%8C%AE/" class="tag">#文献</a>
+        
+          <a href="/tags/CXL/" class="tag">#CXL</a>
+        
+          <a href="/tags/OSDI/" class="tag">#OSDI</a>
+        
+          <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%BA%93/" class="tag">#分布式数据库</a>
+        
+      </div>
+    
+  </footer>
+</article>
+
+      
+    
+      
+        
+        <article class="article-card ">
+  <header class="article-header">
+    <div class="article-meta-top">
+      
+        <span class="article-category">学术</span>
+      
       <time datetime="2026-01-29T00:00:00.000Z" class="article-date">
         一月 29, 2026
       </time>
@@ -133,7 +196,7 @@
 避免其启动广播，再通过 GSync 一次性提交写回。同时，CtXnL 还设计了 VF/VBF
 过滤器来避免无谓的访存操作 CXL 链路通知。</p>
 <h2 id="二-研究背景">二 研究背景</h2>
-<p>CXL 是一种总线协议，采用了 PCIe
+<p>Compute Express Link (CXL) 是一种总线协议，采用了 PCIe
 的物理结构，但是其目的是为了达成一个逻辑上的共享内存池，CPU
 和外设设备都能通过 Load/Store（不经过 RDMA
 这种的数据搬运，相对更快）访问到这片共享内存上的数据。共享内存池通常通过接入
@@ -308,104 +371,6 @@ DRAM 同时存在的混合存储系统的效率。</p>
     
       
     
-      
-    
-      
-        
-        <article class="article-card ">
-  <header class="article-header">
-    <div class="article-meta-top">
-      
-        <span class="article-category">数据库</span>
-      
-      <time datetime="2025-12-16T12:35:30.000Z" class="article-date">
-        十二月 16, 2025
-      </time>
-    </div>
-    
-    <h2 class="article-title">
-      <a href="/2025/12/16/db-15445-3-access/"><未完成>数据库系统的访问方法</a>
-    </h2>
-    
-    
-  </header>
-  
-  <div class="article-excerpt">
-    
-      <p>上一篇博客: <a
-target="_blank" rel="noopener" href="https://zheya.cc/2025/10/19/db-15445-2-storage/">数据库系统的数据存储方式
-| Amiriox’s Storage</a></p>
-<p>上次写博客是在一个多月前了, 最近比较忙, 博客只能抽空写.
-精神状态也不是很好, 得想想办法 ()</p>
-<h2 id="数据库系统的访问方法">数据库系统的访问方法</h2>
-<p>我们在这个系列的第一篇文章(<a
-target="_blank" rel="noopener" href="https://zheya.cc/2025/09/23/db-15445-1-intro/">数据库系统的基本概念
-| Amiriox’s Storage</a>)中就介绍了数据库的架构分层, 但没能真正展开.</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: center;">典型关系型数据库的架构分层</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: center;">查询优化(Query Planning)</td>
-</tr>
-<tr>
-<td style="text-align: center;">算子执行(Operator Execution)</td>
-</tr>
-<tr>
-<td style="text-align: center;">访问方法(Access Method) &lt;-</td>
-</tr>
-<tr>
-<td style="text-align: center;">缓冲池管理器(Buffer Pool Manager)</td>
-</tr>
-<tr>
-<td style="text-align: center;">磁盘管理器(Disk Manager)</td>
-</tr>
-</tbody>
-</table>
-<p>具体来说:</p>
-<ul>
-<li>磁盘管理器单纯用来和磁盘进行交互,
-不过通常实现一些异步方案进行优化(Bustub 就利用了
-<code>std::promise</code>)</li>
-<li>缓冲池在上一篇文章(<a
-target="_blank" rel="noopener" href="https://zheya.cc/2025/10/19/db-15445-2-storage/">数据库系统的数据存储方式
-| Amiriox’s Storage</a>)中介绍了, 为防止磁盘 I/O 成为性能瓶颈,
-有计划地(一些页驱逐策略)将磁盘中的页加载到内存中作为内存中的一个页帧<span
-class="math inline">\(^{[*]}\)</span></li>
-<li>访问方法通过特定的数据结构从页中找到上层算子执行所需要的信息,
-本文将详细解释这些数据结构</li>
-<li>算子是关系代数中的具体操作实现(当然, 事实上是基于可重集合,
-甚至有序可重集合的特殊关系代数), 这在后面的文章中会详细介绍,
-例如数据和逻辑是如何在这些算子间流动最终得出查询结果的,
-算子的执行体现了程序究竟在做什么:
-“用逻辑塑造一个管道让数据在其中塑形”。</li>
-<li>查询优化, 面对一个已知的 SQL 语句, 预估大概的执行成本,
-选择采用什么索引, 某些算子的执行顺序交换, 以形成相对更优的执行计划</li>
-</ul>
-    
-  </div>
-  
-  <footer class="article-footer">
-    <a href="/2025/12/16/db-15445-3-access/" class="read-more-btn">
-      <span class="btn-text">Continue Reading →</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    
-    
-      <div class="article-tags">
-        
-          <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" class="tag">#计算机科学</a>
-        
-          <a href="/tags/cmu15445/" class="tag">#cmu15445</a>
-        
-      </div>
-    
-  </footer>
-</article>
-
       
     
       

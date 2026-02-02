@@ -54,7 +54,7 @@
     <header class="newspaper-header">
   <div class="header-top">
     <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期日, 二月 1, 2026</div>
+    <div class="header-date">星期一, 二月 2, 2026</div>
     <button class="theme-toggle" aria-label="Toggle dark mode">
       <span class="toggle-sun">☀</span>
       <span class="toggle-moon">☾</span>
@@ -106,6 +106,69 @@
       
         
         <article class="article-card article-featured">
+  <header class="article-header">
+    <div class="article-meta-top">
+      
+        <span class="article-category">编程语言理论</span>
+      
+      <time datetime="2025-06-17T08:24:39.000Z" class="article-date">
+        六月 17, 2025
+      </time>
+    </div>
+    
+    <h2 class="article-title">
+      <a href="/2025/06/17/sicp_2/">SICP 第二章(构造数据抽象)</a>
+    </h2>
+    
+    
+  </header>
+  
+  <div class="article-excerpt">
+    
+      <h2 id="复合数据">复合数据</h2>
+<p>在实际的程序设计中(模拟数学或现实系统),
+操作(过程)要应用到的数据往往不是一个单独的基本类型数据,
+而是多个基本类型数据复合起来的: 例如分数是由分子和分母确定起来的,
+单一的分子和分母都不能称为分数.
+而将分子和分母以某种方式复合起来比单独管理分子和分母具有更强的可读性,
+减少了编码中的精力消耗;
+同时加强分子和分母之间的关系(分子和分母的关系应当强于这两个符号之于别的数据的关系)也符合某种(<del>哲学上的</del>)道理.</p>
+<p>为此, 我们需要构造一种抽象使得这两个数据被复合起来:</p>
+<ul>
+<li>首先要有构造函数, 将这分子和分母复合为另一个新的数据</li>
+<li>然后还要有选择函数,
+因为在实际操作中我们需要操作分子和分母本身(来模拟分数的运算)而不是分数本身</li>
+<li>最后,
+分子和分母及其操作应当符合某些规则(即数学上分数运算上的规则)</li>
+</ul>
+<p>这就是复合数据的需求: 将数据定义为一组适当的选择函数和构造函数,
+以及为了使得这些过程成为一套合法表示, 它们就必须满足一组特定的条件.</p>
+    
+  </div>
+  
+  <footer class="article-footer">
+    <a href="/2025/06/17/sicp_2/" class="read-more-btn">
+      <span class="btn-text">Continue Reading →</span>
+      <span class="btn-arrow">→</span>
+    </a>
+    
+    
+      <div class="article-tags">
+        
+          <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" class="tag">#计算机科学</a>
+        
+          <a href="/tags/SICP/" class="tag">#SICP</a>
+        
+      </div>
+    
+  </footer>
+</article>
+
+      
+    
+      
+        
+        <article class="article-card ">
   <header class="article-header">
     <div class="article-meta-top">
       
@@ -220,66 +283,6 @@ target="_blank" rel="noopener" href="https://zheya.cc/2025/03/26/rCore_learn/#�
     
       
     
-      
-    
-      
-        
-        <article class="article-card ">
-  <header class="article-header">
-    <div class="article-meta-top">
-      
-        <span class="article-category">操作系统</span>
-      
-      <time datetime="2025-04-19T07:10:50.000Z" class="article-date">
-        四月 19, 2025
-      </time>
-    </div>
-    
-    <h2 class="article-title">
-      <a href="/2025/04/19/arceos_learn/">组件化操作系统</a>
-    </h2>
-    
-    
-  </header>
-  
-  <div class="article-excerpt">
-    
-      <h1 id="组件化操作系统设计与实现">组件化操作系统设计与实现</h1>
-<p>oscamp 第三节阶段总结.
-由于部分操作系统原理性质的内容在二阶段中已经学过了,
-因此总结主要针对两部分:</p>
-<ol type="1">
-<li>新概念: ArceOS 在传统内核上的创新</li>
-<li>老概念: 与 rCore 的实现不同的部分, 以及分析原因</li>
-</ol>
-<h2 id="为什么要组件化">为什么要组件化?</h2>
-<p>ArceOS 的优势区间在于快速针对特定领域构建出一个最合适的内核,
-主要解决的痛点就是”从头开发一个操作系统太繁琐”,
-而”现成的方案并不完全适用于应用场景”.
-一些操作系统的可扩展性通过内核编译选项或者配置文件来实现,
-但是这种方法无法在更深层次修改组装一个操作系统内核, 因此 ArceOS
-采用了组件化的方案灵活组装某些功能.</p>
-    
-  </div>
-  
-  <footer class="article-footer">
-    <a href="/2025/04/19/arceos_learn/" class="read-more-btn">
-      <span class="btn-text">Continue Reading →</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    
-    
-      <div class="article-tags">
-        
-          <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/" class="tag">#计算机科学</a>
-        
-          <a href="/tags/ArceOS/" class="tag">#ArceOS</a>
-        
-      </div>
-    
-  </footer>
-</article>
-
       
     
       
