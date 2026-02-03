@@ -54,7 +54,7 @@
     <header class="newspaper-header">
   <div class="header-top">
     <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期一, 二月 2, 2026</div>
+    <div class="header-date">星期二, 二月 3, 2026</div>
     <button class="theme-toggle" aria-label="Toggle dark mode">
       <span class="toggle-sun">☀</span>
       <span class="toggle-moon">☾</span>
@@ -120,7 +120,7 @@
           <span class="post-author">By 折鸦夜明け前</span>
         
         
-          <span class="post-updated">Updated 二月 2, 2026</span>
+          <span class="post-updated">Updated 二月 3, 2026</span>
         
       </div>
     </header>
@@ -260,11 +260,28 @@ Reclamation), 如果某个墓碑的 epoch-version 在所有主机的 epoch
 之前，即它是在所有主机当前运行的版本之前被删除的，那么可以放心释放空间。换言之，即使存在一个主机运行在比墓碑更早的
 epoch 上，那这个元组也并不会被释放。</p>
 <h3 id="日志与恢复">日志与恢复</h3>
-<p>// TODO(amiriox):</p>
+<p>Tigon 的日志采用并行记录、并行重放的机制. 每个 worker
+都写入自己的日志到 log buffer, 根据 epoch (10ms) 进行组提交 (写入SSD).
+只有一个 epoch (及其之前的 epoch) 的全部日志都被提交落盘后, 这个 epoch
+才算被成功提交.</p>
 <h2 id="四-性能评估">四 性能评估</h2>
-<p>// TODO(amiriox):</p>
+<p>使用 Intel 虚拟化技术模拟 CXL 硬件.</p>
+<ul>
+<li>对比 Shared-nothing 架构 (数据分片, 各节点不共享数据)
+的数据库吞吐量提升了 2.5 倍</li>
+<li>对比 RDMA 数据库吞吐量提升了 18.5 倍</li>
+</ul>
+<p>HWcc 空间大小:</p>
+<p>当硬件的缓存一致预算不足时, 哪怕只有 50MB, Tigon 的性能下降也只有
+5.8%, 可见 CLOCK 算法能精准识别热点 CAT 以管理 HWcc 空间的驱逐. 当 HWcc
+空间只有 10 MB 时, 出现比较严重的缓存抖动, 吞吐量下降较大</p>
+<p><img src="/images/Pasted%20image%2020260203122859.png" /></p>
 <h2 id="五-阅读总结">五 阅读总结</h2>
-<p>// TODO(amiriox):</p>
+<p>主要思路是一反其他研究方向将 CXL 透明化的思路 (但其实之前 CtXnL
+对用户态也不是透明的, 毕竟还是有 CTLib allocator), 将 CXL
+内存视为不透明的通信介质 “中转站”, 或者说是一个共享缓存.
+总之充分利用了数据库的负载特性 (CAT 较小等) 设计了符合 CXL Pod
+架构特性的数据库系统.</p>
 
     </div>
     
