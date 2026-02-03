@@ -120,7 +120,7 @@
           <span class="post-author">By 折鸦夜明け前</span>
         
         
-          <span class="post-updated">Updated 二月 1, 2026</span>
+          <span class="post-updated">Updated 二月 3, 2026</span>
         
       </div>
     </header>
@@ -136,7 +136,7 @@ DRAM 同时存在的混合存储系统的效率。</p>
 <li>NOVA 充分利用 NVMM 的随机访问特性，从传统 LFS
 中放宽了局部性限制，从而实现了日志数据分离、日志链表来避免传统 LFS
 的垃圾回收开销</li>
-<li>NOVA 通过将空闲链表索引建立在 DRAM 中，规避了在 NVMM
+<li>NOVA 通过将空闲链表索引和范围树索引建立在 DRAM 中，规避了在 NVMM
 中由于一致性难以保证造成的数据结构难以实现的问题</li>
 <li>除了本身是 log-structured 之外，NOVA 还在需要同时修改多个 inode
 的操作(如对路径相关的操作)中采用了 journaling 技术，同时依赖 VFS
@@ -165,8 +165,8 @@ CPU 无法进行乱序执行等优化降低并行度。传统 LFS
 则基于传统存储器的局部性，在尾部追加日志和数据，导致垃圾回收操作开销太大。</p>
 <h2 id="三-nova-系统设计">三 NOVA 系统设计</h2>
 <p>日志和文件数据分离。首先，NOVA 本身是 log-structure
-的，这意味着它需要 1存放实际数据 2记录日志。传统 LFS 会将
-日志和数据放在一起直接追加到已用空间尾部，这是基于空间局部性考虑的。而
+的，这意味着它需要 1存放实际数据 2记录日志。传统 LFS
+会将日志和数据放在一起直接追加到已用空间尾部，这是基于空间局部性考虑的。而
 NOVA 考虑到 NVMM
 可以放宽局部性限制，几乎想跳到哪个地址就跳到哪个地址，所以分离了日志和实际文件数据。这样，可以实现数据的
 copy-on-write (COW),
@@ -284,8 +284,7 @@ PCM（相变内存，二者均为 NVMM）上，其中 <code>create</code> 和
 <p><img src="/images/Pasted%20image%2020260126223649.png" /></p>
 <p><img src="/images/Pasted%20image%2020260126223710.png" /></p>
 <h2 id="六-阅读总结">六 阅读总结</h2>
-<p><del>导师让我读的，说是让我实现文件系统</del> NOVA
-似乎目前只在学术界地位很高， 没有被 Linux
+<p>NOVA 似乎目前只在学术界地位很高， 没有被 Linux
 内核合并。我之前在初学的时候就有在想是否存在可持久化内存之类的东西，后来了解到好像被
 Intel 玩崩了，这么看 NOVA 也是生不逢时了。不过似乎后面还有非易失性的 CXL
 内存，待我往下读。<del>为什么三天只读了一篇啊。</del></p>
