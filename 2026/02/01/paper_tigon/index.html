@@ -54,7 +54,7 @@
     <header class="newspaper-header">
   <div class="header-top">
     <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期二, 二月 3, 2026</div>
+    <div class="header-date">星期日, 二月 15, 2026</div>
     <button class="theme-toggle" aria-label="Toggle dark mode">
       <span class="toggle-sun">☀</span>
       <span class="toggle-moon">☾</span>
@@ -120,7 +120,7 @@
           <span class="post-author">By 折鸦夜明け前</span>
         
         
-          <span class="post-updated">Updated 二月 3, 2026</span>
+          <span class="post-updated">Updated 二月 15, 2026</span>
         
       </div>
     </header>
@@ -178,6 +178,13 @@ Local DRAM 中，此时访问具有低延迟和高带宽。</p>
 CXL
 内存的原子操作实现，而无需昂贵的网络消息开销。当然，如果某个节点想要在远端节点的数据分区中插入数据，还是需要网络消息通知那个远端节点，但仅仅只是一个插入通知：远端节点将一个占位元组插入并转移到
 CXL 共享内存，由当前节点通过原子操作修改这个占位元组中的数据。</p>
+<p>当某个节点想访问的 CAT 已经被其他节点获取了 latch 时,
+这个节点必须自旋等待. 但是在 Tigon 的设计中, 自旋等待无需每次都通过 CXL
+链路访问 CXL 中的 HWcc latch 导致昂贵的开销. 第一次自旋访问 HWcc latch
+时会 cache miss 并加载到 CPU 高速缓存中, 则之后的每次自旋都是 cache hit,
+称为本地自旋. 当持有锁的节点释放锁后, CXL HWcc latch 状态改变, 由于
+latch 在 HWcc 区域, Snoop Filter 会根据 CXL 3.0
+的缓存一致性协议更新自旋节点的 CPU 缓存, 自旋结束, 此节点获取到锁.</p>
 <p>传统的分布式数据库实现需要基于网络通信的两阶段提交，而 Tigon
 只需要基于 CXL 链路的 CXL 原子操作即可。由于涉及跨主机访问的元组都在 CXL
 内存中，单机就可以锁定所有资源、决定事务的提交与终止、写入日志等，极大便利了数据库实现，避免了
