@@ -104,6 +104,55 @@ body {
               color var(--transition-medium);
 }
 
+/* Background image layers (day + night, crossfade on theme switch) */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  z-index: -1;
+  pointer-events: none;
+}
+
+body::before {
+  background-image: var(--bg-image-day, none);
+}
+
+body::after {
+  background-image: var(--bg-image-night, none);
+}
+
+/* Transparent mode — show day bg by default */
+body.transparent-mode::before {
+  opacity: 1;
+}
+
+/* Night mode — fade out day, fade in night */
+body.dark-mode.transparent-mode::before {
+  opacity: 0;
+}
+
+body.dark-mode.transparent-mode::after {
+  opacity: 1;
+}
+
+body.transparent-mode .newspaper-wrapper {
+  background: rgba(249, 247, 241, 0.82);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+body.dark-mode.transparent-mode .newspaper-wrapper {
+  background: rgba(13, 27, 42, 0.80);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -123,6 +172,7 @@ a:hover {
   padding: var(--spacing-lg);
   background: var(--bg-secondary);
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.15);
+  transition: background 0.5s ease, backdrop-filter 0.5s ease;
 }
 
 /* ============================================
@@ -156,7 +206,14 @@ a:hover {
   text-align: center;
 }
 
-.theme-toggle {
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.theme-toggle,
+.bg-toggle {
   background: none;
   border: 1px solid var(--border-light);
   padding: 0.25rem 0.5rem;
@@ -164,11 +221,19 @@ a:hover {
   font-size: 1rem;
   border-radius: 3px;
   transition: all var(--transition-fast);
+  color: var(--text-primary);
 }
 
-.theme-toggle:hover {
+.theme-toggle:hover,
+.bg-toggle:hover {
   background: var(--bg-primary);
   border-color: var(--border-color);
+}
+
+body.transparent-mode .bg-toggle {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--bg-secondary);
 }
 
 .toggle-sun,
@@ -509,6 +574,41 @@ body:not(.dark-mode) .toggle-moon {
   text-align: justify;
 }
 
+/* Lists */
+.post-content ul,
+.post-content ol {
+  margin: var(--spacing-md) 0 var(--spacing-lg) var(--spacing-xl);
+  padding-left: var(--spacing-md);
+}
+
+.post-content ul {
+  list-style: disc;
+}
+
+.post-content ol {
+  list-style: decimal;
+}
+
+.post-content li {
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.8;
+}
+
+.post-content li > ul,
+.post-content li > ol {
+  margin-top: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+  margin-left: var(--spacing-lg);
+}
+
+.post-content li > ul {
+  list-style: circle;
+}
+
+.post-content li > ul > li > ul {
+  list-style: square;
+}
+
 .post-content h2,
 .post-content h3,
 .post-content h4 {
@@ -516,6 +616,26 @@ body:not(.dark-mode) .toggle-moon {
   margin-top: var(--spacing-2xl);
   margin-bottom: var(--spacing-md);
   line-height: 1.3;
+}
+
+/* Anchor link on headings */
+.post-content h2 .anchor,
+.post-content h3 .anchor,
+.post-content h4 .anchor {
+  opacity: 0;
+  margin-left: 0.4em;
+  font-size: 0.7em;
+  text-decoration: none;
+  color: var(--accent-primary);
+  vertical-align: middle;
+  transition: opacity 0.2s;
+  font-weight: normal;
+}
+
+.post-content h2:hover .anchor,
+.post-content h3:hover .anchor,
+.post-content h4:hover .anchor {
+  opacity: 1;
 }
 
 .post-content h2 {
@@ -545,15 +665,44 @@ body:not(.dark-mode) .toggle-moon {
   color: var(--accent-primary);
 }
 
+.post-content h4 {
+  font-size: 1.2rem;
+  padding-left: var(--spacing-lg);
+  border-left: 2px solid var(--border-light);
+}
+
 .post-content img {
   max-width: 100%;
   height: auto;
-  margin: var(--spacing-xl) auto;
+  margin: 0 auto;
   display: block;
   border: 3px solid var(--border-light);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: var(--spacing-sm);
   background: var(--bg-secondary);
+}
+
+.post-content figure {
+  margin: var(--spacing-xl) auto;
+  text-align: center;
+}
+
+.post-content figcaption {
+  margin-top: var(--spacing-sm);
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: var(--spacing-xs);
+}
+
+.post-content figcaption::before {
+  content: '▲ ';
+  font-style: normal;
+  font-size: 0.7em;
+  opacity: 0.6;
 }
 
 .post-content blockquote {
@@ -910,19 +1059,37 @@ body:not(.dark-mode) .toggle-moon {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
 }
 
-.pagination a,
-.pagination .current {
-  padding: 0.5rem 1rem;
+.pagination .page-number,
+.pagination .extend {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
   border: 1px solid var(--border-color);
   font-family: var(--font-accent);
   font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  color: var(--text-primary);
+  background: var(--bg-primary);
   transition: all var(--transition-fast);
 }
 
-.pagination a:hover {
+.pagination .extend {
+  font-size: 0.8rem;
+  letter-spacing: 0;
+  white-space: nowrap;
+  padding: 0 1rem;
+}
+
+.pagination .page-number:hover,
+.pagination .extend:hover {
   background: var(--accent-primary);
   color: var(--bg-secondary);
   border-color: var(--accent-primary);
@@ -932,6 +1099,15 @@ body:not(.dark-mode) .toggle-moon {
   background: var(--text-primary);
   color: var(--bg-secondary);
   border-color: var(--text-primary);
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.pagination .space {
+  border: none;
+  background: transparent;
+  pointer-events: none;
+  letter-spacing: normal;
 }
 
 /* ============================================
