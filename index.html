@@ -62,350 +62,454 @@
 </head>
 <body>
   <div class="newspaper-wrapper">
-    <header class="newspaper-header">
-  <div class="header-top">
-    <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期日, 三月 1, 2026</div>
-    <div class="header-controls">
-      
-      <button class="bg-toggle" aria-label="Toggle background" title="Toggle background">
-        <span class="bg-icon">⬚</span>
-      </button>
-      
-      <button class="theme-toggle" aria-label="Toggle dark mode">
-        <span class="toggle-sun">☀</span>
-        <span class="toggle-moon">☾</span>
-      </button>
-    </div>
-  </div>
-  
+    
+<header class="newspaper-header">
   <div class="masthead">
-    <h1 class="newspaper-title">
-      <a href="/">折鸦夜明け前</a>
-    </h1>
-    <p class="newspaper-motto">我们的同志在困难的时候，要看到成绩，要看到光明，要提高我们的勇气。</p>
+    <aside class="masthead-side masthead-side-left">
+      <p class="masthead-side-copy">我们的同志在困难的时候，要看到成绩，要看到光明，要提高我们的勇气。</p>
+    </aside>
+
+    <div class="masthead-body">
+      <h1 class="newspaper-title">
+        <a href="/">折鸦夜明け前</a>
+      </h1>
+    </div>
+
+    <aside class="masthead-side masthead-side-right">
+      <a href="/atom.xml" class="rss-card">
+        <p class="rss-kicker">From The Feed</p>
+        
+          <p class="rss-note">syndicated via atom.xml</p>
+          <time datetime="2026-03-27T12:52:57.519Z" class="rss-date">
+            3月 27, 2026
+          </time>
+          <p class="rss-title">高三到大一下的总结</p>
+          <p class="rss-excerpt">技能水平 知识类: 组成原理, 操作系统, 算法与数据结构均有涉猎, 对一些在各个领域重要主题如并发有了更深的理解 技能类: 对较大型项目的源代码阅读; LLM 辅助学习流; 缺…</p>
+        
+      </a>
+    </aside>
   </div>
-  
-  <nav class="newspaper-nav">
-    <div class="nav-divider"></div>
-    <ul class="nav-menu">
-      
-        <li class="nav-item">
-          <a href="/" class="nav-link">Home</a>
-        </li>
-      
-        <li class="nav-item">
-          <a href="/archives" class="nav-link">Archives</a>
-        </li>
-      
-        <li class="nav-item">
-          <a href="/categories" class="nav-link">Categories</a>
-        </li>
-      
-        <li class="nav-item">
-          <a href="/tags" class="nav-link">Tags</a>
-        </li>
-      
-        <li class="nav-item">
-          <a href="/about" class="nav-link">About</a>
-        </li>
-      
-    </ul>
-    <div class="nav-divider"></div>
+
+  <nav class="newspaper-nav" aria-label="Primary">
+    <div class="nav-row">
+      <div class="nav-meta">
+        
+          <span class="nav-meta-label">Updated</span>
+          <time datetime="2026-03-27T12:52:57.519Z" class="nav-meta-date">
+            三月 27, 2026
+          </time>
+        
+      </div>
+      <ul class="nav-menu">
+        
+          <li class="nav-item">
+            <a href="/" class="nav-link">Home</a>
+          </li>
+        
+          <li class="nav-item">
+            <a href="/archives" class="nav-link">Archives</a>
+          </li>
+        
+          <li class="nav-item">
+            <a href="/categories" class="nav-link">Categories</a>
+          </li>
+        
+          <li class="nav-item">
+            <a href="/tags" class="nav-link">Tags</a>
+          </li>
+        
+          <li class="nav-item">
+            <a href="/about" class="nav-link">About</a>
+          </li>
+        
+      </ul>
+      <div class="nav-tools">
+        
+        <button class="bg-toggle nav-toggle" aria-label="Toggle background" title="Toggle background">
+          <span class="bg-icon">⬚</span>
+        </button>
+        
+        <button class="theme-toggle nav-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+          <span class="toggle-sun">☀</span>
+          <span class="toggle-moon">☾</span>
+        </button>
+      </div>
+    </div>
   </nav>
 </header>
 
     
     <main class="newspaper-content">
       
-<div class="front-page">
-  <div class="articles-grid">
-    
+<div class="front-page front-page-sections">
+  
+    <div class="front-sections">
       
-        
-        <article class="article-card article-featured">
-  <header class="article-header">
-    <div class="article-meta-top">
-      
-        <span class="article-category">学术</span>
-      
-      <time datetime="2026-02-01T00:00:00.000Z" class="article-date">
-        二月 1, 2026
+        <section class="front-section front-section-lead" aria-label="论文阅读">
+          <div class="front-section-body">
+            
+              <article class="front-story front-story-feature front-story-medium">
+  <header class="front-story-header">
+    <div class="front-story-meta">
+      <time datetime="2026-02-01T00:00:00.000Z" class="front-story-date">
+        2月 1, 2026
       </time>
+      <div class="front-story-meta-tags">
+        
+          <span class="front-story-category">学术</span>
+        
+        <span class="front-story-length">专题</span>
+      </div>
     </div>
-    
-    <h2 class="article-title">
+
+    <h3 class="front-story-title">
       <a href="/2026/02/01/paper_tigon/">【论文阅读】Tigon: A Distributed Database for a CXL Pod</a>
-    </h2>
-    
+    </h3>
+
     
   </header>
+
   
-  <div class="article-excerpt">
-    
-      <h2 id="一-核心内容">一 核心内容</h2>
-<p>本论文提出了名为 Tigon，一种基于 CXL Pod 的分布式内存数据库。</p>
-<p>论文作者注意到 CXL 标准在强缓存一致性实现上 Snoop Filter
-记录的缓存行信息过大、现有 CXL
-硬件实现通常仅仅支持一小部分内存的缓存一致性，充分利用这一点划分了 HWcc
-和 SWcc 区域，通过在 SWcc 中存储松散一致性的实际数据、在 HWcc
-中存储高频同步原语的方式，高效地在 CXL Pod
-架构下管理了跨机活跃元组（Cross-host Active Tuple,
-CAT）在不同主机间的迁移，利用 CLOCK 算法管理有限的 HWcc
-空间，驱逐非热点数据。</p>
-<p>在数据库本身的特性方面，Tigon 采用 2PL 两阶段锁（元数据保存在
-HWcc）策略，结合 CXL 共享内存的特点改进了 Next-Key Locking
-协议解决幻读问题，利用 CXL 共享内存的特性避免了 2PC 两阶段提交。</p>
-<h2 id="二-研究背景">二 研究背景</h2>
-    
-  </div>
+    <p class="front-story-excerpt">一 核心内容 本论文提出了名为 Tigon，一种基于 CXL Pod 的分布式内存数据库。 论文作者注意到 CXL 标准在强缓存一致性实现上 Snoop Filter 记录的缓存行信息过大、现有 CXL 硬件实现通常仅仅支持一小部分内存的缓存一致性，充分利用这一点划分了 HWcc 和 SWcc 区域，通过在 SWcc 中存储松散一致性的实际数据、在 HWcc 中存储高频同步原语的方式，高效地在…</p>
   
-  <footer class="article-footer">
-    <a href="/2026/02/01/paper_tigon/" class="read-more-btn">
-      <span class="btn-text">Continue Reading →</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    
-    
-      <div class="article-tags">
-        
-          <a href="/tags/%E6%96%87%E7%8C%AE/" class="tag">#文献</a>
-        
-          <a href="/tags/CXL/" class="tag">#CXL</a>
-        
-          <a href="/tags/OSDI/" class="tag">#OSDI</a>
-        
-          <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%BA%93/" class="tag">#分布式数据库</a>
-        
-      </div>
-    
+
+  <footer class="front-story-footer">
+    <a href="/2026/02/01/paper_tigon/" class="front-story-link">阅读全文 →</a>
   </footer>
 </article>
 
-      
-    
-      
-        
-        <article class="article-card ">
-  <header class="article-header">
-    <div class="article-meta-top">
-      
-        <span class="article-category">学术</span>
-      
-      <time datetime="2026-01-29T00:00:00.000Z" class="article-date">
-        一月 29, 2026
+            
+              <article class="front-story front-story-showcase front-story-medium">
+  <header class="front-story-header">
+    <div class="front-story-meta">
+      <time datetime="2026-01-29T00:00:00.000Z" class="front-story-date">
+        1月 29, 2026
       </time>
+      <div class="front-story-meta-tags">
+        
+          <span class="front-story-category">学术</span>
+        
+        <span class="front-story-length">专题</span>
+      </div>
     </div>
-    
-    <h2 class="article-title">
+
+    <h3 class="front-story-title">
       <a href="/2026/01/29/paper_CxTnL/">【论文速读】CtXnL: A Software-Hardware Co-designed Solution  for Efficient CXL-Based Transaction Processing</a>
-    </h2>
-    
+    </h3>
+
     
   </header>
+
   
-  <div class="article-excerpt">
-    
-      <h2 id="一-核心内容">一 核心内容</h2>
-<p>论文作者提出了一种名为 CtXnL
-的软硬件协同方案，通过区分元数据与记录数据不同程度的缓存一致性要求，降低了分布式处理系统中的开销。</p>
-<p>CtXnL 通过 View Shim
-机制将同一份数据的副本安排在不同的地址，从而巧妙骗过 CXL 的 Snoop Filter
-避免其启动广播，再通过 GSync 一次性提交写回。同时，CtXnL 还设计了 VF/VBF
-过滤器来避免无谓的访存操作 CXL 链路通知。</p>
-<h2 id="二-研究背景">二 研究背景</h2>
-<p>Compute Express Link (CXL) 是一种总线协议，采用了 PCIe
-的物理结构，但是其目的是为了达成一个逻辑上的共享内存池，CPU
-和外设设备都能通过 Load/Store（不经过 RDMA
-这种的数据搬运，相对更快）访问到这片共享内存上的数据。共享内存池通常通过接入
-CXL 总线的 CXL 内存设备（如 CXL Type-3）实现，在不同的节点中，HPA 到 CXL
-内存的 DPA 映射是一致的<span class="math inline">\(^{[2]}\)</span>。外设设备/节点如 GPU（带有缓存和
-VRAM）、CPU（带有缓存和 DRAM）等。</p>
-    
-  </div>
+    <p class="front-story-excerpt">一 核心内容 论文作者提出了一种名为 CtXnL 的软硬件协同方案，通过区分元数据与记录数据不同程度的缓存一致性要求，降低了分布式处理系统中的开销。 CtXnL 通过 View Shim 机制将同一份数据的副本安排在不同的地址，从而巧妙骗过 CXL 的 Snoop Filter 避免其启动广播，再通过 GSync 一次性提交写回。同时，CtXnL 还设计了 VF/VBF 过滤器来避免无谓的访存操…</p>
   
-  <footer class="article-footer">
-    <a href="/2026/01/29/paper_CxTnL/" class="read-more-btn">
-      <span class="btn-text">Continue Reading →</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    
-    
-      <div class="article-tags">
-        
-          <a href="/tags/%E6%96%87%E7%8C%AE/" class="tag">#文献</a>
-        
-          <a href="/tags/ASPLOS/" class="tag">#ASPLOS</a>
-        
-          <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F/" class="tag">#分布式事务处理系统</a>
-        
-          <a href="/tags/CXL/" class="tag">#CXL</a>
-        
-          <a href="/tags/%E9%80%9F%E8%AF%BB/" class="tag">#速读</a>
-        
-      </div>
-    
+
+  <footer class="front-story-footer">
+    <a href="/2026/01/29/paper_CxTnL/" class="front-story-link">阅读全文 →</a>
   </footer>
 </article>
 
-      
-    
-      
-        
-        <article class="article-card ">
-  <header class="article-header">
-    <div class="article-meta-top">
-      
-        <span class="article-category">学术</span>
-      
-      <time datetime="2026-01-27T00:00:00.000Z" class="article-date">
-        一月 27, 2026
+            
+              <article class="front-story front-story-brief front-story-medium">
+  <header class="front-story-header">
+    <div class="front-story-meta">
+      <time datetime="2026-01-27T00:00:00.000Z" class="front-story-date">
+        1月 27, 2026
       </time>
+      <div class="front-story-meta-tags">
+        
+          <span class="front-story-category">学术</span>
+        
+        <span class="front-story-length">专题</span>
+      </div>
     </div>
-    
-    <h2 class="article-title">
+
+    <h3 class="front-story-title">
       <a href="/2026/01/27/paper_strata/">【论文阅读】Strata: A Cross Media File System</a>
-    </h2>
-    
+    </h3>
+
     
   </header>
+
   
-  <div class="article-excerpt">
-    
-      <p>本文中的 NVM (Non-Volatile Memory) 和 上一篇 NOVA 中的 NVMM
-(Non-Volatile Main Memory) 是相同的概念。</p>
-<h2 id="一-核心内容">一 核心内容</h2>
-<p>论文作者提出了一种名为 Strata 的多层次文件系统，同时管理 NVM/SSD/HDD
-等多种存储系统结构层次。Strata
-为用户态、内核态、存储层次进行了职责划分，进一步为 NVM/SSD/HDD
-的多层存储系统上的应用程序降低延迟、提高吞吐量。</p>
-<p>Strata 主要分为用户态的 LibFS 和内核态的 KernelFS。LibFS 负责记录
-per-process 的 Update log 以及进行热点数据缓存，KernelFS 主要负责 Digest
-操作。NVM 中的 Update log 能够保证写入的同步语义；Digesting
-通过日志合并将随机写转化为顺序写，契合 SSD 的硬件特性。</p>
-<p>为了保证 LibFS 的 Kernel Bypass
-不会导致并发安全问题且避免大量轻度写操作的大量锁开销，Strata
-采用租约（Lease）操作防止两个线程绕过内核同时修改同一个文件。</p>
-    
-  </div>
+    <p class="front-story-excerpt">本文中的 NVM (Non-Volatile Memory) 和 上一篇 NOVA 中的 NVMM (Non-Volatile Main Memory) 是相同的概念。 一 核心内容 论文作者提出了一种名为 Strata 的多层次文件系统，同时管理 NVM/SSD/HDD 等多种存储系统结构层次。Strata 为用户态、内核态、存储层次进行了职责划分，进一步为 NVM/SSD/HDD 的多层存储…</p>
   
-  <footer class="article-footer">
-    <a href="/2026/01/27/paper_strata/" class="read-more-btn">
-      <span class="btn-text">Continue Reading →</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    
-    
-      <div class="article-tags">
-        
-          <a href="/tags/%E6%96%87%E7%8C%AE/" class="tag">#文献</a>
-        
-          <a href="/tags/NVMM%E9%9D%9E%E6%98%93%E5%A4%B1%E6%80%A7%E4%B8%BB%E5%AD%98/" class="tag">#NVMM非易失性主存</a>
-        
-          <a href="/tags/%E6%B7%B7%E5%90%88%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/" class="tag">#混合存储系统</a>
-        
-          <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" class="tag">#文件系统</a>
-        
-          <a href="/tags/SOSP/" class="tag">#SOSP</a>
-        
-          <a href="/tags/%E7%B2%BE%E8%AF%BB/" class="tag">#精读</a>
-        
-      </div>
-    
+
+  <footer class="front-story-footer">
+    <a href="/2026/01/27/paper_strata/" class="front-story-link">阅读全文 →</a>
   </footer>
 </article>
 
-      
-    
-      
-        
-        <article class="article-card ">
-  <header class="article-header">
-    <div class="article-meta-top">
-      
-        <span class="article-category">学术</span>
-      
-      <time datetime="2026-01-23T16:26:06.000Z" class="article-date">
-        一月 24, 2026
+            
+              <article class="front-story front-story-brief front-story-medium">
+  <header class="front-story-header">
+    <div class="front-story-meta">
+      <time datetime="2026-01-23T16:26:06.000Z" class="front-story-date">
+        1月 24, 2026
       </time>
+      <div class="front-story-meta-tags">
+        
+          <span class="front-story-category">学术</span>
+        
+        <span class="front-story-length">专题</span>
+      </div>
     </div>
-    
-    <h2 class="article-title">
+
+    <h3 class="front-story-title">
       <a href="/2026/01/24/paper_NOVA/">【论文阅读】NOVA: A Log-structured File System for Hybrid Volatile/Non-volatile Main Memories</a>
-    </h2>
-    
+    </h3>
+
     
   </header>
+
   
-  <div class="article-excerpt">
-    
-      <h2 id="一-核心内容">一 核心内容</h2>
-<p>论文作者提出了一种名为 NOn- Volatile memory Accelerated (NOVA)
-的日志结构文件系统 (log- structured file system, LFS) 以最大化 NVMM 和
-DRAM 同时存在的混合存储系统的效率。</p>
-<ul>
-<li>NOVA 充分利用 NVMM 的随机访问特性，从传统 LFS
-中放宽了局部性限制，从而实现了日志数据分离、日志链表来避免传统 LFS
-的垃圾回收开销</li>
-<li>NOVA 通过将空闲链表索引和 Inode 索引建立在 DRAM 中，规避了在 NVMM
-中由于一致性难以保证造成的数据结构难以实现的问题</li>
-<li>除了本身是 log-structured 之外，NOVA 还在需要同时修改多个 inode
-的操作(如对路径相关的操作)中采用了 journaling 技术，同时依赖 VFS
-的目录锁，规避了影子分页系统的级联开销和因此强顺序数据依赖造成的性能损失</li>
-</ul>
-<p>NOVA 适配了 NVMM 以及 NVMM + DRAM 混合存储系统的特点，解决了传统 LFS
-中 GC 开销大的痛点，尤其在写密集的场景下表现极其优秀。</p>
-<h2 id="二-研究动机">二 研究动机</h2>
-    
-  </div>
+    <p class="front-story-excerpt">一 核心内容 论文作者提出了一种名为 NOn- Volatile memory Accelerated (NOVA) 的日志结构文件系统 (log- structured file system, LFS) 以最大化 NVMM 和 DRAM 同时存在的混合存储系统的效率。 NOVA 充分利用 NVMM 的随机访问特性，从传统 LFS 中放宽了局部性限制，从而实现了日志数据分离、日志链表来避免传统…</p>
   
-  <footer class="article-footer">
-    <a href="/2026/01/24/paper_NOVA/" class="read-more-btn">
-      <span class="btn-text">Continue Reading →</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    
-    
-      <div class="article-tags">
-        
-          <a href="/tags/%E6%96%87%E7%8C%AE/" class="tag">#文献</a>
-        
-          <a href="/tags/NVMM%E9%9D%9E%E6%98%93%E5%A4%B1%E6%80%A7%E4%B8%BB%E5%AD%98/" class="tag">#NVMM非易失性主存</a>
-        
-          <a href="/tags/%E6%B7%B7%E5%90%88%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F/" class="tag">#混合存储系统</a>
-        
-          <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" class="tag">#文件系统</a>
-        
-          <a href="/tags/FAST/" class="tag">#FAST</a>
-        
-          <a href="/tags/%E7%B2%BE%E8%AF%BB/" class="tag">#精读</a>
-        
-      </div>
-    
+
+  <footer class="front-story-footer">
+    <a href="/2026/01/24/paper_NOVA/" class="front-story-link">阅读全文 →</a>
   </footer>
 </article>
 
+            
+          </div>
+        </section>
       
+        <section class="front-section front-section-secondary" aria-label="技术学习">
+          <div class="front-section-body">
+            
+              <article class="front-story front-story-showcase front-story-long">
+  <header class="front-story-header">
+    <div class="front-story-meta">
+      <time datetime="2025-06-17T08:24:39.000Z" class="front-story-date">
+        6月 17, 2025
+      </time>
+      <div class="front-story-meta-tags">
+        
+          <span class="front-story-category">编程语言理论</span>
+        
+        <span class="front-story-length">长篇</span>
+      </div>
+    </div>
+
+    <h3 class="front-story-title">
+      <a href="/2025/06/17/sicp_2/">SICP 第二章(构造数据抽象)</a>
+    </h3>
+
     
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  </div>
+  </header>
+
   
+    <p class="front-story-excerpt">复合数据 在实际的程序设计中(模拟数学或现实系统), 操作(过程)要应用到的数据往往不是一个单独的基本类型数据, 而是多个基本类型数据复合起来的: 例如分数是由分子和分母确定起来的, 单一的分子和分母都不能称为分数. 而将分子和分母以某种方式复合起来比单独管理分子和分母具有更强的可读性, 减少了编码中的精力消耗; 同时加强分子和分母之间的关系(分子和分母的关系应当强于这两个符号之于别的数据的关系…</p>
   
-    <div class="pagination-wrapper">
-      <nav class="pagination">
-        <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/">Next Edition →</a>
-      </nav>
+
+  <footer class="front-story-footer">
+    <a href="/2025/06/17/sicp_2/" class="front-story-link">阅读全文 →</a>
+  </footer>
+</article>
+
+            
+              <article class="front-story front-story-brief front-story-long">
+  <header class="front-story-header">
+    <div class="front-story-meta">
+      <time datetime="2025-02-23T05:35:32.000Z" class="front-story-date">
+        2月 23, 2025
+      </time>
+      <div class="front-story-meta-tags">
+        
+          <span class="front-story-category">组成原理</span>
+        
+        <span class="front-story-length">长篇</span>
+      </div>
+    </div>
+
+    <h3 class="front-story-title">
+      <a href="/2025/02/23/CSAPP-2025-02-23/">CSAPP3e第五章(优化程序性能)</a>
+    </h3>
+
+    
+  </header>
+
+  
+    <p class="front-story-excerpt">第五章 优化程序性能(摘要与注解) 我错了,我明天一定把这一篇补完 我对了,我今天把这一篇补完了 感觉是本书最难理解和应用的一章, 所以得多花点功夫尽可能深入理解了然后写的好一点 影响优化的细节 有些问题导致编译器不敢放开手脚优化, 所以一味依赖编译器优化是不可行的 常见的影响优化的问题(可能在极端情况下, 优化后的程序与优化前的执行结果不同): 内存别名使用(两个指针实际指向同一地址, 看似相…</p>
+  
+
+  <footer class="front-story-footer">
+    <a href="/2025/02/23/CSAPP-2025-02-23/" class="front-story-link">阅读全文 →</a>
+  </footer>
+</article>
+
+            
+              <article class="front-story front-story-brief front-story-long">
+  <header class="front-story-header">
+    <div class="front-story-meta">
+      <time datetime="2025-08-19T05:21:00.000Z" class="front-story-date">
+        8月 19, 2025
+      </time>
+      <div class="front-story-meta-tags">
+        
+          <span class="front-story-category">组成原理</span>
+        
+        <span class="front-story-length">长篇</span>
+      </div>
+    </div>
+
+    <h3 class="front-story-title">
+      <a href="/2025/08/19/CSAPP-Lab-Cache/">CSAPP Cache Lab 笔记</a>
+    </h3>
+
+    
+  </header>
+
+  
+    <p class="front-story-excerpt">现代计算机通过每一层都是下一层的缓存的抽象构建出存储器的层次结构, 依据程序的局部性原理巧妙解决了存取信息的速度远小于 CPU 处理速度的问题. 前置知识可看: CSAPP3e第六章(存储器层次结构) | Amiriox’s Storage Cache lab 分为两个部分: 第一部分写一个模拟程序, 模拟缓存的行为; 如果对缓存的原理和行为理解透了难度不高, 主要难点是必须用 C 写 第二部分…</p>
+  
+
+  <footer class="front-story-footer">
+    <a href="/2025/08/19/CSAPP-Lab-Cache/" class="front-story-link">阅读全文 →</a>
+  </footer>
+</article>
+
+            
+              <article class="front-story front-story-brief front-story-medium">
+  <header class="front-story-header">
+    <div class="front-story-meta">
+      <time datetime="2025-05-30T00:17:39.000Z" class="front-story-date">
+        5月 30, 2025
+      </time>
+      <div class="front-story-meta-tags">
+        
+          <span class="front-story-category">编程语言理论</span>
+        
+        <span class="front-story-length">专题</span>
+      </div>
+    </div>
+
+    <h3 class="front-story-title">
+      <a href="/2025/05/30/sicp_1/">SICP 第一章(构造过程抽象)</a>
+    </h3>
+
+    
+  </header>
+
+  
+    <p class="front-story-excerpt">程序设计需要考虑的基本元素 基本的表达形式: 基本的数据表达 与 基本的过程表达 组合的方法: 将基本表达组合起来构成复合的元素, 如 Lisp 的组合式 抽象的方法: 为复合对象命名, 从一个新的抽象层次操作非基本单元 在 lisp (SICP 使用 scheme 方言) 中有如下体现:</p>
+  
+
+  <footer class="front-story-footer">
+    <a href="/2025/05/30/sicp_1/" class="front-story-link">阅读全文 →</a>
+  </footer>
+</article>
+
+            
+          </div>
+        </section>
+      
+        <section class="front-section front-section-tertiary" aria-label="总结">
+          <div class="front-section-body">
+            
+              <article class="front-story front-story-showcase front-story-short">
+  <header class="front-story-header">
+    <div class="front-story-meta">
+      <time datetime="2025-12-31T14:54:33.000Z" class="front-story-date">
+        12月 31, 2025
+      </time>
+      <div class="front-story-meta-tags">
+        
+          <span class="front-story-category">年终总结</span>
+        
+        <span class="front-story-length">短章</span>
+      </div>
+    </div>
+
+    <h3 class="front-story-title">
+      <a href="/2025/12/31/2025_first_failed_resistance/">占位 -- 2025 年终总结</a>
+    </h3>
+
+    
+  </header>
+
+  
+    <p class="front-story-excerpt">该写点什么呢？退役，折腾 lecture，迷茫，比较，怀念，自我批判，一些微妙的改变 等期末周过去，放假再写吧。毕竟传统是在除夕前后去写年终总结。 (UPD 大年初二: 完全没有写年终总结的动力, 总体来说这是最辛苦的一年, 却是我评价最低的一年) 以下是草稿，</p>
+  
+
+  <footer class="front-story-footer">
+    <a href="/2025/12/31/2025_first_failed_resistance/" class="front-story-link">阅读全文 →</a>
+  </footer>
+</article>
+
+            
+              <article class="front-story front-story-brief front-story-short">
+  <header class="front-story-header">
+    <div class="front-story-meta">
+      <time datetime="2025-05-02T17:16:33.000Z" class="front-story-date">
+        5月 3, 2025
+      </time>
+      <div class="front-story-meta-tags">
+        
+          <span class="front-story-category">杂谈</span>
+        
+        <span class="front-story-length">短章</span>
+      </div>
+    </div>
+
+    <h3 class="front-story-title">
+      <a href="/2025/05/03/Dairy_250503/">高三到大一下的总结</a>
+    </h3>
+
+    
+  </header>
+
+  
+    <p class="front-story-excerpt">技能水平 知识类: 组成原理, 操作系统, 算法与数据结构均有涉猎, 对一些在各个领域重要主题如并发有了更深的理解 技能类: 对较大型项目的源代码阅读; LLM 辅助学习流; 缺陷仍然在大型工程的组织, 对实际工程应用的经验缺乏 还有就是能接触到的信息源太少了, 眼界太窄. 但是行动力和进度基本都在按计划推进 以及对心理问题几乎是无能为力的状态, 只能硬顶着靠力大砖飞, 至少能维持住学习</p>
+  
+
+  <footer class="front-story-footer">
+    <a href="/2025/05/03/Dairy_250503/" class="front-story-link">阅读全文 →</a>
+  </footer>
+</article>
+
+            
+          </div>
+        </section>
+      
+        <section class="front-section front-section-quaternary" aria-label="操作系统">
+          <div class="front-section-body">
+            
+              <article class="front-story front-story-showcase front-story-medium">
+  <header class="front-story-header">
+    <div class="front-story-meta">
+      <time datetime="2025-04-19T07:10:50.000Z" class="front-story-date">
+        4月 19, 2025
+      </time>
+      <div class="front-story-meta-tags">
+        
+          <span class="front-story-category">操作系统</span>
+        
+        <span class="front-story-length">专题</span>
+      </div>
+    </div>
+
+    <h3 class="front-story-title">
+      <a href="/2025/04/19/arceos_learn/">组件化操作系统</a>
+    </h3>
+
+    
+  </header>
+
+  
+    <p class="front-story-excerpt">设计与实现 oscamp 第三节阶段总结. 由于部分操作系统原理性质的内容在二阶段中已经学过了, 因此总结主要针对两部分: 新概念: ArceOS 在传统内核上的创新 老概念: 与 rCore 的实现不同的部分, 以及分析原因 为什么要组件化? ArceOS 的优势区间在于快速针对特定领域构建出一个最合适的内核, 主要解决的痛点就是”从头开发一个操作系统太繁琐”, 而”现成的方案并不完全适用于应…</p>
+  
+
+  <footer class="front-story-footer">
+    <a href="/2025/04/19/arceos_learn/" class="front-story-link">阅读全文 →</a>
+  </footer>
+</article>
+
+            
+          </div>
+        </section>
+      
     </div>
   
 </div>

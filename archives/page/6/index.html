@@ -62,56 +62,79 @@
 </head>
 <body>
   <div class="newspaper-wrapper">
-    <header class="newspaper-header">
-  <div class="header-top">
-    <div class="header-edition">Morning Edition</div>
-    <div class="header-date">星期日, 三月 1, 2026</div>
-    <div class="header-controls">
-      
-      <button class="bg-toggle" aria-label="Toggle background" title="Toggle background">
-        <span class="bg-icon">⬚</span>
-      </button>
-      
-      <button class="theme-toggle" aria-label="Toggle dark mode">
-        <span class="toggle-sun">☀</span>
-        <span class="toggle-moon">☾</span>
-      </button>
-    </div>
-  </div>
-  
+    
+<header class="newspaper-header">
   <div class="masthead">
-    <h1 class="newspaper-title">
-      <a href="/">折鸦夜明け前</a>
-    </h1>
-    <p class="newspaper-motto">我们的同志在困难的时候，要看到成绩，要看到光明，要提高我们的勇气。</p>
+    <aside class="masthead-side masthead-side-left">
+      <p class="masthead-side-copy">我们的同志在困难的时候，要看到成绩，要看到光明，要提高我们的勇气。</p>
+    </aside>
+
+    <div class="masthead-body">
+      <h1 class="newspaper-title">
+        <a href="/">折鸦夜明け前</a>
+      </h1>
+    </div>
+
+    <aside class="masthead-side masthead-side-right">
+      <a href="/atom.xml" class="rss-card">
+        <p class="rss-kicker">From The Feed</p>
+        
+          <p class="rss-note">syndicated via atom.xml</p>
+          <time datetime="2026-03-27T12:52:57.519Z" class="rss-date">
+            3月 27, 2026
+          </time>
+          <p class="rss-title">高三到大一下的总结</p>
+          <p class="rss-excerpt">技能水平 知识类: 组成原理, 操作系统, 算法与数据结构均有涉猎, 对一些在各个领域重要主题如并发有了更深的理解 技能类: 对较大型项目的源代码阅读; LLM 辅助学习流; 缺…</p>
+        
+      </a>
+    </aside>
   </div>
-  
-  <nav class="newspaper-nav">
-    <div class="nav-divider"></div>
-    <ul class="nav-menu">
-      
-        <li class="nav-item">
-          <a href="/" class="nav-link">Home</a>
-        </li>
-      
-        <li class="nav-item">
-          <a href="/archives" class="nav-link">Archives</a>
-        </li>
-      
-        <li class="nav-item">
-          <a href="/categories" class="nav-link">Categories</a>
-        </li>
-      
-        <li class="nav-item">
-          <a href="/tags" class="nav-link">Tags</a>
-        </li>
-      
-        <li class="nav-item">
-          <a href="/about" class="nav-link">About</a>
-        </li>
-      
-    </ul>
-    <div class="nav-divider"></div>
+
+  <nav class="newspaper-nav" aria-label="Primary">
+    <div class="nav-row">
+      <div class="nav-meta">
+        
+          <span class="nav-meta-label">Updated</span>
+          <time datetime="2026-03-27T12:52:57.519Z" class="nav-meta-date">
+            三月 27, 2026
+          </time>
+        
+      </div>
+      <ul class="nav-menu">
+        
+          <li class="nav-item">
+            <a href="/" class="nav-link">Home</a>
+          </li>
+        
+          <li class="nav-item">
+            <a href="/archives" class="nav-link">Archives</a>
+          </li>
+        
+          <li class="nav-item">
+            <a href="/categories" class="nav-link">Categories</a>
+          </li>
+        
+          <li class="nav-item">
+            <a href="/tags" class="nav-link">Tags</a>
+          </li>
+        
+          <li class="nav-item">
+            <a href="/about" class="nav-link">About</a>
+          </li>
+        
+      </ul>
+      <div class="nav-tools">
+        
+        <button class="bg-toggle nav-toggle" aria-label="Toggle background" title="Toggle background">
+          <span class="bg-icon">⬚</span>
+        </button>
+        
+        <button class="theme-toggle nav-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+          <span class="toggle-sun">☀</span>
+          <span class="toggle-moon">☾</span>
+        </button>
+      </div>
+    </div>
   </nav>
 </header>
 
@@ -140,18 +163,6 @@
         </article>
       
     
-      
-        <article class="archive-item">
-          <time datetime="2020-11-19T16:00:00.000Z" class="archive-date">
-            11月 20, 2020
-          </time>
-          <h2 class="archive-item-title">
-            <a href="/2020/11/20/GIT_1/">Git 版本控制</a>
-          </h2>
-          
-            <span class="archive-category">软件工程</span>
-          
-        </article>
       
     
       
