@@ -6,7 +6,7 @@
   <link href="https://amiriox.github.io/atom.xml" rel="self"/>
   
   <link href="https://amiriox.github.io/"/>
-  <updated>2026-03-27T12:06:59.084Z</updated>
+  <updated>2026-04-03T16:34:42.267Z</updated>
   <id>https://amiriox.github.io/</id>
   
   <author>
@@ -15,6 +15,43 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>【论文速读】Scalable Far Memory: Balancing Faults and Evictions</title>
+    <link href="https://amiriox.github.io/2026/03/20/paper_MAGE/"/>
+    <id>https://amiriox.github.io/2026/03/20/paper_MAGE/</id>
+    <published>2026-03-20T00:19:06.000Z</published>
+    <updated>2026-04-03T16:34:42.267Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="一-核心内容">一 核心内容</h2><p>论文分析了传统远端内存存储系统的性能瓶颈, 并依据这些瓶颈提出了 MAGE,在 Linux 和 LibOS 上实现了对远端内存系统的有效改进.</p><ul><li>严格限制驱逐线程的数量以避免 IPI 风暴导致的 TLB Flush 延迟过高</li><li>严格控制应用程序线程和驱逐线程的行为, 明确区分职责</li><li>利用批处理和流水线来掩盖 TLB Wait 和 RDMA Wait 的延迟</li><li>减少锁竞争的开销</li></ul><h2 id="二-研究动机">二 研究动机</h2><p>论文第三节提出了当前的 Far Memory System 的局限性和性能瓶颈.</p><h3 id="far-memory-system">Far Memory System</h3><p>在传统云计算的服务器架构中, 内存(DRAM)直接插在 CPU 旁的插槽中.然而这样的架构存在一些问题:</p><ol type="1"><li>搁浅(strand): 若一台物理服务器的内存卖完了而 CPU 还有空闲, 则空闲CPU 处于可用而未用的状态, 称为<strong>CPU搁浅</strong>; 相对地,若一台服务器的 CPU 卖完了但是内存仍然存在空闲,对应内存处于可用而未用的状态, 称为<strong>内存搁浅</strong>.核心问题是搁浅的内存无法被其他物理机器上搁浅的 CPU 使用, 搁浅的 CPU也没有内存用于计算.</li><li>容量不足: 对于现代较大规模的应用(如数据库系统),单机的内存是显然不够用的, 通常通过 buffer pool manager等方式从磁盘载入和换出, 但这样会有 I/O 的开销.</li></ol><p>由此产生了远端内存(Far Memory)的概念. 从存储层级来看, Far Memory 处于Local DRAM 和 本次磁盘之间, Local DRAM 称作 Near Memory,而与之相对的远端内存则是通过高速网络(RDMA)或专用协议(如 CXL)被访问的远端服务器内存. (当然会比本地内存慢一点, DRAM 访存在 100ns 左右;而 CXL 大约在 250ns 左右, RDMA 会更慢一些)</p><h3 id="现有远端内存系统存在的问题">现有远端内存系统存在的问题</h3><p>论文通过对 DiLOS 和 Hermit 进行了一些实验,验证了两者在多核场景下性能崩溃(可扩展性较差, 随着线程数增加,吞吐量在短暂提升后很快持平甚至降低),并进一步确认了其性能崩溃并非来源于应用层的 Thrashing而是分页机制的软件同步和全局锁竞争.</p><h4 id="宏观测试">宏观测试</h4><p>通过对多种应用程序内存访问模式下不同内存卸载比例(有多少内存在本地缺页而需要通过RDMA 从远端访问)的测试. 首先设定了一个理想的基线(所有内存都在本地,相当于完全没有远端内存参与)用作参照. 基本运行时长 <spanclass="math inline">\(T_0\)</span>, 加上某一核心 Page Fault的次数乘以单次 Page Fault 延迟 <span class="math inline">\(L \timesF_{c,x}\)</span> 则为核心 <span class="math inline">\(c\)</span>上的该任务运行时间; 任务完成取决于最慢(产生页错误最多)的核心,则取最小后为单次任务所需时长, 除 <spanclass="math inline">\(3600\)</span> 则为一小时的任务数:</p><p><span class="math display">\[\text{Thp}_{\text{ideal}}(x) =\underset{c\in C}{\text{min}}(\frac{3600}{T_0 + L\times F_{c,x}}) \text{jobs/hour} \]</span></p><ol type="1"><li>在随机访问的访问模式下, 仅仅 10% 的内存卸载就造成了 70%左右的性能下降</li><li>在局部性较好的规则/顺序访问模式下, 即使有 prefetch机制减少了随机访问的 Page Fault,也仍然因为空闲页耗尽触发同步驱逐而限制吞吐量</li><li>工作集阶段切换(如 MapReduce): 新老页面交替时造成长达数秒的拥堵</li></ol><p>Fault-in 路径和 Eviction 路径都存在无法多核线性扩展的问题.为确认瓶颈在哪个路径, 论文采用的测试方案是:</p><p>每个线程在充足网络带宽下进行页的顺序读取, 区分两种场景:</p><ol type="1"><li>仅处理缺页, 设定 100% 的本地内存数据配额,但是预先驱逐所有页(本地没有数据, 数据都在远端), 导致每次访问都会 PageFault, 且只统计 Page Fault 的开销)</li><li>处理缺页并且主动换出内存. 设定 50% 的数据在本地内存配额,这导致每从远端拉下来一页, 就会导致本地的一个页被驱逐</li></ol><p>情况 2 比情况 1 出现大量的性能损失, 证明驱逐路径的崩溃是主要瓶颈</p><h4 id="tlb-shootdown-和-ipi-风暴">TLB Shootdown 和 IPI 风暴</h4><p>当从 local memory 中驱逐一个数据页到 far memory 时,不仅需要写回远端内存并释放数据页, 还要清理本地页表和 TLB 避免再次通过TLB 或页表访问到已经被驱逐的数据页.</p><p>MMU 一般在 CPU 芯片上, 每个 CPU 核心都有自己的 TLB, 因此 TLB Flush必须通知其他核心也清理自己 TLB 中对应地址的映射缓存. 这就需要 IPI(Inter-Processor Interrupt) 来通知其他核心. 而 IPI 毕竟是个中断, 对于CPU 来说还是非常慢的.</p><p>在单个 Host 上, Linux kernel 对同一地址空间的 TLB Flush 请求有一个<code>mmu_gather</code> 的过程进行聚集, 即使有多个 TLB Flush,也不会朴素地发送多个 IPI. 但是即使存在 <code>mmu_gather</code>,当大量应用程序线程同时发 IPI, 硬件的中断队列会很快被 <spanclass="math inline">\(N \times N\)</span> 的中断风暴填满,从而导致特定某一个 TLB Flush 的延迟极高(因为还要等待之前的 TLB Flush完成).</p><h4 id="lru-链表的锁竞争">LRU 链表的锁竞争</h4><p>在支持远端内存的系统中, 需要判断页面热度来决定页面的去留.被访问次数较多的页称作热页,按照存储层级的看法应当被放在较快但是容量相对较小的 local DRAM 层;与之相对的称作冷页, 显然应该放在容量更大(虽然较慢)的远端内存.而判断页面冷热通常通过 LRU/LRU-K/ARC 等页面置换算法实现,这依赖(显然应当)共享的数据结构如 LRU 链表. 由于不同 Host判断页面冷热的需求较频繁, 对 LRU 链表的共享操作造成了较严重的锁竞争.</p><h4id="页面迁移导致的全局分配器的锁竞争">页面迁移导致的全局分配器的锁竞争</h4><p>由于不同页面频繁地在本地 DRAM 和远端内存之间迁移,且这个操作一定需要对全局内存分配器上锁, 因此对 allocator共享操作的锁竞争同样拖慢了吞吐效率.</p><h2 id="三-mage-系统设计">三 MAGE 系统设计</h2><p>针对以上三个问题, 论文分别提出了解决方案.</p><h3 id="设计原则">设计原则</h3><p>MAGE 有三条设计原则.</p><ol type="1"><li>永远解耦后台驱逐线程和前台应用程序线程,前台应用程序绝不亲自下场驱逐页面. 当内存不足时,应用程序就只是等着驱逐线程”开路”, 腾出新的页面后继续进程.</li><li>用批处理+流水线技巧来掩盖延迟(话说这就是我进组时候面试的代码任务).既然原先发 TLB Flush 是同步的, 即需要 <code>发 TLB 请求</code> -&gt;<code>TLB Wait</code> -&gt; <code>接受 ACK</code>, 那干脆就在 TLB Wait期间去做其他事情而不是干等着(当然, 对于本次驱逐, 必须在 TLB ACK之后才能去发 RDMA 具体驱逐页面, 否则可能会有线程通过旧的 TLB访问到已经不在本地内存的页面, 一般是进行下一次驱逐的 TLB Flush Send或者上一次驱逐的 RDMA Send). RDMA 请求也类似, 在 RDMA Wait期间可以做其他事情.</li><li>由于统计页面冷热时对共享数据结构的操作造成了锁竞争, 那么干脆设立Per-CPU 的统计数据结构, 避免冲突. 这样会降低对冷热页的判断精度,但是这样的 trade-off 是合理的.</li></ol><h3 id="其他优化">其他优化</h3><p>为了减少 TLB Shootdown 造成的 IPI 风暴, MAGE 严格限制驱逐线程数量,论文认为 4 个驱逐线程是一个 sweet pot, 甚至能跑满 200Gbps网卡的上限.</p><p>为了避免全局 bitmap 或者 free list 的锁竞争, MAGE直接采用了线性映射的方式, 即物理地址唯一对应一个偏移的虚拟地址,避免了锁竞争. 但是坏处是连续虚拟地址无法映射在不连续的物理内存,远端内存的释放也变得没意义了(因为不会有人再用这一物理页), MAGE的观点是”反正远端内存又大又便宜,牺牲一点空间去增加吞吐量降低延迟会更好”</p><h2 id="五-阅读总结">五 阅读总结</h2><p>验证对比实验比较耳目一新, 这个 profiling的过程感觉很厉害我要是也能有这个水平就好了</p><p>处理方式的话感觉比较经典, 异步, 批处理流水线</p><p>不过这篇总结其实写得不太认真, 我还有两篇要读,感觉最近早睡之后效率实在有点太低了</p>]]></content>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;一-核心内容&quot;&gt;一 核心内容&lt;/h2&gt;
+&lt;p&gt;论文分析了传统远端内存存储系统的性能瓶颈, 并依据这些瓶颈提出了 MAGE,
+在 Linux 和 LibOS 上实现了对远端内存系统的有效改进.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;严格限制驱逐线程的数量以避免 IPI 风暴导致的 TLB Flush 延迟过高&lt;/li&gt;
+&lt;li&gt;严格控制应用程序线程和驱逐线程的行为, 明确区分职责&lt;/li&gt;
+&lt;li&gt;利用批处理和流水线来掩盖 TLB Wait 和 RDMA Wait 的延迟&lt;/li&gt;
+&lt;li&gt;减少锁竞争的开销&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;二-研究动机&quot;&gt;二 研究动机&lt;/h2&gt;
+&lt;p&gt;论文第三节提出了当前的 Far Memory System 的局限性和性能瓶颈.&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="学术" scheme="https://amiriox.github.io/categories/%E5%AD%A6%E6%9C%AF/"/>
+    
+    
+    <category term="文献" scheme="https://amiriox.github.io/tags/%E6%96%87%E7%8C%AE/"/>
+    
+    <category term="文件系统" scheme="https://amiriox.github.io/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/"/>
+    
+    <category term="SOSP" scheme="https://amiriox.github.io/tags/SOSP/"/>
+    
+    <category term="远端内存" scheme="https://amiriox.github.io/tags/%E8%BF%9C%E7%AB%AF%E5%86%85%E5%AD%98/"/>
+    
+  </entry>
   
   <entry>
     <title>【论文阅读】Tigon: A Distributed Database for a CXL Pod</title>
@@ -187,31 +224,6 @@ DRAM 同时存在的混合存储系统的效率。&lt;/p&gt;
     <category term="FAST" scheme="https://amiriox.github.io/tags/FAST/"/>
     
     <category term="精读" scheme="https://amiriox.github.io/tags/%E7%B2%BE%E8%AF%BB/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>占位 -- 2025 年终总结</title>
-    <link href="https://amiriox.github.io/2025/12/31/2025_first_failed_resistance/"/>
-    <id>https://amiriox.github.io/2025/12/31/2025_first_failed_resistance/</id>
-    <published>2025-12-31T14:54:33.000Z</published>
-    <updated>2026-03-27T12:51:51.781Z</updated>
-    
-    <content type="html"><![CDATA[<p>该写点什么呢？退役，折腾lecture，迷茫，比较，怀念，自我批判，一些微妙的改变</p><p>等期末周过去，放假再写吧。毕竟传统是在除夕前后去写年终总结。</p><p>(UPD 大年初二: 完全没有写年终总结的动力, 总体来说这是最辛苦的一年,却是我评价最低的一年)</p><p>以下是草稿，</p><hr /><p>记录一些问题:</p><ol type="1"><li>学习上应该适度调整战略。在过去的几年中，尽可能涉猎更多领域来增加对计算机科学了解的广度是合理的，但是时候选择一个方向来深入下去了。如你所见，我不是很乐于承担这份选择的责任，尤其是可能带来的后果：我选错了方向怎么办？在【进一步的学习方案】和【更多的实践拷打】上要多下功夫。幸运的是，我大概只用了不到半年就及时发现了路线错误，这是好的。</li><li>后半年的任务调度存在严重的问题，而任务调度的实质是精力管理、心情管理和驱力管理。<ol type="1"><li>精力管理：今年一整年的作息、饮食都相当错乱，久坐、缺乏运动等对身体伤害极大。可以说，今年的问题是六分心理四分身体。这是好事啊！起码还有四分是能控制得了的。另一方面，后半年急于求成、过于冒进，贪心地安排了一堆任务，反而造成护航效应，使得在做一件事时不能够心无旁骛。所谓“无后顾之忧”，如果只需要考虑这一件事并且这件事足够“正统”，那么事情就简单很多。</li><li>心情管理：这是个伪命题，我实际上不太明白心情怎么会能够被管理的。但是由于本人的性格缺陷，倒有些成事不足败事有余：很多时候我面对逆境是“伸头是一刀缩头也是一刀”的态度，导致很多时候放任情绪恶化仍然强迫自己干活，比如国庆假期期间调一个bug连续调了十小时还是通宵然后顶不住自动睡着了的迷惑操作，典型的意气用事，极其低效，还影响驱力和身体状态。<del>但这个很难改啊</del></li><li>驱力管理：上半年做了很好的榜样。虽然退役是我极不愿意看到的事情，但是在退役后的自救几乎是无可指摘的（迅速转换学习方向，聚焦到一个任务上不断收获反馈，虽然本质上是逃跑——战略转移——但谁管那是黑猫白猫呢）。操作系统夏令营的第二阶段是本年度学习状态最稳定最充实的时间，这首先要归功于“无后顾之忧”，其次就是驱力：一方面这是儿时的梦想，本身就带有很大的兴趣；另一方面上半年的时候我还没有那么功利（或者说因为还在大一所以没有那么焦虑），愿意花时间“浪费”在一些可能没什么前途的领域上（scholar在拉丁语的来源中其实和 leisure 同源）。</li><li>除此之外，由于下半年回到了宿舍生活（这对我其实考验很大！），我的行动易受他人影响，这也是下半年一个很麻烦的阻力。</li></ol></li><li>如上所述，后半年不是太顺利，因此造成了专注力的一定丧失，这很悲哀，需要重新训练。</li></ol><p>好了，本着客观科学的态度，还是应该给个甜枣，但我实际上找不出这一年值得夸的地方，强行编造倒显得我心虚不足</p><ol type="1"><li>对大模型的工作流开发是比较完整的，虽然没有特别登峰造极但是起码达到了年初的预想。比如把单词视频用OpenAI whisper 转文本字幕然后找个小模型让它切成 Anki卡片算是比较天才的想法了（因为单词视频的大多数信息都在语言字幕上，板书和PPT几乎毫无意义，只能说什么都得弄个视频讲出来是教师病犯了，对学习而言视频几乎是最差的形式：没有目录，没法快速定位/随机访问，复习难度大）</li><li>虽然大多数时候无能为力，但是我基本是做到了所谓的吾日三省吾身。至少目前的生活中有什么问题正在发生，哪些比较严重我是心里有数的，总归不至于瞎着眼睛活着。但除了在考六级之前保护代码发力了迅速调整状态形成了良好的学习状态和规划之外，几乎没在这一年看到什么挽狂澜于既倒的出色应对，这是不应该的。</li><li>今年大概写了 22 篇技术类博客文章，其中有 4篇还未完工，<del>至于水的流水账日记更是数不胜数</del>。这个数量其实有点少的，念在一些文章字数和质量（自以为）还不错，姑且算作优点。</li></ol><p>搞了个新的博客主题，就叫Newspepper，因为审美上主要是模仿上世纪的报纸，然后把 paper 改成了pepper，我觉得这种把已有单词小小改一下作为项目名还是挺有趣的。Hexo Next真的很难说符合我的审美，正好是 1 月 1日弄上来的，蹭个辞旧迎新的彩头。但实际上我的博客根本没人看，自娱自乐罢了。</p><hr /><p>UPD 2026.2.18</p><p>完全没有写的欲望和动力, 强迫自己写也写不出什么东西</p><p>唯见日寒月暖, 来煎人寿</p>]]></content>
-    
-    
-    <summary type="html">&lt;p&gt;该写点什么呢？退役，折腾
-lecture，迷茫，比较，怀念，自我批判，一些微妙的改变&lt;/p&gt;
-&lt;p&gt;等期末周过去，放假再写吧。毕竟传统是在除夕前后去写年终总结。&lt;/p&gt;
-&lt;p&gt;(UPD 大年初二: 完全没有写年终总结的动力, 总体来说这是最辛苦的一年,
-却是我评价最低的一年)&lt;/p&gt;
-&lt;p&gt;以下是草稿，&lt;/p&gt;
-&lt;hr&gt;</summary>
-    
-    
-    
-    <category term="年终总结" scheme="https://amiriox.github.io/categories/%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/"/>
-    
     
   </entry>
   
