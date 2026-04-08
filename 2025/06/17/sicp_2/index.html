@@ -80,11 +80,11 @@
         <p class="rss-kicker">From The Feed</p>
         
           <p class="rss-note">syndicated via atom.xml</p>
-          <time datetime="2026-04-03T16:34:42.267Z" class="rss-date">
-            4月 4, 2026
+          <time datetime="2026-04-08T08:14:22.050Z" class="rss-date">
+            4月 8, 2026
           </time>
-          <p class="rss-title">【论文速读】Scalable Far Memory: Balancing Faults and Evictions</p>
-          <p class="rss-excerpt">一 核心内容 论文分析了传统远端内存存储系统的性能瓶颈, 并依据这些瓶颈提出了 MAGE, 在 Linux 和 LibOS 上实现了对远端内存系统的有效改进. 严格限制驱逐线程的…</p>
+          <p class="rss-title">SICP 第二章(构造数据抽象)</p>
+          <p class="rss-excerpt">复合数据 在实际的程序设计中(模拟数学或现实系统), 操作(过程)要应用到的数据往往不是一个单独的基本类型数据, 而是多个基本类型数据复合起来的: 例如分数是由分子和分母确定起来…</p>
         
       </a>
     </aside>
@@ -95,8 +95,8 @@
       <div class="nav-meta">
         
           <span class="nav-meta-label">Updated</span>
-          <time datetime="2026-04-03T16:34:42.267Z" class="nav-meta-date">
-            四月 4, 2026
+          <time datetime="2026-04-08T08:14:22.050Z" class="nav-meta-date">
+            四月 8, 2026
           </time>
         
       </div>
@@ -161,7 +161,7 @@
           <span class="post-author">By 折鸦夜明け前</span>
         
         
-          <span class="post-updated">Updated 三月 27, 2026</span>
+          <span class="post-updated">Updated 四月 8, 2026</span>
         
       </div>
     </header>
@@ -362,8 +362,8 @@ id="通用的数据处理流程序列作为一种约定的接口">通用的数�
 <strong>面向过程编程</strong> 和 <strong>面向对象编程</strong>,
 这里不赘述 PP 和 OOP 的区别.</p>
 <p>声明式编程是描述”我要达成什么样的局面/逻辑”, 直接描述逻辑或现象本身.
-如<strong>逻辑式编程</strong>(如Prolog),
-<strong>函数式编程</strong>(如Haskell)和<strong>数据库查询语言</strong>.</p>
+如<strong>逻辑式编程</strong> (如Prolog), <strong>函数式编程</strong>
+(如 Haskell)和<strong>数据库查询语言</strong>.</p>
 </blockquote>
 <p>映射(map)过程也可以嵌套, 对某个序列进行映射, 映射规则是对其中元素
 <span class="math inline">\(i\)</span> 进一步拆分这个 <span
@@ -390,9 +390,9 @@ class="math inline">\(i+1\)</span> 个皇后”</p>
 这里从开头几乎一直在讲递归操作(因为没有可变状态所以不用循环迭代,
 见第一章), 所以天然具有这样的能力; 这里对八皇后算法本身不再赘述.</p>
 </blockquote>
-<p>我们逐步考虑. 首先把防止前 <span class="math inline">\(k\)</span>
+<p>我们逐步考虑. 首先把放置前 <span class="math inline">\(k\)</span>
 行的功能实现为一个局部的 <code>place-first-k-rows</code> 函数,<br />
-那么首先考虑特殊情况特判</p>
+那么首先考虑特殊情况特判:</p>
 <figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name">place-first-k-rows</span> k)</span><br><span class="line">  (<span class="name"><span class="built_in">if</span></span> (<span class="name"><span class="built_in">=</span></span> k <span class="number">0</span>)</span><br><span class="line">      (<span class="name"><span class="built_in">list</span></span> empty-board)</span><br><span class="line">      <span class="comment">;; <span class="doctag">TODO:</span> k \neq 0</span></span><br><span class="line">      )</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
 <p>看算法描述: <em>“已经存在前 <span class="math inline">\(i\)</span>
 个皇后在棋盘上的局面”</em>, 则涉及到递归:
@@ -409,21 +409,22 @@ class="math inline">\(i+1\)</span> 个皇后”</p>
 <span class="math inline">\(i+1\)</span> 个皇后</em> (这是一个 map 过程:
 把每个被枚举到的行号映射为在当前):</p>
 <figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name">place-first-k-rows</span> k)</span><br><span class="line">  (<span class="name"><span class="built_in">if</span></span> (<span class="name"><span class="built_in">=</span></span> k <span class="number">0</span>)</span><br><span class="line">      (<span class="name"><span class="built_in">list</span></span> empty-board)</span><br><span class="line">      <span class="comment">;; k \neq 0</span></span><br><span class="line">      (<span class="name">flatmap</span> </span><br><span class="line">       (<span class="name"><span class="built_in">lambda</span></span> </span><br><span class="line">         (rest-of-queens)</span><br><span class="line">         </span><br><span class="line">         <span class="comment">;; for each placement... </span></span><br><span class="line">         (<span class="name"><span class="built_in">map</span></span> </span><br><span class="line">          (<span class="name"><span class="built_in">lambda</span></span> </span><br><span class="line">            (new-col) </span><br><span class="line">            (<span class="name">apply-cols</span> rest-of-queens k new-col)) </span><br><span class="line">          (<span class="name">enumerate-interval</span> <span class="number">1</span> board-size))	</span><br><span class="line">         </span><br><span class="line">         )</span><br><span class="line">       (<span class="name">place-first-k-rows</span> (<span class="name"><span class="built_in">-</span></span> k <span class="number">1</span>)))</span><br><span class="line">      )</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
-<p>最后<em>“检查新皇后是否冲突,
+<p>最后:</p>
+<p>检查新皇后是否冲突,
 然后将这些结果中符合条件(不冲突)的”总结”出来作为下一次放置的”前 <span
-class="math inline">\(i+1\)</span> 个皇后”“</em></p>
+class="math inline">\(i+1\)</span> 个皇后”:</p>
 <figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="built_in">define</span></span> (<span class="name">queen</span> board-size)</span><br><span class="line">  (<span class="name"><span class="built_in">define</span></span> (<span class="name">place-first-k-rows</span> k)</span><br><span class="line">    (<span class="name"><span class="built_in">if</span></span> (<span class="name"><span class="built_in">=</span></span> k <span class="number">0</span>)</span><br><span class="line">        (<span class="name"><span class="built_in">list</span></span> empty-board)</span><br><span class="line">        <span class="comment">;; k \neq 0</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">;; check validity</span></span><br><span class="line">        (<span class="name">filter</span></span><br><span class="line">         (<span class="name"><span class="built_in">lambda</span></span> (placements) (<span class="name">safe?</span> placements))</span><br><span class="line">         (<span class="name">flatmap</span></span><br><span class="line">          (<span class="name"><span class="built_in">lambda</span></span> (rest-of-queens)</span><br><span class="line">            </span><br><span class="line">            <span class="comment">;; for each placement... </span></span><br><span class="line">            (<span class="name"><span class="built_in">map</span></span> </span><br><span class="line">             (<span class="name"><span class="built_in">lambda</span></span> (new-col)</span><br><span class="line">               (<span class="name">apply-cols</span> rest-of-queens k new-col))</span><br><span class="line">             (<span class="name">enumerate-interval</span> <span class="number">1</span> board-size)))</span><br><span class="line">          (<span class="name">place-first-k-rows</span> (<span class="name"><span class="built_in">-</span></span> k <span class="number">1</span>))))))</span><br><span class="line">  </span><br><span class="line">  (<span class="name">place-first-k-rows</span> board-size))</span><br></pre></td></tr></table></figure>
 <p>(写到这里我还是不太适应 Lisp 这种括号和缩进, 给写眼花了说是)</p>
 <p>具体的摆放方式可以直接用 list 存每一行的皇后列号, <code>safe?</code>
-就是对新皇后(假设为在第 <span class="math inline">\(r\)</span> 行 <span
-class="math inline">\(c\)</span> 列)向上每一行做检查,
+就是对新皇后 (假设为在第 <span class="math inline">\(r\)</span> 行 <span
+class="math inline">\(c\)</span> 列) 向上每一行做检查,
 检查新皇后所在行向上 <span class="math inline">\(p\)</span> 行的 <span
 class="math inline">\((c - p, r - p)\)</span> 和 <span
 class="math inline">\((c + p, r - p)\)</span>
 位置是否被占据(具体可以画一下)</p>
 <p>这就是把看似复杂的过程统一抽象为几个基本过程的方式,
 增强复用性减少思考代价.</p>
-<p>// TODO 图形那个例子考虑下要不要写</p>
+<p>// TODO 图形那个例子</p>
 <h2 id="符号数据">符号数据</h2>
 <p>以上我们讨论的数据几乎都建立在”值”(或数值)上. 数值是连续的,
 可解释性较差的(光看数值难以理解<strong>含义</strong>)</p>
@@ -477,7 +478,7 @@ class="math inline">\(3, 5, e, x, 2\)</span> 虽然都是数字,
 我们目前所有的数据类型几乎都是通过组合基本数值(设计构造函数与选择函数)以构造出的数据抽象;
 但往往有些事物的构造方法不唯一, 例如复数可以通过直角坐标系坐标表示
 (<span class="math inline">\(a+b \cdot \text{i}\)</span> 表示为 <span
-class="math inline">\((啊, 不)\)</span>) 也可以通过极坐标来表示.</p>
+class="math inline">\((a, b)\)</span>) 也可以通过极坐标来表示.</p>
 <p>假设有两个复数传递给 <code>add-complex</code>: 如果选择直角坐标, 那么
 <code>add-complex</code> 所需的 <code>real-part</code>
 就应该将复数中的两个数视为直角坐标系下的实部虚部, 直接返回前者即可;
